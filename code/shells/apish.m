@@ -1,0 +1,125 @@
+%% --- API Execution Wrapper --- %%
+function model = apish(model)
+%% API execution wrapper
+% function model = apish(model)
+%
+% default wrapper for handling API errors. 
+%
+% can be used to copy/paste into a working project
+%
+% jdv 09212015; 10281015; 10292015
+    uID = 1; % default session id
+    try % execute main fcn in try/catch
+        % load libs and models
+        apiInit(uID,model.sys); 
+        % main fcn
+        model = main(uID,model);
+        % close model file
+        CloseAndUnload(uID);      
+    catch % force close close all refs
+        CloseAndUnload(uID);
+        rethrow(lasterror);
+    end
+end 
+
+
+function apiInit(uID,para)
+%% initialize api fcn
+    % initialize api
+    fprintf('Initializing API... \n'); % update UI
+    
+    % load api files
+    fprintf('\tLoading ST7API.DLL... ');
+    St7APIConst(); % load constants
+    if ~libisloaded('St7API')
+        loadlibrary('St7API.dll', 'St7APICall.h');
+        iErr = calllib('St7API', 'St7Init');
+        HandleError(iErr);
+    end
+    fprintf('Done. \n'); 
+    
+    % open st7 model file
+    fname = fullfile(para.pathname, para.filename); 
+    sname = para.scratchpath;
+    iErr = calllib('St7API', 'St7OpenFile', uID, fname, sname);
+    HandleError(iErr);
+    
+    % update
+    fprintf('Done. \n');
+end 
+
+
+function model = main(uID,model)
+% beware, dragons ahead 
+
+    % Extract and index plane of nodes 
+    %   at z = 0 (RAMPS deck nodes)
+    dof = get_nodes(uID,0);    
+    % save dof struct to model struct
+    model.dof = dof;
+    
+    % Perform A-Priori NFA
+    if isfield(model,'nfa')
+        nfa = model.nfa;
+        % check coords
+        nfa = snapcoords(dof,nfa);
+        % call api fcn
+        [U, freq] = get_nfa(uID,nfa.resultname,nfa.nmodes,nfa.ind);
+        % append to nfa struct
+        nfa.U = U;
+        nfa.freq = freq;
+        % save to model struct 
+        model.nfa = nfa;
+    end
+        
+    % Perform LSA Static Solver
+    if isfield(model,'lsa')        
+        lsa = model.lsa;
+        loads = lsa.loads;
+        resps = lsa.resps;
+        % check coords in load and response structs
+        loads = snapcoords(dof,loads);
+        resps = snapcoords(dof,resps);
+        % call lsa solver
+        res = get_lsa(uID,lsa.resultname, ...
+                          loads.lc, loads.ind, loads.force,...
+                          resps.lc, resps.ind);
+        % save to stuct
+        resps.disp = res; 
+        lsa.loads = loads; 
+        lsa.resps = resps;
+        model.lsa = lsa;
+    end
+end
+
+
+
+%% Utility Functions
+function HandleError(iErr)
+% Helper to convert ST7API error codes to MATLAB errors
+global kMaxStrLen ERR7_NoError
+    if (iErr~=ERR7_NoError)
+        str = char(zeros(kMaxStrLen, 1));
+        [iNewErr, str] = calllib('St7API', 'St7GetAPIErrorString', iErr, str, kMaxStrLen);
+        if (iNewErr>0)
+            [~, str] = calllib('St7API', 'ST7GetSolverErrorString', iErr ,str, kMaxStrLen);
+        end
+        % Issue as a MATLAB error
+        error(['St7API error: ', str]);
+    end
+end % /HandleError()
+
+function CloseAndUnload(uID)
+% Close any open files associated with uID and unload the St7API.
+    % tell user of action
+    fprintf('Exiting API... ');
+    % close any open result files
+    calllib('St7API','St7CloseResultFile', uID);
+    % close st7 model file 
+    calllib('St7API','St7CloseFile',uID);
+    % unload lib
+    unloadlibrary('St7API');
+    % update complete
+    fprintf(' Done\n');
+end  % /CloseAndUnload()
+

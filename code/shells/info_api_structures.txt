@@ -1,0 +1,29 @@
+model.
+	sys.
+		pathname - root path
+		filename - fe model file name
+		scratchpath - st7 tempo dir
+	dof.
+		nnodes - res - total nodes 
+		coords - res - all coordinates [x,y,z,ind] - st7 index = 1:length(coords)
+		bcoords - res - boundary coordinates [x,y,z]
+		totalXYZ
+	nfa.
+		resultname - result file name
+		nmodes - number of modes to return
+		coords - coordinates of sel dof [x,y]
+		ind - node index for global coords
+		U - res - mode shapes [ndof 
+		freq - res - undamped natural freqs [hz]
+	lsa.
+		resultname - lsa result file name
+		loads.
+			coords - global coordinates for load vector
+			ind
+			force - force value for input loads
+			lc - load case id for input assignments
+		resps.
+			coords - global coordinates for response vector
+			ind
+			lc - desired load case
+			disp - res - displacement value for response dof
