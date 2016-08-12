@@ -59,7 +59,7 @@ function [U,freq,modalres] = getNFA(uID,rname,nmodes,ind)
     fprintf('\t\tPopulating Mode Shapes... ');
     NodeRes = zeros(6,1);       % temporary 6DOF result for node jj
     nnodes = length(ind);       % number of nodes to fetch
-    U = zeros(nnodes, nmodes);  % result mode shape matrix
+    U = zeros(nnodes,6,nmodes); % result mode shape matrix
     for ii = 1:nmodes           % loop solved modes
         for jj = 1:nnodes       % loop stored plate nodes; gdata.nodeInd(jj)    
             % index selected dof
