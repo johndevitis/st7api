@@ -1,4 +1,4 @@
-%% Beam1 - Sensitivity Study Example
+%% Beam1 - Get Nodes API Example
 %
 %
 % jdv 08122016
