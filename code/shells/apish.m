@@ -1,11 +1,17 @@
 %% --- API Execution Wrapper --- %%
 function model = apish(model)
-%% API execution wrapper
+%% Self-contained API execution wrapper
 % function model = apish(model)
 %
-% default wrapper for handling API errors. 
+% default wrapper for handling API errors. can be used to copy/paste into a
+% project for quick api work
 %
-% can be used to copy/paste into a working project
+%
+% model.
+% 	sys.
+% 		pathname - root path
+% 		filename - fe model file name
+% 		scratchpath - st7 tempo dir
 %
 % jdv 09212015; 10281015; 10292015
     uID = 1; % default session id
@@ -25,9 +31,7 @@ end
 
 function apiInit(uID,para)
 %% initialize api fcn
-    % initialize api
-    fprintf('Initializing API... \n'); % update UI
-    
+    fprintf('Initializing API... \n'); 
     % load api files
     fprintf('\tLoading ST7API.DLL... ');
     St7APIConst(); % load constants
@@ -37,24 +41,21 @@ function apiInit(uID,para)
         HandleError(iErr);
     end
     fprintf('Done. \n'); 
-    
     % open st7 model file
     fname = fullfile(para.pathname, para.filename); 
     sname = para.scratchpath;
     iErr = calllib('St7API', 'St7OpenFile', uID, fname, sname);
     HandleError(iErr);
-    
     % update
     fprintf('Done. \n');
 end 
 
 
 function model = main(uID,model)
-% beware, dragons ahead 
+%% Main function, edit as you like. 
 
-    % Extract and index plane of nodes 
-    %   at z = 0 (RAMPS deck nodes)
-    dof = get_nodes(uID,0);    
+    % Extract and index plane of nodes at z=0
+    dof = getNodes(uID,0);    
     % save dof struct to model struct
     model.dof = dof;
     
@@ -64,7 +65,7 @@ function model = main(uID,model)
         % check coords
         nfa = snapcoords(dof,nfa);
         % call api fcn
-        [U, freq] = get_nfa(uID,nfa.resultname,nfa.nmodes,nfa.ind);
+        [U, freq] = getNFA(uID,nfa.resultname,nfa.nmodes,nfa.ind);
         % append to nfa struct
         nfa.U = U;
         nfa.freq = freq;
