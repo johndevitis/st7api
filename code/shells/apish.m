@@ -51,10 +51,6 @@ function apiInit(uID,para)
 end 
 
 
-
-
-
-%% Utility Functions
 function HandleError(iErr)
 % Helper to convert ST7API error codes to MATLAB errors
 global kMaxStrLen ERR7_NoError
@@ -67,7 +63,8 @@ global kMaxStrLen ERR7_NoError
         % Issue as a MATLAB error
         error(['St7API error: ', str]);
     end
-end % /HandleError()
+end 
+
 
 function CloseAndUnload(uID)
 % Close any open files associated with uID and unload the St7API.
@@ -81,5 +78,5 @@ function CloseAndUnload(uID)
     unloadlibrary('St7API');
     % update complete
     fprintf(' Done\n');
-end  % /CloseAndUnload()
+end  
 

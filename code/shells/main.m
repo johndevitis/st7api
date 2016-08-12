@@ -9,13 +9,14 @@ function model = main(uID,model)
     % Perform A-Priori NFA
     if isfield(model,'nfa')
         nfa = model.nfa;
-        % check coords
+        % snap dof coordinates to model nodes 
         nfa = snapcoords(dof,nfa);
         % call api fcn
-        [U, freq] = getNFA(uID,nfa.resultname,nfa.nmodes,nfa.ind);
+        [U, freq,modalres] = getNFA(uID,nfa.resultname,nfa.nmodes,nfa.ind);
         % append to nfa struct
         nfa.U = U;
         nfa.freq = freq;
+        nfa.modalres = modalres;
         % save to model struct 
         model.nfa = nfa;
     end
