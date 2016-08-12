@@ -23,6 +23,7 @@ function model = apish(model)
         % close model file
         CloseAndUnload(uID);      
     catch % force close close all refs
+        fprintf('Force close\n');
         CloseAndUnload(uID);
         rethrow(lasterror);
     end

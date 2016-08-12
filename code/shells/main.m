@@ -6,8 +6,20 @@ function model = main(uID,model)
     % save dof struct to model struct
     model.dof = dof;
     
+    nodes = model.dof.coords(:,4);
+    
+    % get UCS info for all nodes
+    [ucsid,ucsname] = getUCSinfo(uID,nodes);
+    model.ucsid = ucsid;
+    model.ucsname = ucsname;
+
+    % set node stiffnesses using st7indices
+    setNodeK(uID,nodes,model.Kfc,ucsid,model.Kt,model.Kr);
+    
+
+    
     % Perform A-Priori NFA
-    if isfield(model,'nfa')
+    if isfield(model,'nfa') && model.nfa.run == 1
         nfa = model.nfa;
         % snap dof coordinates to model nodes 
         nfa = snapcoords(dof,nfa);
@@ -21,8 +33,9 @@ function model = main(uID,model)
         model.nfa = nfa;
     end
         
+        
     % Perform LSA Static Solver
-    if isfield(model,'lsa')        
+    if isfield(model,'lsa') && model.lsa.run == 1        
         lsa = model.lsa;
         loads = lsa.loads;
         resps = lsa.resps;
