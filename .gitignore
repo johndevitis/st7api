@@ -1,0 +1,39 @@
+# ignore...
+
+# temp folder/file
+tmp/
+*.tmp
+
+# stupid windows Thumbs bs
+*.db
+
+# zip files
+*.zip
+
+# autosave files
+*.asv
+*.~t7
+
+# St7 analysis files
+*.LSA
+*.LSL
+*.NFA
+*.NFL
+*.LTA
+*.LTL
+*.~~7
+*.NLA
+*.NLL
+*.SHA
+*.SHL
+*.THA
+*.THL
+
+# ms office temp files
+~$*.doc*
+~$*.xls*
+*.xlk
+~$*.ppt*
+
+# libre office locks
+.~lock.*#
