@@ -66,8 +66,9 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
 
 
 
-  </style></head><body><div class="content"><h2>Contents</h2><div><ul><li><a href="#2">getBoundaryNodes</a></li></ul></div><pre class="codeinput"><span class="keyword">function</span> bcoords = getBoundaryNodes(coords)
-</pre><h2>getBoundaryNodes<a name="2"></a></h2><p>function to extract adn return boundary nodes from an x,y coordinate array.</p><p><b>*note</b>* assumes z coordinates = 0</p><p>input: * coords = [n x 2] array of (x,y) coordinates.</p><p>output: * bcoords = [n x 3] array of (x,y,z) coordinates. note that the function returns zeros for the z dimension.</p><p>drm jdv 2/14/14; 5/28/14; setup</p><pre class="codeinput">    x = coords(:,1);
+  </style></head><body><div class="content"><h1>getBoundaryNodes</h1><p>function to extract adn return boundary nodes from an x,y coordinate array.</p><p><b>*note</b>* assumes z coordinates = 0</p><p>input: * coords = [n x 2] array of (x,y) coordinates.</p><p>output: * bcoords = [n x 3] array of (x,y,z) coordinates. note that the function returns zeros for the z dimension.</p><p>drm jdv 2/14/14; 5/28/14;</p><pre class="codeinput"><span class="keyword">function</span> bcoords = getBoundaryNodes(coords)
+    <span class="comment">% setup</span>
+    x = coords(:,1);
     y = coords(:,2);
     <span class="comment">% sort nodes</span>
     fprintf(<span class="string">'\tSorting boundary nodes... '</span>);
@@ -85,11 +86,10 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
     zb = zeros(size(xb));
     <span class="comment">% save results</span>
     bcoords = [xb yb zb];
-    fprintf(<span class="string">'Done. \n'</span>);
-</pre><pre class="codeinput"><span class="keyword">end</span>
+    fprintf(<span class="string">'Done.'</span>);
+<span class="keyword">end</span>
 </pre><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2014b</a><br></p></div><!--
 ##### SOURCE BEGIN #####
-function bcoords = getBoundaryNodes(coords)
 %% getBoundaryNodes 
 % function to extract adn return boundary nodes from an x,y coordinate
 % array. 
@@ -104,6 +104,7 @@ function bcoords = getBoundaryNodes(coords)
 % returns zeros for the z dimension. 
 % 
 % drm jdv 2/14/14; 5/28/14;
+function bcoords = getBoundaryNodes(coords)
     % setup
     x = coords(:,1);
     y = coords(:,2);
@@ -123,7 +124,7 @@ function bcoords = getBoundaryNodes(coords)
     zb = zeros(size(xb));
     % save results
     bcoords = [xb yb zb];
-    fprintf('Done. \n');
+    fprintf('Done.');
 end
 ##### SOURCE END #####
 --></body></html>

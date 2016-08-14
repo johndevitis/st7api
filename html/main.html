@@ -66,22 +66,28 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
 
 
 
-  </style></head><body><div class="content"><h2>Contents</h2><div><ul><li><a href="#2">Main function, edit as you like.</a></li></ul></div><pre class="codeinput"><span class="keyword">function</span> model = main(uID,model)
+  </style></head><body><div class="content"><h2>Contents</h2><div><ul><li><a href="#1">Main Function</a></li><li><a href="#2">Main function, edit as you like.</a></li></ul></div><h2>Main Function<a name="1"></a></h2><p>to be used with apish.m jdv</p><pre class="codeinput"><span class="keyword">function</span> results = main(uID,model)
 </pre><h2>Main function, edit as you like.<a name="2"></a></h2><pre class="codeinput">    <span class="comment">% Extract and index plane of nodes at z=0</span>
     dof = getNodes(uID,0);
-    <span class="comment">% save dof struct to model struct</span>
-    model.dof = dof;
 
-    nodes = model.dof.coords(:,4);
+    <span class="comment">% get node index</span>
+    nodes = dof.coords(:,4);
 
     <span class="comment">% get UCS info for all nodes</span>
-    [ucsid,ucsname] = getUCSinfo(uID,nodes);
-    model.ucsid = ucsid;
-    model.ucsname = ucsname;
+    [ucsid,ucsname] = getUCSinfo(uID,dof.coords(:,4));
+    dof.ucsid = ucsid;
+    dof.ucsname = ucsname;
 
-    <span class="comment">% set node stiffnesses using st7indices</span>
-    setNodeK(uID,nodes,model.Kfc,ucsid,model.Kt,model.Kr);
+    <span class="comment">% assign stiffness</span>
+    <span class="keyword">if</span> isfield(model,<span class="string">'springs'</span>)
+        <span class="comment">% set node stiffnesses using st7indices</span>
+        springs = model.springs;
+        setNodeK(uID,nodes,springs.Kfc,ucsid,springs.Kt,springs.Kr);
+        dof.springs = springs;
+    <span class="keyword">end</span>
 
+    <span class="comment">% save dof struct</span>
+    results.dof = dof;
 
 
     <span class="comment">% Perform A-Priori NFA</span>
@@ -96,7 +102,7 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
         nfa.freq = freq;
         nfa.modalres = modalres;
         <span class="comment">% save to model struct</span>
-        model.nfa = nfa;
+        results.nfa = nfa;
     <span class="keyword">end</span>
 
 
@@ -116,29 +122,39 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
         resps.disp = res;
         lsa.loads = loads;
         lsa.resps = resps;
-        model.lsa = lsa;
+        results.lsa = lsa;
     <span class="keyword">end</span>
 </pre><pre class="codeinput"><span class="keyword">end</span>
 </pre><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2014b</a><br></p></div><!--
 ##### SOURCE BEGIN #####
-function model = main(uID,model)
+%% Main Function
+% to be used with apish.m
+% jdv
+
+function results = main(uID,model)
 %% Main function, edit as you like. 
 
     % Extract and index plane of nodes at z=0
     dof = getNodes(uID,0);    
-    % save dof struct to model struct
-    model.dof = dof;
     
-    nodes = model.dof.coords(:,4);
+    % get node index
+    nodes = dof.coords(:,4);
     
     % get UCS info for all nodes
-    [ucsid,ucsname] = getUCSinfo(uID,nodes);
-    model.ucsid = ucsid;
-    model.ucsname = ucsname;
+    [ucsid,ucsname] = getUCSinfo(uID,dof.coords(:,4));
+    dof.ucsid = ucsid;
+    dof.ucsname = ucsname;
 
-    % set node stiffnesses using st7indices
-    setNodeK(uID,nodes,model.Kfc,ucsid,model.Kt,model.Kr);
+    % assign stiffness
+    if isfield(model,'springs')
+        % set node stiffnesses using st7indices
+        springs = model.springs;
+        setNodeK(uID,nodes,springs.Kfc,ucsid,springs.Kt,springs.Kr);
+        dof.springs = springs;
+    end
     
+    % save dof struct
+    results.dof = dof;
 
     
     % Perform A-Priori NFA
@@ -153,7 +169,7 @@ function model = main(uID,model)
         nfa.freq = freq;
         nfa.modalres = modalres;
         % save to model struct 
-        model.nfa = nfa;
+        results.nfa = nfa;
     end
         
         
@@ -173,7 +189,7 @@ function model = main(uID,model)
         resps.disp = res; 
         lsa.loads = loads; 
         lsa.resps = resps;
-        model.lsa = lsa;
+        results.lsa = lsa;
     end
 end
 

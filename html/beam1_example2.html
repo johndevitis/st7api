@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>Beam1 - Example1</title><meta name="generator" content="MATLAB 8.4"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2016-08-14"><meta name="DC.source" content="beam1_example.m"><style type="text/css">
+      --><title>Beam1 - Example2</title><meta name="generator" content="MATLAB 8.4"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2016-08-14"><meta name="DC.source" content="beam1_example2.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -66,30 +66,51 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
 
 
 
-  </style></head><body><div class="content"><h1>Beam1 - Example1</h1><!--introduction--><p>jdv 08122016</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">setup st7 file info</a></li><li><a href="#2">setup nfa info</a></li><li><a href="#3">setup api run</a></li><li><a href="#4">run the shell</a></li><li><a href="#5">plot displaced shapes</a></li></ul></div><h2>setup st7 file info<a name="1"></a></h2><pre class="codeinput">sys.pathname = <span class="string">'C:\Users\John\Documents\MATLAB\repos\st7api\models'</span>;
+  </style></head><body><div class="content"><h1>Beam1 - Example2</h1><!--introduction--><div><ul><li>multiple runs</li></ul></div><p>jdv 08142016</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">setup st7 file info</a></li><li><a href="#2">setup nfa info</a></li><li><a href="#3">setup api run</a></li><li><a href="#4">run the shell</a></li><li><a href="#5">view nfa info</a></li><li><a href="#6">plot displaced shapes</a></li></ul></div><h2>setup st7 file info<a name="1"></a></h2><pre class="codeinput">sys.pathname = <span class="string">'C:\Users\John\Documents\MATLAB\repos\st7api\models'</span>;
 sys.filename = <span class="string">'beam1.st7'</span>;
 sys.scratchpath = <span class="string">'C:\Temp'</span>;
 </pre><h2>setup nfa info<a name="2"></a></h2><pre class="codeinput">nfa.resultname = fullfile(sys.pathname,[sys.filename(1:end-4) <span class="string">'.NFA'</span>]);
 nfa.nmodes = 8; <span class="comment">% set number of modes to compute</span>
+<span class="comment">% nfa.coords = beam1.dof.coords(:,[1 3]);</span>
 nfa.run = 1;
-</pre><h2>setup api run<a name="3"></a></h2><pre class="codeinput"><span class="comment">% add discrete springs</span>
-<span class="comment">% set node stiffness for model run 1</span>
+</pre><h2>setup api run<a name="3"></a></h2><pre class="codeinput"><span class="comment">% index and global xyz assignment</span>
+<span class="comment">% [nodeInd, x, y, z]</span>
+tInd = [ 1 1 0 1; 11 1 0 1];
+rInd = [ 1 0 1 0; 11 0 1 0];
+
+<span class="comment">% add discrete unit springs</span>
+<span class="comment">% [x y z]</span>
 Kt = zeros(11,3);           <span class="comment">% translation</span>
 Kr = zeros(11,3);           <span class="comment">% rotation</span>
 Kfc = ones(size(Kt,1),1);   <span class="comment">% freedom case for each assignment</span>
 
-Kt([1 11],:) = [50 0 25; 50 0 25];
-Kr([1 11],:) = [0 1 0; 0 1 0];
+<span class="comment">% loop springs and assign</span>
+<span class="keyword">for</span> ii = 1:size(tInd,1)
+    Kt(tInd(ii,1),:) = tInd(ii,2:end);
+    Kr(rInd(ii,1),:) = rInd(ii,2:end);
+<span class="keyword">end</span>
 
-springs.Kt = Kt;
-springs.Kr = Kr;
-springs.Kfc = Kfc;
+<span class="comment">% create spring range from 10^2 to 10*10 with 10 increments. start at 5 for</span>
+<span class="comment">% stability</span>
+<span class="comment">% note its a row vector</span>
+steps = 10;
+springrange = logspace(2,12,steps)';
 
-beam.sys = sys;
-beam.nfa = nfa;
-beam.springs = springs;
+<span class="comment">% build model array</span>
+<span class="keyword">for</span> ii = 1:steps
+    beam(ii).sys = sys;
+    beam(ii).nfa = nfa;
+    beam(ii).nfa.resultname = strcat(nfa.resultname(1:end-4),<span class="keyword">...</span>
+        <span class="string">'_step'</span>,num2str(ii),<span class="string">'.NFA'</span>);
+
+    springs.Kt = Kt*springrange(ii);
+    springs.Kr = Kr*springrange(ii);
+    springs.Kfc = Kfc; <span class="comment">% default to freedom case 1</span>
+    beam(ii).springs = springs;
+<span class="keyword">end</span>
 </pre><h2>run the shell<a name="4"></a></h2><pre class="codeinput">results = apish(beam);
-</pre><h2>plot displaced shapes<a name="5"></a></h2><pre class="codeinput">dof = results.dof;
+</pre><h2>view nfa info<a name="5"></a></h2><pre class="codeinput">plotSpringsVsFreq(results)
+</pre><h2>plot displaced shapes<a name="6"></a></h2><pre class="codeinput">dof = results(1).dof;
 
 fh = figure(<span class="string">'PaperPositionMode'</span>,<span class="string">'auto'</span>);
 ah = axes();
@@ -133,12 +154,12 @@ grid(ah,<span class="string">'on'</span>);
 grid(ah,<span class="string">'minor'</span>);
 </pre><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2014b</a><br></p></div><!--
 ##### SOURCE BEGIN #####
-%% Beam1 - Example1
+%% Beam1 - Example2
 %
-% 
+% * multiple runs
 %
 %
-% jdv 08122016
+% jdv 08142016
 
 %% setup st7 file info
 sys.pathname = 'C:\Users\John\Documents\MATLAB\repos\st7api\models';
@@ -148,35 +169,63 @@ sys.scratchpath = 'C:\Temp';
 %% setup nfa info
 nfa.resultname = fullfile(sys.pathname,[sys.filename(1:end-4) '.NFA']);
 nfa.nmodes = 8; % set number of modes to compute
+% nfa.coords = beam1.dof.coords(:,[1 3]);
 nfa.run = 1;
 
 %% setup api run
 
-% add discrete springs
-% set node stiffness for model run 1
+% index and global xyz assignment
+% [nodeInd, x, y, z]
+tInd = [ 1 1 0 1; 11 1 0 1]; 
+rInd = [ 1 0 1 0; 11 0 1 0];
+    
+% add discrete unit springs
+% [x y z]
 Kt = zeros(11,3);           % translation
 Kr = zeros(11,3);           % rotation
 Kfc = ones(size(Kt,1),1);   % freedom case for each assignment
 
-Kt([1 11],:) = [50 0 25; 50 0 25];
-Kr([1 11],:) = [0 1 0; 0 1 0];
+% loop springs and assign
+for ii = 1:size(tInd,1)
+    Kt(tInd(ii,1),:) = tInd(ii,2:end);
+    Kr(rInd(ii,1),:) = rInd(ii,2:end);
+end
 
-springs.Kt = Kt;
-springs.Kr = Kr;
-springs.Kfc = Kfc;
+% create spring range from 10^2 to 10*10 with 10 increments. start at 5 for
+% stability
+% note its a row vector
+steps = 10;
+springrange = logspace(2,12,steps)';
 
-beam.sys = sys;
-beam.nfa = nfa;
-beam.springs = springs;
+% build model array
+for ii = 1:steps
+    beam(ii).sys = sys;
+    beam(ii).nfa = nfa;
+    beam(ii).nfa.resultname = strcat(nfa.resultname(1:end-4),...
+        '_step',num2str(ii),'.NFA');
+    
+    springs.Kt = Kt*springrange(ii);
+    springs.Kr = Kr*springrange(ii);
+    springs.Kfc = Kfc; % default to freedom case 1
+    beam(ii).springs = springs;
+end
+
 
 %% run the shell
 
 results = apish(beam);
 
 
+%% view nfa info
+
+plotSpringsVsFreq(results)
+
+
+
+
 %% plot displaced shapes
 
-dof = results.dof;
+dof = results(1).dof;
 
 fh = figure('PaperPositionMode','auto');
 ah = axes();

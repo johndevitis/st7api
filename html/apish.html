@@ -66,17 +66,19 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
 
 
 
-  </style></head><body><div class="content"><h2>Contents</h2><div><ul><li><a href="#1">--- API Execution Wrapper --- %%</a></li><li><a href="#2">Self-contained API execution wrapper</a></li><li><a href="#4">initialize api fcn</a></li></ul></div><h2>--- API Execution Wrapper --- %%<a name="1"></a></h2><pre class="codeinput"><span class="keyword">function</span> model = apish(model)
-</pre><h2>Self-contained API execution wrapper<a name="2"></a></h2><p>function model = apish(model)</p><p>default wrapper for handling API errors. can be used to copy/paste into a project for quick api work</p><p>model. 	sys. 		pathname - root path 		filename - fe model file name 		scratchpath - st7 tempo dir</p><p>jdv 09212015; 10281015; 10292015</p><pre class="codeinput">    uID = 1; <span class="comment">% default session id</span>
+  </style></head><body><div class="content"><h2>Contents</h2><div><ul><li><a href="#1">Self-contained API execution wrapper</a></li><li><a href="#2">--- API Execution Wrapper --- %%</a></li><li><a href="#4">initialize api fcn</a></li></ul></div><h2>Self-contained API execution wrapper<a name="1"></a></h2><p>SYNTAX: model = apish(model)</p><p>default wrapper for handling API errors. can be used to copy/paste into a project for quick api work</p><p>model. 	sys. 		pathname - root path 		filename - fe model file name 		scratchpath - st7 tempo dir</p><p>jdv 09212015; 10281015; 10292015; 08142016</p><pre class="codeinput"><span class="keyword">function</span> results = apish(model)
+</pre><h2>--- API Execution Wrapper --- %%<a name="2"></a></h2><pre class="codeinput">    uID = 1; <span class="comment">% default session id</span>
     <span class="keyword">try</span> <span class="comment">% execute main fcn in try/catch</span>
         <span class="comment">% load libs and models</span>
-        apiInit(uID,model.sys);
+        apiInit(uID,model(1).sys);
         <span class="comment">% main fcn</span>
-        model = main(uID,model);
+        <span class="keyword">for</span> ii = 1:length(model)
+            results(ii) = main(uID,model(ii));
+        <span class="keyword">end</span>
         <span class="comment">% close model file</span>
         CloseAndUnload(uID);
     <span class="keyword">catch</span> <span class="comment">% force close close all refs</span>
-        fprintf(<span class="string">'Force close\n'</span>);
+        fprintf(<span class="string">'Force close'</span>);
         CloseAndUnload(uID);
         rethrow(lasterror);
     <span class="keyword">end</span>
@@ -84,22 +86,18 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
 
 
 <span class="keyword">function</span> apiInit(uID,para)
-</pre><h2>initialize api fcn<a name="4"></a></h2><pre class="codeinput">    fprintf(<span class="string">'Initializing API... \n'</span>);
-    <span class="comment">% load api files</span>
-    fprintf(<span class="string">'\tLoading ST7API.DLL... '</span>);
+</pre><h2>initialize api fcn<a name="4"></a></h2><p>load api files</p><pre class="codeinput">    fprintf(<span class="string">'Loading ST7API.DLL... '</span>);
     St7APIConst(); <span class="comment">% load constants</span>
     <span class="keyword">if</span> ~libisloaded(<span class="string">'St7API'</span>)
         loadlibrary(<span class="string">'St7API.dll'</span>, <span class="string">'St7APICall.h'</span>);
         iErr = calllib(<span class="string">'St7API'</span>, <span class="string">'St7Init'</span>);
         HandleError(iErr);
     <span class="keyword">end</span>
-    fprintf(<span class="string">'Done. \n'</span>);
     <span class="comment">% open st7 model file</span>
     fname = fullfile(para.pathname, para.filename);
     sname = para.scratchpath;
     iErr = calllib(<span class="string">'St7API'</span>, <span class="string">'St7OpenFile'</span>, uID, fname, sname);
     HandleError(iErr);
-    <span class="comment">% update</span>
     fprintf(<span class="string">'Done. \n'</span>);
 </pre><pre class="codeinput"><span class="keyword">end</span>
 
@@ -122,7 +120,7 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
 <span class="keyword">function</span> CloseAndUnload(uID)
 <span class="comment">% Close any open files associated with uID and unload the St7API.</span>
     <span class="comment">% tell user of action</span>
-    fprintf(<span class="string">'Exiting API... '</span>);
+    fprintf(<span class="string">'\nExiting API... '</span>);
     <span class="comment">% close any open result files</span>
     calllib(<span class="string">'St7API'</span>,<span class="string">'St7CloseResultFile'</span>, uID);
     <span class="comment">% close st7 model file</span>
@@ -134,10 +132,8 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
 <span class="keyword">end</span>
 </pre><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2014b</a><br></p></div><!--
 ##### SOURCE BEGIN #####
-%% REPLACE_WITH_DASH_DASH- API Execution Wrapper REPLACE_WITH_DASH_DASH- %%
-function model = apish(model)
 %% Self-contained API execution wrapper
-% function model = apish(model)
+% SYNTAX: model = apish(model)
 %
 % default wrapper for handling API errors. can be used to copy/paste into a
 % project for quick api work
@@ -149,17 +145,21 @@ function model = apish(model)
 % 		filename - fe model file name
 % 		scratchpath - st7 tempo dir
 %
-% jdv 09212015; 10281015; 10292015
+% jdv 09212015; 10281015; 10292015; 08142016
+function results = apish(model)
+%% REPLACE_WITH_DASH_DASH- API Execution Wrapper REPLACE_WITH_DASH_DASH- %%
     uID = 1; % default session id
     try % execute main fcn in try/catch
         % load libs and models
-        apiInit(uID,model.sys); 
+        apiInit(uID,model(1).sys); 
         % main fcn
-        model = main(uID,model);
+        for ii = 1:length(model)
+            results(ii) = main(uID,model(ii));
+        end
         % close model file
         CloseAndUnload(uID);      
     catch % force close close all refs
-        fprintf('Force close\n');
+        fprintf('Force close');
         CloseAndUnload(uID);
         rethrow(lasterror);
     end
@@ -168,22 +168,19 @@ end
 
 function apiInit(uID,para)
 %% initialize api fcn
-    fprintf('Initializing API... \n'); 
     % load api files
-    fprintf('\tLoading ST7API.DLL... ');
+    fprintf('Loading ST7API.DLL... ');
     St7APIConst(); % load constants
     if ~libisloaded('St7API')
         loadlibrary('St7API.dll', 'St7APICall.h');
         iErr = calllib('St7API', 'St7Init');
         HandleError(iErr);
     end
-    fprintf('Done. \n'); 
     % open st7 model file
     fname = fullfile(para.pathname, para.filename); 
     sname = para.scratchpath;
     iErr = calllib('St7API', 'St7OpenFile', uID, fname, sname);
     HandleError(iErr);
-    % update
     fprintf('Done. \n');
 end 
 
@@ -206,7 +203,7 @@ end
 function CloseAndUnload(uID)
 % Close any open files associated with uID and unload the St7API.
     % tell user of action
-    fprintf('Exiting API... ');
+    fprintf('\nExiting API... ');
     % close any open result files
     calllib('St7API','St7CloseResultFile', uID);
     % close st7 model file 

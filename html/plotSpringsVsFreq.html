@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>check/snap user coords to model coords</title><meta name="generator" content="MATLAB 8.4"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2016-08-14"><meta name="DC.source" content="snapcoords.m"><style type="text/css">
+      --><title>plotSpringsVsFreq</title><meta name="generator" content="MATLAB 8.4"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2016-08-14"><meta name="DC.source" content="plotSpringsVsFreq.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -66,42 +66,66 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
 
 
 
-  </style></head><body><div class="content"><h1>check/snap user coords to model coords</h1><pre class="codeinput"><span class="keyword">function</span> slave = snapcoords(master,slave)
-    <span class="comment">% error screen empty coords</span>
-    <span class="keyword">if</span> ~isfield(slave,<span class="string">'coords'</span>)
-        <span class="comment">% if no coords, default to all nodes</span>
-        slave.coords = master.coords;
-        slave.ind = master.coords(:,4);
+  </style></head><body><div class="content"><h1>plotSpringsVsFreq</h1><p>used for api sensitivity studies</p><p>author: john devitis create date: 14-Aug-2016 14:58:56</p><pre class="codeinput"><span class="keyword">function</span> plotSpringsVsFreq(results)
 
-    <span class="keyword">elseif</span> size(slave.coords,2) &lt; 3
-        <span class="comment">% if coords but no index, snap nodes</span>
-        [xx,yy,nn] = nodeSnap(master.coords(:,1),master.coords(:,2),<span class="keyword">...</span>
-                               slave.coords(:,1),slave.coords(:,2));
-        <span class="comment">% save st7 node index</span>
-        slave.coords(:,1) = xx;
-        slave.coords(:,2) = yy;
-        slave.ind = master.coords(nn,4); <span class="comment">% reference st7 node index</span>
+    fh = figure(<span class="string">'PaperPositionMode'</span>,<span class="string">'auto'</span>);
+    ah = axes;
+    hold <span class="string">on</span>
+    steps = length(results);
+
+    lins = {<span class="string">'+b'</span>,<span class="string">'or'</span>,<span class="string">'xg'</span>,<span class="string">'*m'</span>};
+
+    <span class="keyword">for</span> jj = 1:4
+        mode = jj;
+        <span class="keyword">for</span> ii = 1:steps
+            freq = results(ii).nfa.freq;
+            springs = results(ii).dof.springs;
+
+
+            yy = freq(mode);
+            xx = ones(size(yy))*springs.Kt(1);
+            plot(xx,yy,lins{jj})
+            hold <span class="string">on</span>
+        <span class="keyword">end</span>
     <span class="keyword">end</span>
+
+    set(ah,<span class="string">'XScale'</span>,<span class="string">'log'</span>)
+
 <span class="keyword">end</span>
 </pre><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2014b</a><br></p></div><!--
 ##### SOURCE BEGIN #####
-%% check/snap user coords to model coords
-function slave = snapcoords(master,slave)
-    % error screen empty coords 
-    if ~isfield(slave,'coords') 
-        % if no coords, default to all nodes
-        slave.coords = master.coords;
-        slave.ind = master.coords(:,4);
-        
-    elseif size(slave.coords,2) < 3
-        % if coords but no index, snap nodes
-        [xx,yy,nn] = nodeSnap(master.coords(:,1),master.coords(:,2),...
-                               slave.coords(:,1),slave.coords(:,2));
-        % save st7 node index
-        slave.coords(:,1) = xx;
-        slave.coords(:,2) = yy;
-        slave.ind = master.coords(nn,4); % reference st7 node index
+%% plotSpringsVsFreq
+% 
+% used for api sensitivity studies
+% 
+% author: john devitis
+% create date: 14-Aug-2016 14:58:56
+function plotSpringsVsFreq(results)
+	
+    fh = figure('PaperPositionMode','auto');
+    ah = axes;
+    hold on
+    steps = length(results);
+    
+    lins = {'+b','or','xg','*m'};
+    
+    for jj = 1:4
+        mode = jj;
+        for ii = 1:steps
+            freq = results(ii).nfa.freq;
+            springs = results(ii).dof.springs;
+
+
+            yy = freq(mode);
+            xx = ones(size(yy))*springs.Kt(1);
+            plot(xx,yy,lins{jj})
+            hold on
+        end
     end
+    
+    set(ah,'XScale','log')	
+	
 end
+
 ##### SOURCE END #####
 --></body></html>

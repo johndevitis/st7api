@@ -66,8 +66,8 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
 
 
 
-  </style></head><body><div class="content"><h2>Contents</h2><div><ul><li><a href="#2">getUCSinfo</a></li></ul></div><pre class="codeinput"><span class="keyword">function</span> [ucsid, ucsname] = getUCSinfo(uID,nodes)
-</pre><h2>getUCSinfo<a name="2"></a></h2><p>author: john devitis create date: 12-Aug-2016 18:07:14</p><pre class="codeinput">    <span class="comment">% default ucs index = 1 = Global XYZ</span>
+  </style></head><body><div class="content"><h1>getUCSinfo</h1><p>author: john devitis create date: 12-Aug-2016 18:07:14</p><pre class="codeinput"><span class="keyword">function</span> [ucsid, ucsname] = getUCSinfo(uID,nodes)
+    <span class="comment">% default ucs index = 1 = Global XYZ</span>
     ind = 1;
     ucsid = zeros(size(nodes));
     ucsname = cell(size(nodes));
@@ -82,17 +82,17 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
             50);
         HandleError(iErr);
     <span class="keyword">end</span>
-</pre><pre class="codeinput"><span class="keyword">end</span>
+
+<span class="keyword">end</span>
 </pre><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2014b</a><br></p></div><!--
 ##### SOURCE BEGIN #####
-function [ucsid, ucsname] = getUCSinfo(uID,nodes)
 %% getUCSinfo
 % 
 % 
 % 
 % author: john devitis
 % create date: 12-Aug-2016 18:07:14
-	
+function [ucsid, ucsname] = getUCSinfo(uID,nodes)	
     % default ucs index = 1 = Global XYZ
     ind = 1; 
     ucsid = zeros(size(nodes));

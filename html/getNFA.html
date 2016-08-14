@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>getNFA</title><meta name="generator" content="MATLAB 8.4"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2016-08-14"><meta name="DC.source" content="getNFA.m"><style type="text/css">
+      --><title>SYNTAX: [U,freq] = getNFA(uID,rname,nmodes,ind)</title><meta name="generator" content="MATLAB 8.4"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2016-08-14"><meta name="DC.source" content="getNFA.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -66,11 +66,11 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
 
 
 
-  </style></head><body><div class="content"><h2>Contents</h2><div><ul><li><a href="#2">SYNTAX: [U,freq] = getNFA(uID,rname,nmodes,ind)</a></li></ul></div><pre class="codeinput"><span class="keyword">function</span> [U,freq,modalres] = getNFA(uID,rname,nmodes,ind)
-</pre><h2>SYNTAX: [U,freq] = getNFA(uID,rname,nmodes,ind)<a name="2"></a></h2><p>input:   rname   - result name   nmodes  - number of modes to return   nmodes  - number of modes to solve   ind     - strand7 node index for global modes</p><p>output:   U       - mode shape array of size [nNodes x 6 DOF x nModes]   freq    - undamped natural freqs [hz]   modalres - st7 modal results</p><p>jdv 1/10/13; 1/29/13; 2/14/14; 08122016;</p><pre class="codeinput">    fprintf(<span class="string">'\t NFA Analysis... \n'</span>);
+  </style></head><body><div class="content"><h1>SYNTAX: [U,freq] = getNFA(uID,rname,nmodes,ind)</h1><p>input:   rname   - result name   nmodes  - number of modes to return   nmodes  - number of modes to solve   ind     - strand7 node index for global modes</p><p>output:   U       - mode shape array of size [nNodes x 6 DOF x nModes]   freq    - undamped natural freqs [hz]   modalres - st7 modal results</p><p>jdv 1/10/13; 1/29/13; 2/14/14; 08122016;</p><pre class="codeinput"><span class="keyword">function</span> [U,freq,modalres] = getNFA(uID,rname,nmodes,ind)
+    fprintf(<span class="string">'\t NFA Analysis... \n'</span>);
 
     <span class="comment">% setup - globals</span>
-    <span class="keyword">global</span> stNaturalFrequencySolver smProgressRun kNodeDisp btTrue
+    <span class="keyword">global</span> stNaturalFrequencySolver smBackgroundRun kNodeDisp btTrue
 
     <span class="comment">% set result file name</span>
     iErr = calllib(<span class="string">'St7API'</span>, <span class="string">'St7SetResultFileName'</span>, uID, rname);
@@ -85,7 +85,7 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
     HandleError(iErr);
 
     <span class="comment">% run NFA solver</span>
-    iErr = calllib(<span class="string">'St7API'</span>,<span class="string">'St7RunSolver'</span>, uID, stNaturalFrequencySolver, smProgressRun, btTrue);
+    iErr = calllib(<span class="string">'St7API'</span>,<span class="string">'St7RunSolver'</span>, uID, stNaturalFrequencySolver, smBackgroundRun, btTrue);
     HandleError(iErr);
 
     <span class="comment">% open NFA result file</span>
@@ -121,19 +121,17 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
             U(jj,:,ii) = NodeRes;
         <span class="keyword">end</span>
     <span class="keyword">end</span>
-
+    fprintf(<span class="string">'Done.'</span>);
 
 
     <span class="comment">% clean up</span>
     iErr = calllib(<span class="string">'St7API'</span>,<span class="string">'St7CloseResultFile'</span>,uID);
     HandleError(iErr);
 
-    <span class="comment">% update UI</span>
-    fprintf(<span class="string">' Done. \nDone.'</span>);
-</pre><pre class="codeinput"><span class="keyword">end</span>
+
+<span class="keyword">end</span>
 </pre><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2014b</a><br></p></div><!--
 ##### SOURCE BEGIN #####
-function [U,freq,modalres] = getNFA(uID,rname,nmodes,ind)
 %% SYNTAX: [U,freq] = getNFA(uID,rname,nmodes,ind)
 %
 %
@@ -150,10 +148,11 @@ function [U,freq,modalres] = getNFA(uID,rname,nmodes,ind)
 %
 %
 % jdv 1/10/13; 1/29/13; 2/14/14; 08122016;
+function [U,freq,modalres] = getNFA(uID,rname,nmodes,ind)
     fprintf('\t NFA Analysis... \n'); 
     
     % setup - globals
-    global stNaturalFrequencySolver smProgressRun kNodeDisp btTrue
+    global stNaturalFrequencySolver smBackgroundRun kNodeDisp btTrue
     
     % set result file name 
     iErr = calllib('St7API', 'St7SetResultFileName', uID, rname);
@@ -168,7 +167,7 @@ function [U,freq,modalres] = getNFA(uID,rname,nmodes,ind)
     HandleError(iErr);
     
     % run NFA solver
-    iErr = calllib('St7API','St7RunSolver', uID, stNaturalFrequencySolver, smProgressRun, btTrue);
+    iErr = calllib('St7API','St7RunSolver', uID, stNaturalFrequencySolver, smBackgroundRun, btTrue);
     HandleError(iErr);
     
     % open NFA result file
@@ -204,15 +203,14 @@ function [U,freq,modalres] = getNFA(uID,rname,nmodes,ind)
             U(jj,:,ii) = NodeRes; 
         end
     end
-    
+    fprintf('Done.');
     
     
     % clean up
     iErr = calllib('St7API','St7CloseResultFile',uID);
     HandleError(iErr);
     
-    % update UI
-    fprintf(' Done. \nDone.');
+
 end
 ##### SOURCE END #####
 --></body></html>
