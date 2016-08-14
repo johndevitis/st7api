@@ -1,4 +1,4 @@
-% check/snap user coords to model coords
+%% check/snap user coords to model coords
 function slave = snapcoords(master,slave)
     % error screen empty coords 
     if ~isfield(slave,'coords') 

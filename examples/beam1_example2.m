@@ -1,9 +1,9 @@
-%% Beam1 - Example1
+%% Beam1 - Example2
 %
-% 
+% * multiple runs
 %
 %
-% jdv 08122016
+% jdv 08142016
 
 %% setup st7 file info
 sys.pathname = 'C:\Users\John\Documents\MATLAB\repos\st7api\models';
@@ -13,35 +13,63 @@ sys.scratchpath = 'C:\Temp';
 %% setup nfa info
 nfa.resultname = fullfile(sys.pathname,[sys.filename(1:end-4) '.NFA']);
 nfa.nmodes = 8; % set number of modes to compute
+% nfa.coords = beam1.dof.coords(:,[1 3]);
 nfa.run = 1;
 
 %% setup api run
 
-% add discrete springs
-% set node stiffness for model run 1
+% index and global xyz assignment
+% [nodeInd, x, y, z]
+tInd = [ 1 1 0 1; 11 1 0 1]; 
+rInd = [ 1 0 1 0; 11 0 1 0];
+    
+% add discrete unit springs
+% [x y z]
 Kt = zeros(11,3);           % translation
 Kr = zeros(11,3);           % rotation
 Kfc = ones(size(Kt,1),1);   % freedom case for each assignment
 
-Kt([1 11],:) = [50 0 25; 50 0 25];
-Kr([1 11],:) = [0 1 0; 0 1 0];
+% loop springs and assign
+for ii = 1:size(tInd,1)
+    Kt(tInd(ii,1),:) = tInd(ii,2:end);
+    Kr(rInd(ii,1),:) = rInd(ii,2:end);
+end
 
-springs.Kt = Kt;
-springs.Kr = Kr;
-springs.Kfc = Kfc;
+% create spring range from 10^2 to 10*10 with 10 increments. start at 5 for
+% stability
+% note its a row vector
+steps = 10;
+springrange = logspace(2,12,steps)';
 
-beam.sys = sys;
-beam.nfa = nfa;
-beam.springs = springs;
+% build model array
+for ii = 1:steps
+    beam(ii).sys = sys;
+    beam(ii).nfa = nfa;
+    beam(ii).nfa.resultname = strcat(nfa.resultname(1:end-4),...
+        '_step',num2str(ii),'.NFA');
+    
+    springs.Kt = Kt*springrange(ii);
+    springs.Kr = Kr*springrange(ii);
+    springs.Kfc = Kfc; % default to freedom case 1
+    beam(ii).springs = springs;
+end
+
 
 %% run the shell
 
 results = apish(beam);
 
 
+%% view nfa info
+
+plotSpringsVsFreq(results)
+
+
+
+
 %% plot displaced shapes
 
-dof = results.dof;
+dof = results(1).dof;
 
 fh = figure('PaperPositionMode','auto');
 ah = axes();

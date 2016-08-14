@@ -1,21 +1,31 @@
-function model = main(uID,model)
+%% Main Function
+% to be used with apish.m
+% jdv
+
+function results = main(uID,model)
 %% Main function, edit as you like. 
 
     % Extract and index plane of nodes at z=0
     dof = getNodes(uID,0);    
-    % save dof struct to model struct
-    model.dof = dof;
     
-    nodes = model.dof.coords(:,4);
+    % get node index
+    nodes = dof.coords(:,4);
     
     % get UCS info for all nodes
-    [ucsid,ucsname] = getUCSinfo(uID,nodes);
-    model.ucsid = ucsid;
-    model.ucsname = ucsname;
+    [ucsid,ucsname] = getUCSinfo(uID,dof.coords(:,4));
+    dof.ucsid = ucsid;
+    dof.ucsname = ucsname;
 
-    % set node stiffnesses using st7indices
-    setNodeK(uID,nodes,model.Kfc,ucsid,model.Kt,model.Kr);
+    % assign stiffness
+    if isfield(model,'springs')
+        % set node stiffnesses using st7indices
+        springs = model.springs;
+        setNodeK(uID,nodes,springs.Kfc,ucsid,springs.Kt,springs.Kr);
+        dof.springs = springs;
+    end
     
+    % save dof struct
+    results.dof = dof;
 
     
     % Perform A-Priori NFA
@@ -30,7 +40,7 @@ function model = main(uID,model)
         nfa.freq = freq;
         nfa.modalres = modalres;
         % save to model struct 
-        model.nfa = nfa;
+        results.nfa = nfa;
     end
         
         
@@ -50,6 +60,6 @@ function model = main(uID,model)
         resps.disp = res; 
         lsa.loads = loads; 
         lsa.resps = resps;
-        model.lsa = lsa;
+        results.lsa = lsa;
     end
 end

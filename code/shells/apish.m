@@ -1,7 +1,5 @@
-%% --- API Execution Wrapper --- %%
-function model = apish(model)
 %% Self-contained API execution wrapper
-% function model = apish(model)
+% SYNTAX: model = apish(model)
 %
 % default wrapper for handling API errors. can be used to copy/paste into a
 % project for quick api work
@@ -13,17 +11,21 @@ function model = apish(model)
 % 		filename - fe model file name
 % 		scratchpath - st7 tempo dir
 %
-% jdv 09212015; 10281015; 10292015
+% jdv 09212015; 10281015; 10292015; 08142016
+function results = apish(model)
+%% --- API Execution Wrapper --- %%
     uID = 1; % default session id
     try % execute main fcn in try/catch
         % load libs and models
-        apiInit(uID,model.sys); 
+        apiInit(uID,model(1).sys); 
         % main fcn
-        model = main(uID,model);
+        for ii = 1:length(model)
+            results(ii) = main(uID,model(ii));
+        end
         % close model file
         CloseAndUnload(uID);      
     catch % force close close all refs
-        fprintf('Force close\n');
+        fprintf('Force close');
         CloseAndUnload(uID);
         rethrow(lasterror);
     end
@@ -32,22 +34,19 @@ end
 
 function apiInit(uID,para)
 %% initialize api fcn
-    fprintf('Initializing API... \n'); 
     % load api files
-    fprintf('\tLoading ST7API.DLL... ');
+    fprintf('Loading ST7API.DLL... ');
     St7APIConst(); % load constants
     if ~libisloaded('St7API')
         loadlibrary('St7API.dll', 'St7APICall.h');
         iErr = calllib('St7API', 'St7Init');
         HandleError(iErr);
     end
-    fprintf('Done. \n'); 
     % open st7 model file
     fname = fullfile(para.pathname, para.filename); 
     sname = para.scratchpath;
     iErr = calllib('St7API', 'St7OpenFile', uID, fname, sname);
     HandleError(iErr);
-    % update
     fprintf('Done. \n');
 end 
 
@@ -70,7 +69,7 @@ end
 function CloseAndUnload(uID)
 % Close any open files associated with uID and unload the St7API.
     % tell user of action
-    fprintf('Exiting API... ');
+    fprintf('\nExiting API... ');
     % close any open result files
     calllib('St7API','St7CloseResultFile', uID);
     % close st7 model file 

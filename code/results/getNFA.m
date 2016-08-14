@@ -1,4 +1,3 @@
-function [U,freq,modalres] = getNFA(uID,rname,nmodes,ind)
 %% SYNTAX: [U,freq] = getNFA(uID,rname,nmodes,ind)
 %
 %
@@ -15,10 +14,11 @@ function [U,freq,modalres] = getNFA(uID,rname,nmodes,ind)
 %
 %
 % jdv 1/10/13; 1/29/13; 2/14/14; 08122016;
+function [U,freq,modalres] = getNFA(uID,rname,nmodes,ind)
     fprintf('\t NFA Analysis... \n'); 
     
     % setup - globals
-    global stNaturalFrequencySolver smProgressRun kNodeDisp btTrue
+    global stNaturalFrequencySolver smBackgroundRun kNodeDisp btTrue
     
     % set result file name 
     iErr = calllib('St7API', 'St7SetResultFileName', uID, rname);
@@ -33,7 +33,7 @@ function [U,freq,modalres] = getNFA(uID,rname,nmodes,ind)
     HandleError(iErr);
     
     % run NFA solver
-    iErr = calllib('St7API','St7RunSolver', uID, stNaturalFrequencySolver, smProgressRun, btTrue);
+    iErr = calllib('St7API','St7RunSolver', uID, stNaturalFrequencySolver, smBackgroundRun, btTrue);
     HandleError(iErr);
     
     % open NFA result file
@@ -69,13 +69,12 @@ function [U,freq,modalres] = getNFA(uID,rname,nmodes,ind)
             U(jj,:,ii) = NodeRes; 
         end
     end
-    
+    fprintf('Done.');
     
     
     % clean up
     iErr = calllib('St7API','St7CloseResultFile',uID);
     HandleError(iErr);
     
-    % update UI
-    fprintf(' Done. \nDone.');
+
 end

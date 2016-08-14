@@ -1,4 +1,3 @@
-function dof = getNodes(uID,zz)
 %% get coordinate info in plane
 % zz = 0; % filter only z = 0 (RAMPS)
 %
@@ -17,6 +16,7 @@ function dof = getNodes(uID,zz)
 % 		totalXYZ - array of all nodal coordinates
 %
 % jdv 1/10/13; 1/29/13; 2/14/14; 09222015; 08122016
+function dof = getNodes(uID,zz)
     fprintf('\t Getting spatial information... '); 
     
     global tyNODE

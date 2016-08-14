@@ -1,11 +1,10 @@
-function [ucsid, ucsname] = getUCSinfo(uID,nodes)
 %% getUCSinfo
 % 
 % 
 % 
 % author: john devitis
 % create date: 12-Aug-2016 18:07:14
-	
+function [ucsid, ucsname] = getUCSinfo(uID,nodes)	
     % default ucs index = 1 = Global XYZ
     ind = 1; 
     ucsid = zeros(size(nodes));
