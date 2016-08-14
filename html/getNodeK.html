@@ -1,0 +1,184 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>getNodeK</title><meta name="generator" content="MATLAB 8.4"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2016-08-14"><meta name="DC.source" content="getNodeK.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; } 
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><h2>Contents</h2><div><ul><li><a href="#2">getNodeK</a></li></ul></div><pre class="codeinput"><span class="keyword">function</span> [Kt,Kr,ucsid,ucsname] = getNodeK(uID,nodes,freedomCaseNum)
+</pre><h2>getNodeK<a name="2"></a></h2><p>gets the rotational stiffness acting at the specified node</p><p>nodes:   strand7 node index</p><p>casenum:   load case number</p><p>USCid:   The ID number for the specified UCS</p><p>Kt:   A 3 element array describing the translational stiffnesses for the specified   node.  Doubles[i-1] describes the stiffness for the i th translational DoF   according to the 123 axis definition in the specified UCS.</p><p>Kr:   A 3 element array describing the rotational stiffnesses for the specified node.   Doubles[i-1] describes the stiffness for the i th rotational DoF according to   the 456 axis definition in the specified UCS.</p><p>author: john devitis create date: 12-Aug-2016 15:29:10</p><pre class="codeinput">    Kt = zeros(length(nodes),3);
+    Kr = zeros(length(nodes),3);
+
+    <span class="keyword">for</span> ii = 1:length(nodes)
+
+        <span class="comment">% get ucs id</span>
+
+        [iErr,ucsid] = calllib(<span class="string">'St7API'</span>,<span class="string">'St7GetUCSID'</span>,uID,ind,1);
+        HandleError(iErr);
+
+        <span class="comment">% get ucs name</span>
+        [iErr,ucsname] = calllib(<span class="string">'St7API'</span>,<span class="string">'St7GetUCSName'</span>,uID,ucsid,<span class="string">'hi'</span>,<span class="keyword">...</span>
+            50);
+        HandleError(iErr);
+
+
+        <span class="comment">% get translation spring stiffnesses</span>
+        [iErr,kt] = calllib(<span class="string">'St7API'</span>,<span class="string">'St7GetNodeKTranslation3F'</span>,uID,<span class="keyword">...</span>
+            nodes(ii), freedomCaseNum, ucsid, [0 0 0]);
+        <span class="comment">% check for empty sping values</span>
+        <span class="comment">%  (this happens when there's no discrete spring at the node)</span>
+        <span class="keyword">if</span> iErr == 10
+            <span class="comment">% no springs there</span>
+            Kt(ii,:) = [0 0 0];
+        <span class="keyword">else</span>
+            Kt(ii,:) = kt;
+        <span class="keyword">end</span>
+
+        <span class="comment">% get rotation spring stiffnesses</span>
+        [iErr,kr] = calllib(<span class="string">'St7API'</span>,<span class="string">'St7GetNodeKRotation3F'</span>,uID,<span class="keyword">...</span>
+            nodes(ii), freedomCaseNum, ucsid, [1 1 1]);
+        <span class="comment">% check for empty sping values</span>
+        <span class="comment">%  (this happens when there's no discrete spring at the node)</span>
+        <span class="keyword">if</span> iErr == 10
+            <span class="comment">% no springs there</span>
+            Kr(ii,:) = [0 0 0];
+        <span class="keyword">else</span>
+            Kr(ii,:) = kr;
+        <span class="keyword">end</span>
+    <span class="keyword">end</span>
+</pre><pre class="codeinput"><span class="keyword">end</span>
+</pre><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2014b</a><br></p></div><!--
+##### SOURCE BEGIN #####
+function [Kt,Kr,ucsid,ucsname] = getNodeK(uID,nodes,freedomCaseNum)
+%% getNodeK
+% 
+% gets the rotational stiffness acting at the specified node
+% 
+% nodes:
+%   strand7 node index
+%
+% casenum:
+%   load case number
+%
+% USCid: 
+%   The ID number for the specified UCS
+%
+% Kt:
+%   A 3 element array describing the translational stiffnesses for the specified
+%   node.  Doubles[i-1] describes the stiffness for the i th translational DoF
+%   according to the 123 axis definition in the specified UCS.
+%
+% Kr:
+%   A 3 element array describing the rotational stiffnesses for the specified node.
+%   Doubles[i-1] describes the stiffness for the i th rotational DoF according to
+%   the 456 axis definition in the specified UCS.
+%   
+% 
+% author: john devitis
+% create date: 12-Aug-2016 15:29:10
+
+    Kt = zeros(length(nodes),3);
+    Kr = zeros(length(nodes),3);
+
+    for ii = 1:length(nodes)
+        
+        % get ucs id
+        
+        [iErr,ucsid] = calllib('St7API','St7GetUCSID',uID,ind,1);
+        HandleError(iErr);
+        
+        % get ucs name
+        [iErr,ucsname] = calllib('St7API','St7GetUCSName',uID,ucsid,'hi',...
+            50);
+        HandleError(iErr);
+        
+        
+        % get translation spring stiffnesses
+        [iErr,kt] = calllib('St7API','St7GetNodeKTranslation3F',uID,...
+            nodes(ii), freedomCaseNum, ucsid, [0 0 0]);
+        % check for empty sping values
+        %  (this happens when there's no discrete spring at the node)
+        if iErr == 10
+            % no springs there
+            Kt(ii,:) = [0 0 0];
+        else
+            Kt(ii,:) = kt;
+        end
+        
+        % get rotation spring stiffnesses
+        [iErr,kr] = calllib('St7API','St7GetNodeKRotation3F',uID,...
+            nodes(ii), freedomCaseNum, ucsid, [1 1 1]);
+        % check for empty sping values
+        %  (this happens when there's no discrete spring at the node)
+        if iErr == 10
+            % no springs there
+            Kr(ii,:) = [0 0 0];
+        else
+            Kr(ii,:) = kr;
+        end
+    end
+end
+	
+##### SOURCE END #####
+--></body></html>

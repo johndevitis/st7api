@@ -1,0 +1,142 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>getLoadCaseNums</title><meta name="generator" content="MATLAB 8.4"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2016-08-14"><meta name="DC.source" content="getLoadCaseNums.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; } 
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><pre class="codeinput"><span class="keyword">function</span> lcNums = getLoadCaseNums(lcName,lcnames,beamNums,resultFlag)
+</pre><p>searches cell array of load case names and finds each paired load case number for the desired array of beamNums.</p><p>inputs:  lcName   - truck label/loadcase label. see data/ for list of brp opts  lcnames  - cell array vector of raw strings mined from LSL file  beamNums - vector of beam numbers to find in results file  resultFlag - 'BM2' for bending moment (flexure), 'SF2' for shear</p><p>original by nr refactored by jdv 06152016</p><pre class="codeinput">    quantifier = {<span class="string">'Min'</span>;<span class="string">'Max'</span>};         <span class="comment">% search both min and max response</span>
+    lcNums = zeros(length(beamNums),2); <span class="comment">% preallocate</span>
+
+    <span class="comment">% Get result case numbers</span>
+    <span class="keyword">for</span> ii = 1:length(beamNums)
+        <span class="keyword">for</span> jj = 1:length(quantifier)
+            <span class="comment">% look for beam End 1 first</span>
+            resultCaseName = [<span class="string">'Beam('</span> num2str(beamNums(ii)) <span class="string">') End 1 '</span> resultFlag <span class="string">' ['</span> lcName <span class="string">'] ('</span> quantifier{jj} <span class="string">' Response)'</span>];
+            match = find(strcmp(lcnames,resultCaseName));
+            <span class="comment">% check for pair</span>
+            <span class="keyword">if</span> isempty(match)
+                <span class="comment">% no match, look for End 2</span>
+                resultCaseName = [<span class="string">'Beam('</span> num2str(beamNums(ii)) <span class="string">') End 2 '</span> resultFlag <span class="string">' ['</span> lcName <span class="string">'] ('</span> quantifier{jj} <span class="string">' Response)'</span>];
+                match = find(strcmp(lcnames,resultCaseName));
+                <span class="comment">% check for End 2 match now</span>
+                <span class="keyword">if</span> isempty(match)
+                    <span class="comment">% error screen null save</span>
+                    match = 0;
+                    <span class="comment">% update user</span>
+                    fprintf([<span class="string">'Beam '</span> num2str(beamNums(ii)) <span class="string">' not found. \n'</span>]);
+                <span class="keyword">end</span>
+            <span class="keyword">end</span>
+            <span class="comment">% save flex</span>
+            lcNums(ii,jj) = match;
+        <span class="keyword">end</span>
+    <span class="keyword">end</span>
+</pre><pre class="codeinput"><span class="keyword">end</span>
+</pre><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2014b</a><br></p></div><!--
+##### SOURCE BEGIN #####
+function lcNums = getLoadCaseNums(lcName,lcnames,beamNums,resultFlag)
+%%
+% searches cell array of load case names and finds each paired load case
+% number for the desired array of beamNums.
+%
+% inputs:
+%  lcName   - truck label/loadcase label. see data/ for list of brp opts
+%  lcnames  - cell array vector of raw strings mined from LSL file
+%  beamNums - vector of beam numbers to find in results file
+%  resultFlag - 'BM2' for bending moment (flexure), 'SF2' for shear
+%  
+% original by nr
+% refactored by jdv 06152016
+
+    quantifier = {'Min';'Max'};         % search both min and max response
+    lcNums = zeros(length(beamNums),2); % preallocate
+    
+    % Get result case numbers
+    for ii = 1:length(beamNums)    
+        for jj = 1:length(quantifier)  
+            % look for beam End 1 first
+            resultCaseName = ['Beam(' num2str(beamNums(ii)) ') End 1 ' resultFlag ' [' lcName '] (' quantifier{jj} ' Response)'];
+            match = find(strcmp(lcnames,resultCaseName));
+            % check for pair
+            if isempty(match)
+                % no match, look for End 2
+                resultCaseName = ['Beam(' num2str(beamNums(ii)) ') End 2 ' resultFlag ' [' lcName '] (' quantifier{jj} ' Response)'];
+                match = find(strcmp(lcnames,resultCaseName));    
+                % check for End 2 match now
+                if isempty(match)
+                    % error screen null save
+                    match = 0;
+                    % update user
+                    fprintf(['Beam ' num2str(beamNums(ii)) ' not found. \n']);
+                end
+            end
+            % save flex
+            lcNums(ii,jj) = match;                          
+        end
+    end
+end
+
+##### SOURCE END #####
+--></body></html>

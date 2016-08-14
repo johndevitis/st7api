@@ -1,0 +1,218 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>getNFA</title><meta name="generator" content="MATLAB 8.4"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2016-08-14"><meta name="DC.source" content="getNFA.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; } 
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><h2>Contents</h2><div><ul><li><a href="#2">SYNTAX: [U,freq] = getNFA(uID,rname,nmodes,ind)</a></li></ul></div><pre class="codeinput"><span class="keyword">function</span> [U,freq,modalres] = getNFA(uID,rname,nmodes,ind)
+</pre><h2>SYNTAX: [U,freq] = getNFA(uID,rname,nmodes,ind)<a name="2"></a></h2><p>input:   rname   - result name   nmodes  - number of modes to return   nmodes  - number of modes to solve   ind     - strand7 node index for global modes</p><p>output:   U       - mode shape array of size [nNodes x 6 DOF x nModes]   freq    - undamped natural freqs [hz]   modalres - st7 modal results</p><p>jdv 1/10/13; 1/29/13; 2/14/14; 08122016;</p><pre class="codeinput">    fprintf(<span class="string">'\t NFA Analysis... \n'</span>);
+
+    <span class="comment">% setup - globals</span>
+    <span class="keyword">global</span> stNaturalFrequencySolver smProgressRun kNodeDisp btTrue
+
+    <span class="comment">% set result file name</span>
+    iErr = calllib(<span class="string">'St7API'</span>, <span class="string">'St7SetResultFileName'</span>, uID, rname);
+    HandleError(iErr);
+
+    <span class="comment">% set number of modes to solve</span>
+    iErr = calllib(<span class="string">'St7API'</span>,<span class="string">'St7SetNFANumModes'</span>, uID, nmodes);
+    HandleError(iErr);
+
+    <span class="comment">% set mode participation calculation</span>
+    iErr = calllib(<span class="string">'St7API'</span>,<span class="string">'St7SetNFAModeParticipationCalculate'</span>, uID, btTrue);
+    HandleError(iErr);
+
+    <span class="comment">% run NFA solver</span>
+    iErr = calllib(<span class="string">'St7API'</span>,<span class="string">'St7RunSolver'</span>, uID, stNaturalFrequencySolver, smProgressRun, btTrue);
+    HandleError(iErr);
+
+    <span class="comment">% open NFA result file</span>
+    [iErr, nPrimary, nSecondary] = calllib(<span class="string">'St7API'</span>, <span class="string">'St7OpenResultFile'</span>, uID, rname, <span class="string">''</span>, false, 0, 0);
+    HandleError(iErr);
+
+    <span class="comment">% Get frequencies and modalresults</span>
+    freq = zeros(nmodes,1);
+    modalres = zeros(nmodes,10);
+    <span class="keyword">for</span> ii = 1:nmodes <span class="comment">% loop solved modes</span>
+
+        <span class="comment">% get natural frequency</span>
+        [iErr, freq(ii,1)] = calllib(<span class="string">'St7API'</span>,<span class="string">'St7GetFrequency'</span>,uID,ii,1);
+        HandleError(iErr);
+
+        <span class="comment">% get modal results (e.g. modal mass, modal stiffness)</span>
+        [iErr,modalres(ii,:)] = calllib(<span class="string">'St7API'</span>,<span class="string">'St7GetModalResultsNFA'</span>,uID,<span class="keyword">...</span>
+            ii,modalres(ii,:));
+        HandleError(iErr);
+    <span class="keyword">end</span>
+
+    <span class="comment">% Get modeshapes</span>
+    fprintf(<span class="string">'\t\tPopulating Mode Shapes... '</span>);
+    NodeRes = zeros(6,1);       <span class="comment">% temporary 6DOF result for node jj</span>
+    nnodes = length(ind);       <span class="comment">% number of nodes to fetch</span>
+    U = zeros(nnodes,6,nmodes); <span class="comment">% result mode shape matrix</span>
+    <span class="keyword">for</span> ii = 1:nmodes           <span class="comment">% loop solved modes</span>
+        <span class="keyword">for</span> jj = 1:nnodes       <span class="comment">% loop stored plate nodes; gdata.nodeInd(jj)</span>
+            <span class="comment">% index selected dof</span>
+            [iErr, NodeRes] = calllib(<span class="string">'St7API'</span>, <span class="string">'St7GetNodeResult'</span>, uID, kNodeDisp,<span class="keyword">...</span>
+                                        ind(jj), ii, NodeRes);
+            HandleError(iErr);
+            U(jj,:,ii) = NodeRes;
+        <span class="keyword">end</span>
+    <span class="keyword">end</span>
+
+
+
+    <span class="comment">% clean up</span>
+    iErr = calllib(<span class="string">'St7API'</span>,<span class="string">'St7CloseResultFile'</span>,uID);
+    HandleError(iErr);
+
+    <span class="comment">% update UI</span>
+    fprintf(<span class="string">' Done. \nDone.'</span>);
+</pre><pre class="codeinput"><span class="keyword">end</span>
+</pre><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2014b</a><br></p></div><!--
+##### SOURCE BEGIN #####
+function [U,freq,modalres] = getNFA(uID,rname,nmodes,ind)
+%% SYNTAX: [U,freq] = getNFA(uID,rname,nmodes,ind)
+%
+%
+% input:
+%   rname   - result name
+%   nmodes  - number of modes to return
+%   nmodes  - number of modes to solve        
+%   ind     - strand7 node index for global modes
+% 		
+% output:
+%   U       - mode shape array of size [nNodes x 6 DOF x nModes]
+%   freq    - undamped natural freqs [hz]
+%   modalres - st7 modal results
+%
+%
+% jdv 1/10/13; 1/29/13; 2/14/14; 08122016;
+    fprintf('\t NFA Analysis... \n'); 
+    
+    % setup - globals
+    global stNaturalFrequencySolver smProgressRun kNodeDisp btTrue
+    
+    % set result file name 
+    iErr = calllib('St7API', 'St7SetResultFileName', uID, rname);
+    HandleError(iErr);
+    
+    % set number of modes to solve
+    iErr = calllib('St7API','St7SetNFANumModes', uID, nmodes);
+    HandleError(iErr);
+    
+    % set mode participation calculation
+    iErr = calllib('St7API','St7SetNFAModeParticipationCalculate', uID, btTrue);
+    HandleError(iErr);
+    
+    % run NFA solver
+    iErr = calllib('St7API','St7RunSolver', uID, stNaturalFrequencySolver, smProgressRun, btTrue);
+    HandleError(iErr);
+    
+    % open NFA result file
+    [iErr, nPrimary, nSecondary] = calllib('St7API', 'St7OpenResultFile', uID, rname, '', false, 0, 0);
+    HandleError(iErr);
+    
+    % Get frequencies and modalresults
+    freq = zeros(nmodes,1);
+    modalres = zeros(nmodes,10);
+    for ii = 1:nmodes % loop solved modes
+        
+        % get natural frequency
+        [iErr, freq(ii,1)] = calllib('St7API','St7GetFrequency',uID,ii,1);
+        HandleError(iErr);
+        
+        % get modal results (e.g. modal mass, modal stiffness)
+        [iErr,modalres(ii,:)] = calllib('St7API','St7GetModalResultsNFA',uID,...
+            ii,modalres(ii,:));
+        HandleError(iErr);
+    end
+    
+    % Get modeshapes
+    fprintf('\t\tPopulating Mode Shapes... ');
+    NodeRes = zeros(6,1);       % temporary 6DOF result for node jj
+    nnodes = length(ind);       % number of nodes to fetch
+    U = zeros(nnodes,6,nmodes); % result mode shape matrix
+    for ii = 1:nmodes           % loop solved modes
+        for jj = 1:nnodes       % loop stored plate nodes; gdata.nodeInd(jj)    
+            % index selected dof
+            [iErr, NodeRes] = calllib('St7API', 'St7GetNodeResult', uID, kNodeDisp,...
+                                        ind(jj), ii, NodeRes);
+            HandleError(iErr); 
+            U(jj,:,ii) = NodeRes; 
+        end
+    end
+    
+    
+    
+    % clean up
+    iErr = calllib('St7API','St7CloseResultFile',uID);
+    HandleError(iErr);
+    
+    % update UI
+    fprintf(' Done. \nDone.');
+end
+##### SOURCE END #####
+--></body></html>

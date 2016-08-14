@@ -1,0 +1,307 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>getBeamResults</title><meta name="generator" content="MATLAB 8.4"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2016-08-14"><meta name="DC.source" content="getBeamResults.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; } 
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><pre class="codeinput"><span class="keyword">function</span> results = getBeamResults(model,res,beamNums,lcNums)
+</pre><p>returns: [beamNum, beamDesc, beamID]</p><p>jdv 06152016</p><pre class="codeinput">    uID = 1;     <span class="comment">% default st7 model id</span>
+    results = []; <span class="comment">% make sure this exists</span>
+
+    <span class="comment">%-- API Execution Wrapper --%</span>
+    <span class="keyword">try</span>
+        results = Main(uID,model,res,lcNums,beamNums);
+    <span class="keyword">catch</span>
+        <span class="comment">% force close errthang</span>
+        fprintf(<span class="string">'Force close!\n'</span>);
+        CloseAndUnload(uID);
+        rethrow(lasterror);
+    <span class="keyword">end</span>
+</pre><pre class="codeinput"><span class="keyword">end</span>
+
+<span class="keyword">function</span> results = Main(uID,model,res,lcNums,beamNums)
+    <span class="comment">% load api</span>
+    InitializeSt7();
+    <span class="comment">% open model file</span>
+    St7OpenModelFile(uID, model.path, model.name, model.scratch)
+    <span class="comment">% open result file</span>
+    St7OpenResultFile(uID,res.fullpath);
+
+    <span class="comment">% loop beam numbers</span>
+    <span class="keyword">for</span> ii = 1:length(beamNums)
+
+        <span class="comment">% get beam info</span>
+        [propNum,propName,sectionName] = getBeamInfo(uID,beamNums(ii));
+
+        <span class="comment">% save to results</span>
+        results.beamNum(ii) = beamNums(ii);
+        results.propNum(ii) = propNum;
+        results.propName{ii} = propName;
+        results.sectionName{ii} = sectionName;
+
+        <span class="comment">% loop load case numbers for each beam</span>
+        <span class="comment">%  assuming 2 load cases, min and max</span>
+        beamResults = zeros(12,size(lcNums,2)); <span class="comment">% preallocate</span>
+        <span class="keyword">for</span> jj = 1:size(lcNums,2)
+            <span class="comment">% check for empty load case number</span>
+            <span class="comment">% (this will happen when load case is not found by</span>
+            <span class="comment">% getLoadCaseNums)</span>
+            <span class="keyword">if</span> lcNums(ii,jj) ~= 0
+                <span class="comment">% get beam results</span>
+                beamResults(:,jj) = extractBeamResults(uID,beamNums(ii),<span class="keyword">...</span>
+                    lcNums(ii,jj));
+            <span class="keyword">end</span>
+        <span class="keyword">end</span>
+
+        <span class="comment">% filter results for beam ii</span>
+        [M,P,V] = filterBeamResults(beamResults);
+
+        <span class="comment">% save to results struct</span>
+        results.M(ii,1) = M;
+        results.P(ii,1) = P;
+        results.V(ii,1) = V;
+
+    <span class="keyword">end</span>
+
+    <span class="comment">% Close all and unload library</span>
+    CloseAndUnload(uID);
+<span class="keyword">end</span>
+
+<span class="keyword">function</span> [M,P,V] = filterBeamResults(beamres)
+<span class="comment">% filter absolute max response and pull out moment, shear, and axial</span>
+<span class="comment">% TODO: generalize for any number of resultcases - currently only works for</span>
+<span class="comment">% a max of 2 cases (for min/max)</span>
+
+    <span class="comment">% find absolute max response</span>
+    <span class="comment">% assume 2 load cases per beam -&gt; min and max (positive/negative, etc)</span>
+    beamResults = max(abs(beamres(:,1)),abs(beamres(:,end)));
+
+    <span class="comment">% index moment, shear, and axial results</span>
+    M = max(abs(beamResults(4)), abs(beamResults(10)));
+    P = max(abs(beamResults(1)), abs(beamResults(7)));
+    V = max(abs(beamResults(5)), abs(beamResults(9)));
+
+<span class="keyword">end</span>
+
+<span class="keyword">function</span> beamResults = extractBeamResults(uID,bnum,lcnum)
+<span class="comment">% 6 resultants for each beam end</span>
+<span class="comment">% beamResults - [12x1]</span>
+    <span class="keyword">global</span> rtBeamForce stBeamGlobal
+    numRes = 12; numCol = 6;
+    beamResults = zeros(numRes,1);
+    [iErr, numCol, beamResults] = calllib(<span class="string">'St7API'</span>, <span class="string">'St7GetBeamResultEndPos'</span>,<span class="keyword">...</span>
+        uID, rtBeamForce, stBeamGlobal, bnum, lcnum, numCol, beamResults);
+    HandleError(iErr);
+<span class="keyword">end</span>
+
+<span class="keyword">function</span> [propNum,propName,sectionName] = getBeamInfo(uID,bnum)
+<span class="comment">% get property number, property name, and section name from beam number</span>
+
+    <span class="keyword">global</span> tyBEAM ptBEAMPROP
+
+    <span class="comment">% get beam property number</span>
+    [iErr,propNum] = calllib(<span class="string">'St7API'</span>, <span class="string">'St7GetElementProperty'</span>,uID,tyBEAM, <span class="keyword">...</span>
+        bnum,1);
+    HandleError(iErr);
+
+    <span class="comment">% get beam prop name</span>
+    maxLen = 128; <span class="comment">% max length of name</span>
+    propName = char(ones(1,maxLen)); <span class="comment">% preallocate (don't use zeros!)</span>
+    [iErr,propName] = calllib(<span class="string">'St7API'</span>,<span class="string">'St7GetPropertyName'</span>,uID, ptBEAMPROP,<span class="keyword">...</span>
+        propNum,propName,maxLen);
+    HandleError(iErr);
+
+    <span class="comment">% get beam section name</span>
+    sectionName = char(ones(1,maxLen)); <span class="comment">% pre-al</span>
+    [iErr,sectionName] = calllib(<span class="string">'St7API'</span>,<span class="string">'St7GetBeamSectionName'</span>,uID,<span class="keyword">...</span>
+        propNum,sectionName,maxLen);
+    HandleError(iErr);
+<span class="keyword">end</span>
+</pre><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2014b</a><br></p></div><!--
+##### SOURCE BEGIN #####
+function results = getBeamResults(model,res,beamNums,lcNums)
+%%
+%
+% returns:
+% [beamNum, beamDesc, beamID]
+% 
+% jdv 06152016
+
+    uID = 1;     % default st7 model id      
+    results = []; % make sure this exists
+    
+    %REPLACE_WITH_DASH_DASH API Execution Wrapper REPLACE_WITH_DASH_DASH%
+    try
+        results = Main(uID,model,res,lcNums,beamNums);
+    catch   
+        % force close errthang
+        fprintf('Force close!\n');
+        CloseAndUnload(uID);
+        rethrow(lasterror);
+    end
+end
+
+function results = Main(uID,model,res,lcNums,beamNums)
+    % load api 
+    InitializeSt7(); 
+    % open model file
+    St7OpenModelFile(uID, model.path, model.name, model.scratch)      
+    % open result file
+    St7OpenResultFile(uID,res.fullpath);
+    
+    % loop beam numbers
+    for ii = 1:length(beamNums)     
+        
+        % get beam info
+        [propNum,propName,sectionName] = getBeamInfo(uID,beamNums(ii));
+        
+        % save to results
+        results.beamNum(ii) = beamNums(ii);
+        results.propNum(ii) = propNum;
+        results.propName{ii} = propName;
+        results.sectionName{ii} = sectionName;
+            
+        % loop load case numbers for each beam 
+        %  assuming 2 load cases, min and max
+        beamResults = zeros(12,size(lcNums,2)); % preallocate 
+        for jj = 1:size(lcNums,2)               
+            % check for empty load case number 
+            % (this will happen when load case is not found by
+            % getLoadCaseNums)
+            if lcNums(ii,jj) ~= 0
+                % get beam results
+                beamResults(:,jj) = extractBeamResults(uID,beamNums(ii),...
+                    lcNums(ii,jj));
+            end
+        end
+        
+        % filter results for beam ii
+        [M,P,V] = filterBeamResults(beamResults);
+
+        % save to results struct
+        results.M(ii,1) = M;
+        results.P(ii,1) = P;
+        results.V(ii,1) = V;
+        
+    end
+    
+    % Close all and unload library
+    CloseAndUnload(uID);        
+end
+
+function [M,P,V] = filterBeamResults(beamres)
+% filter absolute max response and pull out moment, shear, and axial
+% TODO: generalize for any number of resultcases - currently only works for
+% a max of 2 cases (for min/max)
+
+    % find absolute max response
+    % assume 2 load cases per beam -> min and max (positive/negative, etc)
+    beamResults = max(abs(beamres(:,1)),abs(beamres(:,end)));
+    
+    % index moment, shear, and axial results
+    M = max(abs(beamResults(4)), abs(beamResults(10)));
+    P = max(abs(beamResults(1)), abs(beamResults(7)));
+    V = max(abs(beamResults(5)), abs(beamResults(9)));
+
+end
+
+function beamResults = extractBeamResults(uID,bnum,lcnum)
+% 6 resultants for each beam end
+% beamResults - [12x1]
+    global rtBeamForce stBeamGlobal
+    numRes = 12; numCol = 6;
+    beamResults = zeros(numRes,1);
+    [iErr, numCol, beamResults] = calllib('St7API', 'St7GetBeamResultEndPos',...
+        uID, rtBeamForce, stBeamGlobal, bnum, lcnum, numCol, beamResults);
+    HandleError(iErr);
+end
+
+function [propNum,propName,sectionName] = getBeamInfo(uID,bnum)
+% get property number, property name, and section name from beam number
+
+    global tyBEAM ptBEAMPROP    
+    
+    % get beam property number
+    [iErr,propNum] = calllib('St7API', 'St7GetElementProperty',uID,tyBEAM, ...
+        bnum,1);
+    HandleError(iErr);
+    
+    % get beam prop name
+    maxLen = 128; % max length of name
+    propName = char(ones(1,maxLen)); % preallocate (don't use zeros!)
+    [iErr,propName] = calllib('St7API','St7GetPropertyName',uID, ptBEAMPROP,...
+        propNum,propName,maxLen);
+    HandleError(iErr);       
+    
+    % get beam section name
+    sectionName = char(ones(1,maxLen)); % pre-al
+    [iErr,sectionName] = calllib('St7API','St7GetBeamSectionName',uID,...
+        propNum,sectionName,maxLen);
+    HandleError(iErr);
+end
+
+
+##### SOURCE END #####
+--></body></html>

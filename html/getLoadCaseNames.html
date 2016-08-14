@@ -1,0 +1,174 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>getLoadCaseNames</title><meta name="generator" content="MATLAB 8.4"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2016-08-14"><meta name="DC.source" content="getLoadCaseNames.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; } 
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><h2>Contents</h2><div><ul><li><a href="#2">lcnames = getLoadCaseNames(filename)</a></li></ul></div><pre class="codeinput"><span class="keyword">function</span> lcnames = getLoadCaseNames(filename)
+</pre><h2>lcnames = getLoadCaseNames(filename)<a name="2"></a></h2><p>Search st7 log files for load case names. Returns a cell array of strings.</p><p>jdv 03162016</p><pre class="codeinput"><span class="comment">% open file</span>
+[fid, errmsg] = fopen(filename);
+    <span class="comment">% error screen</span>
+    <span class="keyword">if</span> ~isempty(errmsg)
+        error(errmsg);
+    <span class="keyword">end</span>
+
+<span class="comment">% find the burried names using literals</span>
+literal = <span class="string">'LOAD CASES'</span>;      <span class="comment">% start flag</span>
+exitflag = <span class="string">'STORAGE SCHEME'</span>; <span class="comment">% end flag</span>
+
+<span class="comment">% loop for flags</span>
+flg = 0; cnt = 0; matches = [];
+<span class="keyword">while</span> ~feof(fid) &amp;&amp; flg == 0
+   <span class="comment">% read line</span>
+   tline = fgetl(fid);
+   lit = strfind(tline, literal);
+   ext = strfind(tline, exitflag);
+   <span class="comment">% check literal</span>
+   <span class="keyword">if</span> ~isempty(lit)
+       cnt = cnt+1;
+   <span class="keyword">end</span>
+   <span class="comment">% check exitflag</span>
+   <span class="keyword">if</span> ~isempty(ext)
+       flg = 1;
+   <span class="keyword">end</span>
+   <span class="comment">% check for save</span>
+   <span class="keyword">if</span> cnt &gt;= 1 &amp;&amp; flg == 0
+       <span class="comment">% save line</span>
+       matches{cnt} = sprintf(<span class="string">'%s'</span>,tline);
+       <span class="comment">% advance counter</span>
+       cnt = cnt+1;
+   <span class="keyword">end</span>
+<span class="keyword">end</span>
+
+<span class="comment">% remove trailing white space</span>
+matches = matches(1:end-1);
+<span class="comment">% filter</span>
+lcnames = regexp(matches,<span class="string">'(?&lt;=")(.*?)+(?=")'</span>,<span class="string">'match'</span>);
+<span class="comment">% close file</span>
+fclose(fid);
+
+<span class="comment">% unnest nested cell arrays</span>
+lcnames = [lcnames{:}];
+</pre><pre class="codeinput"><span class="keyword">end</span>
+</pre><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2014b</a><br></p></div><!--
+##### SOURCE BEGIN #####
+function lcnames = getLoadCaseNames(filename)
+%% lcnames = getLoadCaseNames(filename)
+%
+% Search st7 log files for load case names. Returns a cell array of 
+% strings.
+%
+% jdv 03162016
+
+% open file
+[fid, errmsg] = fopen(filename);
+    % error screen
+    if ~isempty(errmsg)
+        error(errmsg);
+    end
+
+% find the burried names using literals
+literal = 'LOAD CASES';      % start flag
+exitflag = 'STORAGE SCHEME'; % end flag
+
+% loop for flags
+flg = 0; cnt = 0; matches = [];
+while ~feof(fid) && flg == 0    
+   % read line
+   tline = fgetl(fid);
+   lit = strfind(tline, literal);
+   ext = strfind(tline, exitflag);      
+   % check literal
+   if ~isempty(lit) 
+       cnt = cnt+1;    
+   end   
+   % check exitflag
+   if ~isempty(ext)
+       flg = 1;
+   end   
+   % check for save
+   if cnt >= 1 && flg == 0
+       % save line
+       matches{cnt} = sprintf('%s',tline);
+       % advance counter
+       cnt = cnt+1;
+   end   
+end
+
+% remove trailing white space
+matches = matches(1:end-1);
+% filter
+lcnames = regexp(matches,'(?<=")(.*?)+(?=")','match');
+% close file
+fclose(fid);
+
+% unnest nested cell arrays
+lcnames = [lcnames{:}];
+
+end
+
+
+##### SOURCE END #####
+--></body></html>
