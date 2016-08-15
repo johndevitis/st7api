@@ -27,6 +27,12 @@ function results = main(uID,model)
     
     % save dof struct
     results.dof = dof;
+    
+    % check for beam struct
+    if isfield(model,'beam')
+        out = getBeamInfo(uID,model.beam.num);
+        results.beam = out;
+    end
 
     
     % Perform A-Priori NFA
