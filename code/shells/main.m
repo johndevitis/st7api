@@ -9,6 +9,7 @@ function results = main(uID,model)
     dof = getNodes(uID,0);    
     
     % get node index
+    % dof.coords - [x y z st7nodeid]
     nodes = dof.coords(:,4);
     
     % get UCS info for all nodes
@@ -26,6 +27,12 @@ function results = main(uID,model)
     
     % save dof struct
     results.dof = dof;
+    
+    % check for beam struct
+    if isfield(model,'beam')
+        out = getBeamInfo(uID,model.beam.num);
+        results.beam = out;
+    end
 
     
     % Perform A-Priori NFA

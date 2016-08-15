@@ -15,6 +15,9 @@ nfa.resultname = fullfile(sys.pathname,[sys.filename(1:end-4) '.NFA']);
 nfa.nmodes = 8; % set number of modes to compute
 nfa.run = 1;
 
+%% setup beam info
+beam.num = 1;
+
 %% setup api run
 
 % add discrete springs
@@ -30,13 +33,16 @@ springs.Kt = Kt;
 springs.Kr = Kr;
 springs.Kfc = Kfc;
 
-beam.sys = sys;
-beam.nfa = nfa;
-beam.springs = springs;
+%% assign input structures to main model structure
+
+model.sys = sys;
+model.nfa = nfa;
+model.beam = beam;
+model.springs = springs;
 
 %% run the shell
 
-results = apish(beam);
+results = apish(model);
 
 
 %% plot displaced shapes
@@ -49,7 +55,7 @@ ah = axes();
 % nfa - mode shape vector
 nfa = results(1).nfa;
 
-mode = 5;
+mode = 1;
 scale = 1;
 z = nfa.U(:,3,mode)*scale; 
 
@@ -59,28 +65,22 @@ plot(dof.coords(:,1),dof.coords(:,3),...
     'Marker','.',...
     'MarkerEdgeColor','k',...
     'MarkerFaceColo','k');
-
 hold(ah,'all')
-            
 % plot mode
 plot(dof.coords(:,1),z,...
     'color','b',...
     'Marker','o',...
     'MarkerEdgeColor','b',...
     'MarkerFaceColor','b');
-
 % plot boundaries
 scatter(dof.bcoords(:,1),dof.bcoords(:,2),...
     'MarkerEdgeColor','m',...
     'MarkerFaceColor','m');
-            
+% format axes
 hold(ah,'off')
-
 xlabel(ah,'Beam Length [ft]');
 ylabel(ah,'Modal Amplitude');
-
 ylim(ah,[-1.5 1.5]);
-
 grid(ah,'on');
 grid(ah,'minor');
 

@@ -35,7 +35,7 @@ for ii = 1:size(tInd,1)
     Kr(rInd(ii,1),:) = rInd(ii,2:end);
 end
 
-% create spring range from 10^2 to 10*10 with 10 increments. start at 5 for
+% create spring range from 10^2 to 10*12 with 10 increments. start at 5 for
 % stability
 % note its a row vector
 steps = 10;
