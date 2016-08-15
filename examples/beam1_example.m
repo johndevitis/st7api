@@ -49,7 +49,7 @@ ah = axes();
 % nfa - mode shape vector
 nfa = results(1).nfa;
 
-mode = 5;
+mode = 1;
 scale = 1;
 z = nfa.U(:,3,mode)*scale; 
 

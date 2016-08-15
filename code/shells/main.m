@@ -9,6 +9,7 @@ function results = main(uID,model)
     dof = getNodes(uID,0);    
     
     % get node index
+    % dof.coords - [x y z st7nodeid]
     nodes = dof.coords(:,4);
     
     % get UCS info for all nodes
