@@ -8,10 +8,5 @@ function init()
         iErr = calllib('St7API', 'St7Init');
         HandleError(iErr);
     end
-    % open st7 model file
-    fname = fullfile(para.pathname, para.filename); 
-    sname = para.scratchpath;
-    iErr = calllib('St7API', 'St7OpenFile', uID, fname, sname);
-    HandleError(iErr);
     fprintf('Done. \n');
 end

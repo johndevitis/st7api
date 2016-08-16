@@ -77,7 +77,7 @@ function getNodes(self,uID,zz)
     % save to object
     self.units = units;
     self.coords = coords;
-    self.ind = ind;
+    self.id = ind;
     self.nnodes = nnodes;
     self.totalXYZ = totalXYZ;
     self.bcoords = bcoords;

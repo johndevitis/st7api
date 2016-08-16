@@ -5,8 +5,6 @@
 %
 % jdv 08122016
 
-% clear;
-clc;
 %% setup st7 file info
 
 sys = st7model();
@@ -20,7 +18,7 @@ sys.scratchpath = 'C:\Temp';
 
 nfa = NFA();
 nfa.name = fullfile(sys.pathname,[sys.filename(1:end-4) '.NFA']);
-nfa.nmodes = 8; % set number of modes to compute
+nfa.nmodes = 4; % set number of modes to compute
 nfa.run = 1;
 
 
@@ -36,17 +34,20 @@ bc.fcase = ones(size(bc.ind));
 
 % add discrete springs
 % set node stiffness for model run 1
-Kt = zeros(11,3);           % [nodeInd(ii) x 3] translational stiffness
-Kr = zeros(11,3);           % [nodeInd(ii) x 3] rotational stiffness
-Kfc = ones(size(Kt,1),1);   % freedom case to be applied
-
-Kt([1 11],:) = [50 0 25; 50 0 25];
-Kr([1 11],:) = [0 1 0; 0 1 0];
+% Kt = zeros(11,3);           % [nodeInd(ii) x 3] translational stiffness
+% Kr = zeros(11,3);           % [nodeInd(ii) x 3] rotational stiffness
+% Kfc = 
 
 springs = spring();
-springs.Kt = Kt;
-springs.Kr = Kr;
-springs.Kfc = Kfc;
+springs.Kt = [50 0 25; 50 0 25];
+springs.Kr = [0 1 0; 0 1 0];
+springs.Kfc = ones(size(springs.Kt,1),1);   
+springs.id = [1 11];
+
+% fully fixed
+bc.ind = [1 11];
+bc.restraint = ones(length(bc.ind),6);
+bc.fcase = ones(size(bc.ind));
 
 %% assign input structures to main model structure
 

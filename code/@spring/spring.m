@@ -11,7 +11,7 @@ classdef spring
         Kt % [nodeInd(ii) x 3] translational stiffness
         Kr % [nodeInd(ii) x 3] rotational stiffness
         Kfc % freedom case to be applied
-        ind % node index
+        id % node index
 	end
 
 %% dependent properties

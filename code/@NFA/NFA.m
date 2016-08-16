@@ -14,7 +14,7 @@ classdef NFA < handle
         U % mode shape array of size [nNodes x 6 DOF x nModes]
         freq % undamped natural freqs [hz]
         modal % st7 modal results
-        nodeInd % strand7 node index (where results are pulled)
+        nodeid % strand7 node index (where results are pulled)
 	end
 
 %% dependent properties

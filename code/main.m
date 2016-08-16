@@ -5,15 +5,15 @@
 function results = main(uID,model)
 %% Main function, edit as you like. 
 
-    % index nodes at z=0
-    % note the convention:
-    %  node() is the object,
-    %  nodes is the instance of the object.
-    nodes = node();
-    nodes.getNodes(uID,0);    
-       
-    % get UCS info for all nodes
-    nodes.getUCSinfo(uID);
+
+%% Node 
+% note the convention:
+%  node() is the object,
+%  nodes is the instance of the object.
+    
+    nodes = node();         % create instance of node class
+    nodes.getNodes(uID);    % index all nodes
+    nodes.getUCSinfo(uID);  % get UCS info 
     
     % assign restraints if present
     if isfield(model,'bc')
@@ -32,23 +32,27 @@ function results = main(uID,model)
     % save to results structure
     results.nodes = nodes;
     
+    
+%% Beam
+
     % check for beam struct
     if isfield(model,'beam')
-        out = getBeamInfo(uID,model.beam.num);
+        beam = model.beam;
+        out = getBeamInfo(uID,beam.num);
         results.beam = out;
     end
 
-    % Perform A-Priori NFA
+    
+%% NFA
     if isfield(model,'nfa') && model.nfa.run == 1
         nfa = model.nfa;
         % call api fcn
-        nfa.runNFA(uID,results.nodes.ind);
+        nfa.runNFA(uID);
         % save to model struct 
         results.nfa = nfa;
     end
-        
-        
-    % Perform LSA Static Solver
+         
+%% LSA
     if isfield(model,'lsa') && model.lsa.run == 1        
         lsa = model.lsa;
         loads = lsa.loads;

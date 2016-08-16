@@ -31,11 +31,11 @@ function runNFA(self,uID,nodeInd)
       
     % create nodeInd if not provided
     if nargin < 3
-        nnodes = api.getTotalNodes(uID);    % get total number of nodes
-        self.nodeInd = 1:length(nnodes);         % form full node index
-    else
-        self.nodeInd = nodeInd;
-        nnodes = length(nodeInd);           % get number of nodes to fetch
+        nnodes = api.getTotalNodes(uID); % get total number of nodes
+        self.nodeid = 1:nnodes;          % form full node index
+    else % userinput
+        self.nodeid = nodeInd;
+        nnodes = length(nodeInd); % get number of nodes to fetch
     end
     
     fprintf('\t NFA Analysis... \n'); 
@@ -79,12 +79,12 @@ function runNFA(self,uID,nodeInd)
     % Get modeshapes
     fprintf('\t\tPopulating Mode Shapes... ');
     NodeRes = zeros(6,1);       % temporary 6DOF result for node jj
-    U = zeros(nnodes,6,self.nmodes); % result mode shape matrix
-    for ii = 1:self.nmodes           % loop solved modes
+    self.U = zeros(nnodes,6,self.nmodes); % result mode shape matrix
+    for ii = 1:self.nmodes      % loop solved modes
         for jj = 1:nnodes       % loop stored nodes
             % index selected dof
             [iErr, NodeRes] = calllib('St7API', 'St7GetNodeResult', uID,...
-                kNodeDisp, self.nodeInd(jj), ii, NodeRes);
+                kNodeDisp, self.nodeid(jj), ii, NodeRes);
             HandleError(iErr); 
             % save to U [nnodes x 6dof x nmodes]
             self.U(jj,:,ii) = NodeRes; 

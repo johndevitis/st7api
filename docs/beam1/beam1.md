@@ -2,7 +2,7 @@
 
 
 ## Model Building
-The structure is a simply supported, steel beam that is 10' long.
+The steel beam is simply supported and 10' long.
 ![elevation](elevation.png)
 
 The beam has a rectangular cross-section of 1x12".
