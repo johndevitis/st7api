@@ -1,4 +1,4 @@
-function res = getLSA(uID,rname,load_lc,load_ind,load_force,resp_lc,resp_ind)
+function res = runLSA(uID,rname,load_lc,load_ind,load_force,resp_lc,resp_ind)
 % assign static load by index
 % jdv 7/9/14; 1/11/15
 

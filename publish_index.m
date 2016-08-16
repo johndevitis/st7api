@@ -4,7 +4,7 @@
 % 
 % jdv 08142016
 
-root = pwd;
+root = 'C:\Users\John\Documents\MATLAB\repos\st7api\code';
 opts.username = 'john devitis';
 opts.ignore = {'St7APIConst'};
 

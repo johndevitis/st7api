@@ -1,5 +1,6 @@
+function getNodes(self,uID,zz)
 %% get coordinate info in plane
-% zz = 0; % filter only z = 0 (RAMPS)
+% zz = 0; % index only at global z = 0 (RAMPS)
 %
 % 1. gets total nodes in model
 % 2. checks for units (handles everything in feet)
@@ -16,7 +17,6 @@
 % 		totalXYZ - array of all nodal coordinates
 %
 % jdv 1/10/13; 1/29/13; 2/14/14; 09222015; 08122016
-function dof = getNodes(uID,zz)
     fprintf('\t Getting spatial information... '); 
     
     global tyNODE
@@ -72,11 +72,12 @@ function dof = getNodes(uID,zz)
     % find boundary nodes
     bcoords = getBoundaryNodes(coords);
     
-    % save to structure
-    dof.coords = coords;
-    dof.nnodes = nnodes;
-    dof.totalXYZ = totalXYZ;
-    dof.bcoords = bcoords;
+    % save to object
+    self.units = units;
+    self.coords = coords;
+    self.nnodes = nnodes;
+    self.totalXYZ = totalXYZ;
+    self.bcoords = bcoords;
     
     % update UI
     fprintf('Done. \n');     

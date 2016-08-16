@@ -5,28 +5,26 @@
 function results = main(uID,model)
 %% Main function, edit as you like. 
 
-    % Extract and index plane of nodes at z=0
-    dof = getNodes(uID,0);    
-    
-    % get node index
-    % dof.coords - [x y z st7nodeid]
-    nodes = dof.coords(:,4);
-    
+    % index nodes at z=0
+    nodes = node();
+    nodes.getNodes(uID,0);    
+       
     % get UCS info for all nodes
-    [ucsid,ucsname] = node.getUCSinfo(uID,dof.coords(:,4));
-    dof.ucsid = ucsid;
-    dof.ucsname = ucsname;
+    node.getUCSinfo(uID);
+    
+    % assign restraints
+    
 
     % assign stiffness
     if isfield(model,'springs')
         % set node stiffnesses using st7indices
         springs = model.springs;
-        setNodeK(uID,nodes,springs.Kfc,ucsid,springs.Kt,springs.Kr);
+        nodes.setNodeK(uID,nodeInd,springs.Kfc,ucsid,springs.Kt,springs.Kr);
         dof.springs = springs;
     end
     
     % save dof struct
-    results.dof = dof;
+    results.nodes;
     
     % check for beam struct
     if isfield(model,'beam')
@@ -34,18 +32,11 @@ function results = main(uID,model)
         results.beam = out;
     end
 
-    
     % Perform A-Priori NFA
     if isfield(model,'nfa') && model.nfa.run == 1
         nfa = model.nfa;
-        % snap dof coordinates to model nodes 
-        nfa = snapcoords(dof,nfa);
         % call api fcn
-        [U, freq,modalres] = getNFA(uID,nfa.resultname,nfa.nmodes,nfa.ind);
-        % append to nfa struct
-        nfa.U = U;
-        nfa.freq = freq;
-        nfa.modalres = modalres;
+        [nfa.U,nfa.freq,nfa.modal] = NFA.runNFA(uID,nfa.name,nfa.nmodes,nodeInd);
         % save to model struct 
         results.nfa = nfa;
     end

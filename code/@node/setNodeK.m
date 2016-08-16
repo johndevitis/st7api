@@ -1,4 +1,4 @@
-function setNodeK(uID,nodes,fcasenum,ucsid,Kt,Kr)
+function setNodeK(self,uID,fcasenum,Kt,Kr)
 %% setNodeK
 % 
 % Sets the rotational stiffness acting at the specified node
@@ -25,23 +25,23 @@ function setNodeK(uID,nodes,fcasenum,ucsid,Kt,Kr)
 % 
 % author: john devitis
 % create date: 12-Aug-2016 11:23:37
-	
+
 	% translation
-    if nargin > 4
+    if nargin > 3
         if ~isempty(Kt)
-            for ii = 1:length(nodes)
-                iErr = calllib('St7API','St7SetNodeKTranslation3F',uID,nodes(ii),...
-                    fcasenum(ii),ucsid(ii),Kt(ii,:));
+            for ii = 1:length(self.ind)
+                iErr = calllib('St7API','St7SetNodeKTranslation3F',uID,self.ind(ii),...
+                    fcasenum(ii),self.ucsid,Kt(ii,:));
                 HandleError(iErr);
             end
         end
     end
     
     % rotation
-    if nargin > 5
-        for ii = 1:length(nodes)
-            iErr = calllib('St7API','St7SetNodeKRotation3F',uID,nodes(ii),...
-                fcasenum(ii),ucsid(ii),Kr(ii,:));
+    if nargin > 4
+        for ii = 1:length(self.ind)
+            iErr = calllib('St7API','St7SetNodeKRotation3F',uID,self.ind(ii),...
+                fcasenum(ii),self.ucsid,Kr(ii,:));
             HandleError(iErr);
         end
     end

@@ -3,7 +3,6 @@
 %
 % input:
 %   rname   - result name
-%   nmodes  - number of modes to return
 %   nmodes  - number of modes to solve        
 %   ind     - strand7 node index for global modes
 % 		
@@ -14,7 +13,7 @@
 %
 %
 % jdv 1/10/13; 1/29/13; 2/14/14; 08122016;
-function [U,freq,modalres] = getNFA(uID,rname,nmodes,ind)
+function [U,freq,modalres] = runNFA(uID,rname,nmodes,ind)
     fprintf('\t NFA Analysis... \n'); 
     
     % setup - globals
@@ -66,6 +65,7 @@ function [U,freq,modalres] = getNFA(uID,rname,nmodes,ind)
             [iErr, NodeRes] = calllib('St7API', 'St7GetNodeResult', uID, kNodeDisp,...
                                         ind(jj), ii, NodeRes);
             HandleError(iErr); 
+            % save to U [nnodes x 6dof x nmodes]
             U(jj,:,ii) = NodeRes; 
         end
     end

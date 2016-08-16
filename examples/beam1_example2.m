@@ -57,7 +57,8 @@ end
 
 %% run the shell
 
-results = apish(beam);
+fcn = @main;
+results = apish(fcn,beam);
 
 
 %% view nfa info
