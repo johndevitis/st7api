@@ -1,20 +1,16 @@
-classdef NFA < handle
-%% classdef NFA
+classdef st7model
+%% classdef st7model
 % 
 % 
 % 
 % author: john devitis
-% create date: 15-Aug-2016 18:58:33
+% create date: 15-Aug-2016 19:30:12
 
 %% object properties
 	properties
-        name
-        nmodes
-        run
-        U % mode shape array of size [nNodes x 6 DOF x nModes]
-        freq % undamped natural freqs [hz]
-        modal % st7 modal results
-        nodeInd % strand7 node index (where results are pulled)
+        pathname
+        filename
+        scratchpath
 	end
 
 %% dependent properties
@@ -28,7 +24,7 @@ classdef NFA < handle
 %% dynamic methods
 	methods
 	%% constructor
-		function self = NFA()
+		function self = st7model()
 		end
 
 	%% dependent methods

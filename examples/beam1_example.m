@@ -5,10 +5,11 @@
 %
 % jdv 08122016
 
-clear; clc;
+% clear;
+clc;
 %% setup st7 file info
 
-sys = st7file();
+sys = st7model();
 sys.pathname = 'C:\Users\John\Documents\MATLAB\repos\st7api\models';
 sys.filename = 'beam1.st7';
 sys.scratchpath = 'C:\Temp';
@@ -23,6 +24,14 @@ nfa.nmodes = 8; % set number of modes to compute
 nfa.run = 1;
 
 
+%% setup node restraints
+
+% fully fixed
+bc.ind = [1 11];
+bc.restraint = ones(length(bc.ind),6);
+bc.fcase = ones(size(bc.ind));
+
+
 %% setup api run
 
 % add discrete springs
@@ -34,6 +43,7 @@ Kfc = ones(size(Kt,1),1);   % freedom case to be applied
 Kt([1 11],:) = [50 0 25; 50 0 25];
 Kr([1 11],:) = [0 1 0; 0 1 0];
 
+springs = spring();
 springs.Kt = Kt;
 springs.Kr = Kr;
 springs.Kfc = Kfc;
@@ -42,8 +52,10 @@ springs.Kfc = Kfc;
 
 model.sys = sys;
 model.nfa = nfa;
+model.bc = bc;
 % model.beam = beam;
-model.springs = springs;
+% model.springs = springs;
+
 
 %% run the shell
 % pass apish.m the function handle of your script and the structure you just 

@@ -6,25 +6,31 @@ function results = main(uID,model)
 %% Main function, edit as you like. 
 
     % index nodes at z=0
+    % note the convention:
+    %  node() is the object,
+    %  nodes is the instance of the object.
     nodes = node();
     nodes.getNodes(uID,0);    
        
     % get UCS info for all nodes
-    node.getUCSinfo(uID);
+    nodes.getUCSinfo(uID);
     
-    % assign restraints
-    
+    % assign restraints if present
+    if isfield(model,'bc')
+        bc = model.bc;
+        nodes.setRestraint(uID,bc.ind,bc.fcase,bc.restraint);
+    end
 
-    % assign stiffness
+    % assign stiffness if present
     if isfield(model,'springs')
         % set node stiffnesses using st7indices
         springs = model.springs;
-        nodes.setNodeK(uID,nodeInd,springs.Kfc,ucsid,springs.Kt,springs.Kr);
+        nodes.setNodeK(uID,springs);
         dof.springs = springs;
     end
     
-    % save dof struct
-    results.nodes;
+    % save to results structure
+    results.nodes = nodes;
     
     % check for beam struct
     if isfield(model,'beam')
@@ -36,7 +42,7 @@ function results = main(uID,model)
     if isfield(model,'nfa') && model.nfa.run == 1
         nfa = model.nfa;
         % call api fcn
-        [nfa.U,nfa.freq,nfa.modal] = NFA.runNFA(uID,nfa.name,nfa.nmodes,nodeInd);
+        nfa.runNFA(uID,results.nodes.ind);
         % save to model struct 
         results.nfa = nfa;
     end

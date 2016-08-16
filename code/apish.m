@@ -1,5 +1,6 @@
+function results = apish(main,model)
 %% Self-contained API execution wrapper
-% SYNTAX: model = apish(model)
+% SYNTAX: model = apish(main,model)
 %
 % default wrapper for handling API errors. can be used to copy/paste into a
 % project for quick api work
@@ -17,8 +18,6 @@
 %
 %
 % jdv 09212015; 10281015; 10292015; 08142016
-function results = apish(main,model)
-%% --- API Execution Wrapper --- %%
     uID = 1; % default session id
     try % execute main fcn in try/catch
         % load libs and models
@@ -35,7 +34,6 @@ function results = apish(main,model)
         rethrow(lasterror);
     end
 end 
-
 
 function apiInit(uID,para)
 %% initialize api fcn
@@ -55,7 +53,6 @@ function apiInit(uID,para)
     fprintf('Done. \n');
 end 
 
-
 function HandleError(iErr)
 % Helper to convert ST7API error codes to MATLAB errors
 global kMaxStrLen ERR7_NoError
@@ -69,7 +66,6 @@ global kMaxStrLen ERR7_NoError
         error(['St7API error: ', str]);
     end
 end 
-
 
 function CloseAndUnload(uID)
 % Close any open files associated with uID and unload the St7API.

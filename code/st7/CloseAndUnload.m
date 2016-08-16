@@ -10,4 +10,4 @@ function CloseAndUnload(uID)
     unloadlibrary('St7API');
     % update complete
     fprintf(' Done\n');
-end  % /CloseAndUnload()
+end

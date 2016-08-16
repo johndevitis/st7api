@@ -8,13 +8,14 @@ classdef node < handle
 
 %% object properties
 	properties
-        coords
         nnodes
+        coords
         totalXYZ
         bcoords
         ind
         ucsid = 1 % default ucs index = 1 = Global XYZ
         ucsname
+        units % [length force stress mass temperature energy]
 	end
 
 %% dependent properties
@@ -38,10 +39,10 @@ classdef node < handle
 
 %% static methods
 	methods (Static)
-        [ucsid, ucsname] = getUCSinfo(uID,nodes);
+%         [ucsid, ucsname] = getUCSinfo(uID,nodes);
 %         [Kt,Kr,ucsid,ucsname] = getNodeK(uID,nodes,freedomCaseNum)
-        dof = getNodes(uID,zz)
-        setNodeK(uID,nodes,fcasenum,ucsid,Kt,Kr)
+%         dof = getNodes(uID,zz)
+%         setNodeK(uID,nodes,fcasenum,ucsid,Kt,Kr)
 	end
 
 %% protected methods

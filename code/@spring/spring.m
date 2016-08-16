@@ -1,16 +1,17 @@
-classdef st7file 
-%% classdef st7file
+classdef spring 
+%% classdef spring
 % 
 % 
 % 
 % author: john devitis
-% create date: 15-Aug-2016 19:30:12
+% create date: 16-Aug-2016 11:38:45
 
 %% object properties
 	properties
-        pathname
-        filename
-        scratchpath
+        Kt % [nodeInd(ii) x 3] translational stiffness
+        Kr % [nodeInd(ii) x 3] rotational stiffness
+        Kfc % freedom case to be applied
+        ind % node index
 	end
 
 %% dependent properties
@@ -24,7 +25,7 @@ classdef st7file
 %% dynamic methods
 	methods
 	%% constructor
-		function self = st7file()
+		function self = spring()
 		end
 
 	%% dependent methods

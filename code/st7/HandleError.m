@@ -10,4 +10,4 @@ global kMaxStrLen ERR7_NoError
         % Issue as a MATLAB error
         error(['St7API error: ', str]);
     end
-end % /HandleError()
+end

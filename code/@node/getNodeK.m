@@ -1,5 +1,7 @@
-function [Kt,Kr,ucsid,ucsname] = getNodeK(uID,nodes,freedomCaseNum)
-%% getNodeK
+function [Kt,Kr,ucsid,ucsname] = getNodeK(self,uID,freedomCaseNum)
+%% getNodeK 
+%
+% NOT WORKING
 % 
 % gets the rotational stiffness acting at the specified node
 % 
@@ -29,18 +31,7 @@ function [Kt,Kr,ucsid,ucsname] = getNodeK(uID,nodes,freedomCaseNum)
     Kt = zeros(length(nodes),3);
     Kr = zeros(length(nodes),3);
 
-    for ii = 1:length(nodes)
-        
-        % get ucs id
-        
-        [iErr,ucsid] = calllib('St7API','St7GetUCSID',uID,ind,1);
-        HandleError(iErr);
-        
-        % get ucs name
-        [iErr,ucsname] = calllib('St7API','St7GetUCSName',uID,ucsid,'hi',...
-            50);
-        HandleError(iErr);
-        
+    for ii = 1:length(nodes)   
         
         % get translation spring stiffnesses
         [iErr,kt] = calllib('St7API','St7GetNodeKTranslation3F',uID,...

@@ -26,7 +26,7 @@ nn = zeros(size(x));
 for ii = 1:length(x)
     
     % get residual for node(ii)
-    residual = sqrt( (X - x(ii)).^2 + (Y - y(ii)).^2);
+    residual = sqrt( (X - x(ii)).^2 + (Y - y(ii)).^2 );
     
     % index lowest residual
     [~,ind] = min(residual);
