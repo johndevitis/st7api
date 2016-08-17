@@ -42,6 +42,6 @@ results = apish(fcn,inputs);
 ### Examples
 
 #### Simple Beam
-1. [assign boundary conditions to beam](examples/beam_restraints.html)
+1. [assign boundary conditions to beam](examples/html/beam_restraints.html)
 2. [natural frequency analysis](examples/beam1_nfa.html)
 3. [assign discrete springs to the beam](examples/beam1_springs.html)

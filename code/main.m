@@ -5,9 +5,6 @@
 function results = main(uID,model)
 %% Main function, edit as you like. 
 
-    inputs = fieldnames(model);
-
-
 %% Node 
 % note the convention:
 %  node() is the object,

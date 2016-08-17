@@ -21,3 +21,9 @@ model.bc = bc;
 %% run the apis-shell using main function
 fcn = @main;
 results = apish(fcn,model);
+
+%% view results
+fprintf('Number of nodes: %i\n',results.nodes.nnodes);
+fprintf('UCS Name: %s\n',results.nodes.ucsname{1});
+fprintf('Coordinates [ft]:\n');
+fprintf('\t%f %f %f\n',results.nodes.coords);
