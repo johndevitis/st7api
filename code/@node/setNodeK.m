@@ -28,9 +28,9 @@ function setNodeK(self,uID,springs)
 
 	% translation
     if ~isempty(springs.Kt)
-        for ii = 1:length(self.id)
-            iErr = calllib('St7API','St7SetNodeKTranslation3F',uID,self.id(ii),...
-                springs.Kfc,self.ucsid,springs.Kt(ii,:));
+        for ii = 1:length(springs.nodeid)
+            iErr = calllib('St7API','St7SetNodeKTranslation3F',uID,...
+                springs.nodeid(ii),springs.Kfc(ii),self.ucsid,springs.Kt(ii,:));
             HandleError(iErr);
         end
     end
@@ -38,8 +38,8 @@ function setNodeK(self,uID,springs)
     % rotation
     if ~isempty(springs.Kr)
         for ii = 1:length(self.id)
-            iErr = calllib('St7API','St7SetNodeKRotation3F',uID,self.id(ii),...
-                springs.Kfc,self.ucsid,springs.Kr(ii,:));
+            iErr = calllib('St7API','St7SetNodeKRotation3F',uID,...
+                springs.nodeid(ii),springs.Kfc(ii),self.ucsid,springs.Kr(ii,:));
             HandleError(iErr);
         end
     end

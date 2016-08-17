@@ -25,7 +25,7 @@ function results = main(uID,model)
         % set node stiffnesses using st7indices
         springs = model.springs;
         nodes.setNodeK(uID,springs);
-        dof.springs = springs;
+        results.springs = springs;
     end
     
     % save to results structure
