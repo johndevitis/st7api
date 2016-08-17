@@ -1,4 +1,4 @@
-classdef boundaryNode < matlab.mixin.SetGet
+classdef boundaryNode < handle
 %% classdef boundaryNode
 % 
 % 
