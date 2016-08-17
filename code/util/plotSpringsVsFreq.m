@@ -17,7 +17,7 @@ function plotSpringsVsFreq(results)
         mode = jj;
         for ii = 1:steps
             freq = results(ii).nfa.freq;
-            springs = results(ii).dof.springs;
+            springs = results(ii).springs;
 
 
             yy = freq(mode);
