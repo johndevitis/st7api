@@ -9,9 +9,39 @@ To get the Stran7 API working you need Stran7 installed (with the license config
 
 * **Strand7** - The path to the Strand7 executable need to be in your namespace. For Windows machines, copy/paste the full path into your environmental variables. The path is usually located here: `C:\Program Files (x86)\Strand7 R24\Bin`
 
+## Contents
 
-## To Do
+### The API Shell
+The Strand7/Matlab API needs some boiler plate code to run and handle errors correctly. Typically this takes the form of a try/catch statement which calls a main function:
+```
+function apiCalls()
+  try
+    apiInit();
+    results = main(input);
+    apiClose();
+  catch
+    apiForceClose();
+    rethrow(lasterror);
+  end
+end
 
-* error screen:
-  * calcBeamSectionProperty
-  * 
+function results = main(input)
+  % do some things...
+end
+
+```
+
+`apish.m` handles this boiler plate code and acts as a self-contained wrapper for executing your main function.
+
+Refactoring the above code using apish becomes:
+```
+fcn = @main; % create a function handle
+results = apish(fcn,inputs);
+```
+
+### Examples
+
+#### Simple Beam
+1. [assign boundary conditions to beam](examples/beam_restraints.html)
+2. [natural frequency analysis](examples/beam1_nfa.html)
+3. [assign discrete springs to the beam](examples/beam1_springs.html)

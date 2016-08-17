@@ -5,6 +5,8 @@
 function results = main(uID,model)
 %% Main function, edit as you like. 
 
+    inputs = fieldnames(model);
+
 
 %% Node 
 % note the convention:
@@ -18,7 +20,7 @@ function results = main(uID,model)
     % assign restraints if present
     if isfield(model,'bc')
         bc = model.bc;
-        nodes.setRestraint(uID,bc.ind,bc.fcase,bc.restraint);
+        nodes.setRestraint(uID,bc.nodeid,bc.fcase,bc.restraint);
     end
 
     % assign stiffness if present
