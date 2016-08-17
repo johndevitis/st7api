@@ -4,7 +4,7 @@
 
 %% setup st7model class
 sys = st7model();
-sys.pathname = 'C:\Users\John\Documents\MATLAB\repos\st7api\models';
+sys.pathname = 'C:\Users\John\Projects_Git\st7api\models';
 sys.filename = 'beam1.st7';
 sys.scratchpath = 'C:\Temp';
 
