@@ -7,7 +7,7 @@
 
 %% setup st7 file info
 sys = st7model();
-sys.pathname = 'C:\Users\John\Documents\MATLAB\repos\st7api\models';
+sys.pathname = 'C:\Users\John\Projects_Git\st7api\models';
 sys.filename = 'beam1.st7';
 sys.scratchpath = 'C:\Temp';
 
@@ -27,7 +27,7 @@ bc.fcase = ones(size(bc.nodeid));
 %% setup spring sensitivity study
 % Create rotational springs about the y-axis for boundary nodes
 springs = spring();
-springs.nodeid = [1 11]; 
+springs.nodeid = [1 11];
 % create unit spring force at desired dof
 Kr = [0 1 0;... % for node 1
       0 1 0]    % for node 11
@@ -44,7 +44,7 @@ for ii = 1:steps
     beam(ii).nfa = nfa;
     beam(ii).nfa.name = strcat(nfa.name(1:end-4),...
         '_step',num2str(ii),'.NFA');
-    
+
 %     springs.Kt = Kt*springrange(ii);
     springs.Kr = Kr*springrange(ii);
     springs.Kfc = ones(size(springs.Kr,1),1); % default to freedom case 1
@@ -77,7 +77,7 @@ nfa = results(1).nfa;
 
 mode = 5;
 scale = 1;
-z = nfa.U(:,3,mode)*scale; 
+z = nfa.U(:,3,mode)*scale;
 
 
 % plot undeformed shape
@@ -87,7 +87,7 @@ plot(dof.coords(:,1),dof.coords(:,3),...
     'MarkerFaceColo','k');
 
 hold(ah,'all')
-            
+
 % plot mode
 plot(dof.coords(:,1),z,...
     'color','b',...
@@ -99,7 +99,7 @@ plot(dof.coords(:,1),z,...
 scatter(dof.bcoords(:,1),dof.bcoords(:,2),...
     'MarkerEdgeColor','m',...
     'MarkerFaceColor','m');
-            
+
 hold(ah,'off')
 
 xlabel(ah,'Beam Length [ft]');
@@ -109,21 +109,3 @@ ylim(ah,[-1.5 1.5]);
 
 grid(ah,'on');
 grid(ah,'minor');
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
