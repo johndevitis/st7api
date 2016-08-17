@@ -18,7 +18,7 @@ nfa.nmodes = 4; % set number of modes to compute
 nfa.run = 1;
 
 %% setup node restraints
-bc = boundaryNode()
+bc = boundaryNode();
 bc.nodeid = [1 11];
 bc.restraint = zeros(length(bc.nodeid),6); % no restraints
 bc.fcase = ones(size(bc.nodeid));
