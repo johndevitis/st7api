@@ -6,34 +6,31 @@
 % jdv 08142016
 
 %% setup st7 file info
+sys = st7model();
 sys.pathname = 'C:\Users\John\Documents\MATLAB\repos\st7api\models';
 sys.filename = 'beam1.st7';
 sys.scratchpath = 'C:\Temp';
 
 %% setup nfa info
-nfa.resultname = fullfile(sys.pathname,[sys.filename(1:end-4) '.NFA']);
-nfa.nmodes = 8; % set number of modes to compute
-% nfa.coords = beam1.dof.coords(:,[1 3]);
+nfa = NFA();
+nfa.name = fullfile(sys.pathname,[sys.filename(1:end-4) '.NFA']);
+nfa.nmodes = 4; % set number of modes to compute
 nfa.run = 1;
 
-%% setup api run
+%% setup node restraints
+bc = boundaryNode();
+bc.nodeid = [1 11];
+bc.restraint = zeros(length(bc.nodeid),6); % no restraints
+bc.restraint(:,1:3) = 1; % pinned
+bc.fcase = ones(size(bc.nodeid));
 
-% index and global xyz assignment
-% [nodeInd, x, y, z]
-tInd = [ 1 1 0 1; 11 1 0 1]; 
-rInd = [ 1 0 1 0; 11 0 1 0];
-    
-% add discrete unit springs
-% [x y z]
-Kt = zeros(11,3);           % translation
-Kr = zeros(11,3);           % rotation
-Kfc = ones(size(Kt,1),1);   % freedom case for each assignment
-
-% loop springs and assign
-for ii = 1:size(tInd,1)
-    Kt(tInd(ii,1),:) = tInd(ii,2:end);
-    Kr(rInd(ii,1),:) = rInd(ii,2:end);
-end
+%% setup spring sensitivity study
+% Create rotational springs about the y-axis for boundary nodes
+springs = spring();
+springs.nodeid = [1 11]; 
+% create unit spring force at desired dof
+Kr = [0 1 0;... % for node 1
+      0 1 0]    % for node 11
 
 % create spring range from 10^2 to 10*12 with 10 increments. start at 5 for
 % stability
@@ -45,12 +42,12 @@ springrange = logspace(2,12,steps)';
 for ii = 1:steps
     beam(ii).sys = sys;
     beam(ii).nfa = nfa;
-    beam(ii).nfa.resultname = strcat(nfa.resultname(1:end-4),...
+    beam(ii).nfa.name = strcat(nfa.name(1:end-4),...
         '_step',num2str(ii),'.NFA');
     
-    springs.Kt = Kt*springrange(ii);
+%     springs.Kt = Kt*springrange(ii);
     springs.Kr = Kr*springrange(ii);
-    springs.Kfc = Kfc; % default to freedom case 1
+    springs.Kfc = ones(size(springs.Kr,1),1); % default to freedom case 1
     beam(ii).springs = springs;
 end
 

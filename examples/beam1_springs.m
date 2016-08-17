@@ -18,12 +18,12 @@ nfa.nmodes = 4; % set number of modes to compute
 nfa.run = 1;
 
 %% setup node restraints
-bc = boundaryNode()
+bc = boundaryNode();
 bc.nodeid = [1 11];
 bc.restraint = zeros(length(bc.nodeid),6); % no restraints
 bc.fcase = ones(size(bc.nodeid));
 
-%% setup api run
+%% setup discrete springs
 % Add discrete longitudinal (x) and vertical (z) translational springs.
 % No rotational springs added
 springs = spring();

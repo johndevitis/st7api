@@ -37,7 +37,7 @@ function setNodeK(self,uID,springs)
     
     % rotation
     if ~isempty(springs.Kr)
-        for ii = 1:length(self.id)
+        for ii = 1:length(springs.nodeid)
             iErr = calllib('St7API','St7SetNodeKRotation3F',uID,...
                 springs.nodeid(ii),springs.Kfc(ii),self.ucsid,springs.Kr(ii,:));
             HandleError(iErr);
