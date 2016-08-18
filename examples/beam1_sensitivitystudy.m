@@ -21,7 +21,7 @@ nfa.run = 1;
 bc = boundaryNode();
 bc.nodeid = [1 11];
 bc.restraint = zeros(length(bc.nodeid),6); % no restraints
-bc.restraint(:,[1 3]) = 1; % pinned
+bc.restraint(:,[1 2 3]) = 1; % pinned
 bc.fcase = ones(size(bc.nodeid));
 
 %% setup spring sensitivity study
@@ -38,7 +38,7 @@ Kr = [0 1 0;... % for node 1
 % stability
 % note its a row vector
 steps = 10;
-springrange = logspace(0,.1,steps)';
+springrange = logspace(0,10,steps)';
 
 % build model array
 for ii = 1:steps
