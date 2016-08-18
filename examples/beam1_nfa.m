@@ -33,7 +33,7 @@ results = apish(fcn,model);
 
 %% view frequencies
 fprintf('Natural Frequencies [Hz]:\n');
-fprintf('%f\n',results.nfa.freq);
+fprintf('\t%f\n',results.nfa.freq);
 % 
 % % plot displaced shapes
 % 

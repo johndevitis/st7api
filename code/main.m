@@ -40,7 +40,7 @@ function results = main(uID,model)
         out = getBeamInfo(uID,beam.num);
         results.beam = out;
     end
-
+    
     
 %% NFA
     if isfield(model,'nfa') && model.nfa.run == 1
