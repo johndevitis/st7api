@@ -1,4 +1,4 @@
-%% Beam1 - Example2
+%% Beam1 - sensitivity study
 %
 % * multiple runs
 %
@@ -21,7 +21,8 @@ nfa.run = 1;
 bc = boundaryNode();
 bc.nodeid = [1 11];
 bc.restraint = zeros(length(bc.nodeid),6); % no restraints
-bc.restraint(:,[1 2 3]) = 1; % pinned
+bc.restraint(1,1:3) = 1; % pinned
+bc.restraint(11,2:3) = 1; % roller (x kept released)
 bc.fcase = ones(size(bc.nodeid));
 
 %% setup spring sensitivity study
@@ -29,10 +30,9 @@ bc.fcase = ones(size(bc.nodeid));
 %
 % *pay attention, this section is tricky*
 springs = spring();
-springs.nodeid = [1 11]; 
+springs.nodeid = 1; 
 % create unit spring force at desired dof
-Kr = [0 1 0;... % for node 1
-      0 1 0];   % for node 11
+Kr = [0 1 0];
 
 % create spring range from 10^2 to 10*12 with 10 increments. start at 5 for
 % stability
@@ -71,8 +71,7 @@ end
 %% run the shell
 tic
 
-fcn = @main;
-results = apish(fcn,beam);
+results = apish(@main,beam);
 
 toc
 

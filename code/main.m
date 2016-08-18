@@ -32,7 +32,7 @@ function results = main(uID,model)
     results.nodes = nodes;
     
     
-%% Beam
+%% Beam - broken
 
     % check for beam struct
     if isfield(model,'beam')
@@ -51,7 +51,7 @@ function results = main(uID,model)
         results.nfa = nfa;
     end
          
-%% LSA
+%% LSA - broken
     if isfield(model,'lsa') && model.lsa.run == 1        
         lsa = model.lsa;
         loads = lsa.loads;

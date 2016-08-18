@@ -18,7 +18,7 @@ function plotSpringsVsFreq(results)
         for ii = 1:steps
             % get x value - discrete spring stiffness
             springs = results(ii).springs;
-            xx = springs.Kr(2,2);  % plot spring k about y
+            xx = springs.Kr(1,2);  % plot spring k about y
             
             % get y value - freq
             freq = results(ii).nfa.freq;
