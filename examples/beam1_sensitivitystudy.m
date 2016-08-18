@@ -37,8 +37,8 @@ Kr = [0 1 0;... % for node 1
 % create spring range from 10^2 to 10*12 with 10 increments. start at 5 for
 % stability
 % note its a row vector
-steps = 10;
-springrange = logspace(0,10,steps)';
+steps = 20;
+springrange = logspace(7,11,steps)';
 
 % build model array
 for ii = 1:steps
@@ -47,12 +47,15 @@ for ii = 1:steps
     % copies of it
     beam(ii).sys = sys;
     
+    % the same goes with the boundaryNodes class
+    beam(ii).bc = bc;
+    
     % create new instance of nfa class
     % * this is because nfa subclasses the handle class. handles are 
     % persistent. if you create a copy and change it, the original changes 
     % too. we we need to create a new instance. 
     beam(ii).nfa = NFA();
-    beam(ii).nfa.name = strcat(fullfile(sys.pathname, sys.filename), ...
+    beam(ii).nfa.name = strcat(fullfile(sys.pathname,sys.filename(1:end-4)), ...
         '_step',num2str(ii),'.NFA');
     beam(ii).nfa.nmodes = 4;
     beam(ii).nfa.run = 1;
@@ -66,10 +69,12 @@ end
 
 
 %% run the shell
+tic
 
 fcn = @main;
 results = apish(fcn,beam);
 
+toc
 
 %% view nfa info
 
