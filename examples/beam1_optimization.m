@@ -51,6 +51,8 @@ efreq = results.nfa.freq;
 
 %% setup optimization
 
+tic
+
 % use random starting guess
 lb = 1e7; 
 ub = 1e11;
@@ -70,7 +72,7 @@ obj = @(para)beam1_obj(para,beam,efreq);
 [para,fval,exitflag,output] = PSO(obj,initpara,lb,ub,options);
 
 
-
+toc
 
 
 
