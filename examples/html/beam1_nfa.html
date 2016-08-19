@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>Beam1 Fixed-Fixed NFA example</title><meta name="generator" content="MATLAB 8.4"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2016-08-17"><meta name="DC.source" content="beam1_nfa.m"><style type="text/css">
+      --><title>Beam1 Fixed-Fixed NFA example</title><meta name="generator" content="MATLAB 8.4"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2016-08-19"><meta name="DC.source" content="beam1_nfa.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -89,12 +89,51 @@ results = apish(fcn,model);
 		Populating Mode Shapes... Done.
 Exiting API...  Done
 </pre><h2>view frequencies<a name="6"></a></h2><pre class="codeinput">fprintf(<span class="string">'Natural Frequencies [Hz]:\n'</span>);
-fprintf(<span class="string">'%f\n'</span>,results.nfa.freq);
+fprintf(<span class="string">'\t%f\n'</span>,results.nfa.freq);
+<span class="comment">%</span>
+<span class="comment">% % plot displaced shapes</span>
+<span class="comment">%</span>
+<span class="comment">% nodes = results.nodes;</span>
+<span class="comment">%</span>
+<span class="comment">% fh = figure('PaperPositionMode','auto');</span>
+<span class="comment">% ah = axes();</span>
+<span class="comment">%</span>
+<span class="comment">% % nfa - mode shape vector</span>
+<span class="comment">% nfa = results(1).nfa;</span>
+<span class="comment">%</span>
+<span class="comment">% mode = 1;</span>
+<span class="comment">% scale = 1;</span>
+<span class="comment">% z = nfa.U(:,3,mode)*scale;</span>
+<span class="comment">%</span>
+<span class="comment">%</span>
+<span class="comment">% % plot undeformed shape</span>
+<span class="comment">% plot(nodes.coords(:,1),nodes.coords(:,3),...</span>
+<span class="comment">%     'Marker','.',...</span>
+<span class="comment">%     'MarkerEdgeColor','k',...</span>
+<span class="comment">%     'MarkerFaceColo','k');</span>
+<span class="comment">% hold(ah,'all')</span>
+<span class="comment">% % plot mode</span>
+<span class="comment">% plot(nodes.coords(:,1),z,...</span>
+<span class="comment">%     'color','b',...</span>
+<span class="comment">%     'Marker','o',...</span>
+<span class="comment">%     'MarkerEdgeColor','b',...</span>
+<span class="comment">%     'MarkerFaceColor','b');</span>
+<span class="comment">% % plot boundaries</span>
+<span class="comment">% scatter(nodes.bcoords(:,1),nodes.bcoords(:,2),...</span>
+<span class="comment">%     'MarkerEdgeColor','m',...</span>
+<span class="comment">%     'MarkerFaceColor','m');</span>
+<span class="comment">% % format axes</span>
+<span class="comment">% hold(ah,'off')</span>
+<span class="comment">% xlabel(ah,'Beam Length [ft]');</span>
+<span class="comment">% ylabel(ah,'Modal Amplitude');</span>
+<span class="comment">% ylim(ah,[-1.5 1.5]);</span>
+<span class="comment">% grid(ah,'on');</span>
+<span class="comment">% grid(ah,'minor');</span>
 </pre><pre class="codeoutput">Natural Frequencies [Hz]:
-159.787149
-411.388830
-750.091076
-830.361348
+	159.787149
+	411.388830
+	750.091076
+	830.361348
 </pre><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2014b</a><br></p></div><!--
 ##### SOURCE BEGIN #####
 %% Beam1 Fixed-Fixed NFA example
@@ -132,6 +171,45 @@ results = apish(fcn,model);
 
 %% view frequencies
 fprintf('Natural Frequencies [Hz]:\n');
-fprintf('%f\n',results.nfa.freq);
+fprintf('\t%f\n',results.nfa.freq);
+% 
+% % plot displaced shapes
+% 
+% nodes = results.nodes;
+% 
+% fh = figure('PaperPositionMode','auto');
+% ah = axes();
+% 
+% % nfa - mode shape vector
+% nfa = results(1).nfa;
+% 
+% mode = 1;
+% scale = 1;
+% z = nfa.U(:,3,mode)*scale; 
+% 
+% 
+% % plot undeformed shape
+% plot(nodes.coords(:,1),nodes.coords(:,3),...
+%     'Marker','.',...
+%     'MarkerEdgeColor','k',...
+%     'MarkerFaceColo','k');
+% hold(ah,'all')
+% % plot mode
+% plot(nodes.coords(:,1),z,...
+%     'color','b',...
+%     'Marker','o',...
+%     'MarkerEdgeColor','b',...
+%     'MarkerFaceColor','b');
+% % plot boundaries
+% scatter(nodes.bcoords(:,1),nodes.bcoords(:,2),...
+%     'MarkerEdgeColor','m',...
+%     'MarkerFaceColor','m');
+% % format axes
+% hold(ah,'off')
+% xlabel(ah,'Beam Length [ft]');
+% ylabel(ah,'Modal Amplitude');
+% ylim(ah,[-1.5 1.5]);
+% grid(ah,'on');
+% grid(ah,'minor');
 ##### SOURCE END #####
 --></body></html>

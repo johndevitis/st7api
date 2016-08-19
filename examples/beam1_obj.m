@@ -3,7 +3,8 @@ function obj = beam1_obj(para,beam,efreq)
     % set spring value
     beam.springs.Kr = [0 para 0];
     
-    % call api for frequencies due to current para
+    % call api to get frequencies due to current para
+    opts.keepLoaded = 1; % keeps library loaded
     results = apish(@main,beam);
     
     % get frequencies

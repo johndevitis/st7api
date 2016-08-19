@@ -26,8 +26,13 @@ function results = apish(main,model)
         for ii = 1:length(model)
             results(ii) = main(uID,model(ii));
         end
-        % close model file
-        CloseAndUnload(uID);      
+        
+        if nargin > 2 && isfield(opts,'keepLoaded') && opts.update == 1
+            api.closeModel(uID)
+        else
+            % close model file
+            CloseAndUnload(uID);      
+        end
     catch % force close close all refs
         fprintf('Force close');
         CloseAndUnload(uID);

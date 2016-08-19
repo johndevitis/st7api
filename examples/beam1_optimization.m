@@ -40,7 +40,7 @@ springs.nodeid = 1;
 springs.Kr = [0 k 0];  %assign spring value
 springs.Kfc = 1;
 
-% assgn to beam struct and call api
+% assign to beam struct and call api
 beam.sys = sys;
 beam.nfa = nfa;
 beam.bc = bc;
@@ -58,7 +58,7 @@ initpara = (ub-lb)*rand(1,1)+lb;
 
 
 options = PSOSET('SWARM_SIZE', 10  , ...
-                 'MAX_ITER'  , 20  , ...
+                 'MAX_ITER'  , 10  , ...
                  'TOLFUN'    , 1e-6 , ...
                  'TOLX'      , 1e-6 , ...
                  'DISPLAY'   , 'iter');
