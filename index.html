@@ -1,0 +1,52 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta name="generator" content="pandoc" />
+  <title></title>
+  <style type="text/css">code{white-space: pre;}</style>
+</head>
+<body>
+<h1 id="st7api">st7api</h1>
+<p>a collection of strand7 api utilities and templates</p>
+<blockquote>
+<p>run the init.m script from anywhere to add all files to the matlab search path</p>
+</blockquote>
+<h2 id="setup">Setup</h2>
+<p>To get the Stran7 API working you need Stran7 installed (with the license configured) and a 32-bit version of Matlab. * <strong>Matlab</strong> - Newer versions of Matlab don't require any setup, but older versions (circa 2011) need a default compiler to be selected (done with <code>mex -setup</code>).</p>
+<ul>
+<li><strong>Strand7</strong> - The path to the Strand7 executable need to be in your namespace. For Windows machines, copy/paste the full path into your environmental variables. The path is usually located here: <code>C:\Program Files (x86)\Strand7 R24\Bin</code></li>
+</ul>
+<h2 id="contents">Contents</h2>
+<h3 id="the-api-shell">The API Shell</h3>
+<p>The Strand7/Matlab API needs some boiler plate code to run and handle errors correctly. Typically this takes the form of a try/catch statement which calls a main function:</p>
+<pre><code>function apiCalls()
+  try
+    apiInit();
+    results = main(input);
+    apiClose();
+  catch
+    apiForceClose();
+    rethrow(lasterror);
+  end
+end
+
+function results = main(input)
+  % do some things...
+end
+</code></pre>
+<p><code>apish.m</code> handles this boiler plate code and acts as a self-contained wrapper for executing your main function.</p>
+<p>Refactoring the above code using apish becomes:</p>
+<pre><code>fcn = @main; % create a function handle
+results = apish(fcn,inputs);</code></pre>
+<h3 id="examples">Examples</h3>
+<p>A compiled PDF of the published example files can be found <a href="johndevitis.github.io/st7api/examples/html/index.pdf">here</a></p>
+<h4 id="simple-beam">Simple Beam</h4>
+<ol style="list-style-type: decimal">
+<li><a href="examples/html/beam_restraints.html">assign boundary conditions to beam</a></li>
+<li><a href="examples/beam1_nfa.html">natural frequency analysis</a></li>
+<li><a href="examples/beam1_springs.html">assign discrete springs to the beam</a></li>
+</ol>
+</body>
+</html>
