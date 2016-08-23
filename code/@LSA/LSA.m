@@ -1,4 +1,4 @@
-classdef LSA 
+classdef LSA < handle
 %% classdef lsa
 % 
 % 
@@ -8,6 +8,15 @@ classdef LSA
 
 %% object properties
 	properties
+        name % result file name
+        inputid % nodeid to apply load
+        inputcase % input loadcase id
+        outputid % nodeid to return results
+        outputcase % output loadcase id
+        force % [nnodes x (x y z]] force
+        moment % not working yet
+        fcase
+        resp % [outputid x 6] from St7GetNodeResult
 	end
 
 %% dependent properties
