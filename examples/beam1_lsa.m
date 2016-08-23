@@ -40,5 +40,5 @@ results = apish(fcn,model);
 
 %% view frequencies
 fprintf('The nodal displacements are: \n');
-fprintf('\tDX\tDY\tDZ\tRX\tRY\tRZ\n')
-fprintf('\t%f\t%f\t%f\t%f\t%f\t%f\n',results.lsa.resp);
+fprintf('\t\tDZ\n')
+fprintf('\t%f\n',results.lsa.resp(:,3));
