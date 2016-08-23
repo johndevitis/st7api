@@ -41,6 +41,8 @@ results = apish(fcn,inputs);
 
 ### Examples
 
+A compiled PDF of the published example files can be found [here](johndevitis.github.io/st7api/examples/html/index.pdf)
+
 #### Simple Beam
 1. [assign boundary conditions to beam](examples/html/beam_restraints.html)
 2. [natural frequency analysis](examples/beam1_nfa.html)
