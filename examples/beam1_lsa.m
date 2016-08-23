@@ -13,12 +13,20 @@ sys.scratchpath = 'C:\Temp';
 % default to all nodes
 lsa = LSA();
 lsa.name = fullfile(sys.pathname,[sys.filename(1:end-4) '.LSA']);
+lsa.run = 1;
+lsa.inputid = 3; % point load at nodeid=3
+lsa.inputcase = 1; % loadcase = 1
+lsa.fcase = 1; % freedom case
+lsa.force = [0 0 -1e3]; % -1kip load at dof3
+lsa.outputid = 1:11; % output at all nodes
+lsa.outputcase = ones(size(lsa.outputid));
+
 
 
 %% setup node restraints
 bc = boundaryNode();
 bc.nodeid = [1 11]; % boundary nodes
-bc.restraint = [1 1 1 0 0 0; 1 1 1 0 0 0]; % [nnodes x 6dof] - simple beam
+bc.restraint = [1 1 1 0 0 0; 0 1 1 0 0 0]; % [nnodes x 6dof] - simple beam
 bc.fcase = ones(size(bc.nodeid));          % [nnodes x 1] - assign to case1
 
 %% assign input structures to main model structure
@@ -32,4 +40,5 @@ results = apish(fcn,model);
 
 %% view frequencies
 fprintf('The nodal displacements are: \n');
-fprintf('\t%f\n',results.lsa.resp);
+fprintf('\tDX\tDY\tDZ\tRX\tRY\tRZ\n')
+fprintf('\t%f\t%f\t%f\t%f\t%f\t%f\n',results.lsa.resp);

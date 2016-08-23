@@ -17,6 +17,7 @@ classdef LSA < handle
         moment % not working yet
         fcase
         resp % [outputid x 6] from St7GetNodeResult
+        run
 	end
 
 %% dependent properties

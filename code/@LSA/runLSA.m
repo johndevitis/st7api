@@ -36,7 +36,7 @@ function runLSA(self,uID)
 
     % Assign force 
     % - loop load index for force assignment indices. assign to load case
-    for ii = 1:length(self.nodeid)
+    for ii = 1:length(self.inputid)
         iErr = calllib('St7API','St7SetNodeForce3',uID,self.inputid(ii),...
             self.inputcase(ii),self.force(ii,:));
         HandleError(iErr);
@@ -46,9 +46,10 @@ function runLSA(self,uID)
     
     
     % enable all load cases in lsa object
-    lc = unique(load_lc);
+    [lc,ind] = unique(self.inputcase);
     for ii = 1:length(lc);
-        iErr = calllib('St7API','St7EnableLSALoadCase',uID,lc(ii),self.fcase);
+        iErr = calllib('St7API','St7EnableLSALoadCase',uID,lc(ii),...
+            self.fcase(ind));
         HandleError(iErr);
     end
 
@@ -59,7 +60,8 @@ function runLSA(self,uID)
     
     % disable load case
     for ii = 1:length(lc);
-        iErr = calllib('St7API','St7DisableLSALoadCase',uID,lc(ii),self.fcase);
+        iErr = calllib('St7API','St7DisableLSALoadCase',uID,lc(ii),...
+            self.fcase(ind));
         HandleError(iErr);
     end
 
@@ -69,7 +71,7 @@ function runLSA(self,uID)
     HandleError(iErr);
 
     % Gather Results
-    self.resp = zeros(self.outputid,6);
+    self.resp = zeros(length(self.outputid),6);
 
     % loop response index for requested results
     for ii = 1:size(self.resp,1)

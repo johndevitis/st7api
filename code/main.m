@@ -51,22 +51,12 @@ function results = main(uID,model)
         results.nfa = nfa;
     end
          
-%% LSA - broken
+%% LSA 
     if isfield(model,'lsa') && model.lsa.run == 1        
         lsa = model.lsa;
-        loads = lsa.loads;
-        resps = lsa.resps;
-        % check coords in load and response structs
-        loads = snapcoords(dof,loads);
-        resps = snapcoords(dof,resps);
         % call lsa solver
-        res = get_lsa(uID,lsa.resultname, ...
-                          loads.lc, loads.ind, loads.force,...
-                          resps.lc, resps.ind);
-        % save to stuct
-        resps.disp = res; 
-        lsa.loads = loads; 
-        lsa.resps = resps;
+        lsa.runLSA(uID)
+        % save to modle struct
         results.lsa = lsa;
     end
 end
