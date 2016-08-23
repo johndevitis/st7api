@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>Beam1 - Assign Boundary Conditions (node restraints) and get node info</title><meta name="generator" content="MATLAB 8.4"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2016-08-23"><meta name="DC.source" content="beam1_restraints.m"><style type="text/css">
+      --><title>Beam1 Simply Supported Linear Static Solver</title><meta name="generator" content="MATLAB 8.4"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2016-08-23"><meta name="DC.source" content="beam1_lsa.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -66,45 +66,52 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
 
 
 
-  </style></head><body><div class="content"><h1>Beam1 - Assign Boundary Conditions (node restraints) and get node info</h1><!--introduction--><p>jdv 08172016</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">setup st7model class</a></li><li><a href="#2">setup node restraints</a></li><li><a href="#3">assign input structures to main model structure</a></li><li><a href="#4">run the apis-shell using main function</a></li><li><a href="#5">view results</a></li></ul></div><h2>setup st7model class<a name="1"></a></h2><pre class="codeinput">sys = st7model();
+  </style></head><body><div class="content"><h1>Beam1 Simply Supported Linear Static Solver</h1><!--introduction--><p>jdv 08232016</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">setup st7model class</a></li><li><a href="#2">setup nfa solver info</a></li><li><a href="#3">setup node restraints</a></li><li><a href="#4">assign input structures to main model structure</a></li><li><a href="#5">run the apis-shell using main function</a></li><li><a href="#6">view frequencies</a></li></ul></div><h2>setup st7model class<a name="1"></a></h2><pre class="codeinput">sys = st7model();
 sys.pathname = <span class="string">'C:\Users\John\Documents\MATLAB\repos\st7api\models'</span>;
 sys.filename = <span class="string">'beam1.st7'</span>;
 sys.scratchpath = <span class="string">'C:\Temp'</span>;
-</pre><h2>setup node restraints<a name="2"></a></h2><pre class="codeinput">bc = boundaryNode();
-bc.nodeid = [1 11]; <span class="comment">% fully fixed at nodes 1 and 11</span>
-bc.restraint = ones(length(bc.nodeid),6); <span class="comment">% [nnodes x 6dof]</span>
-bc.fcase = ones(size(bc.nodeid));         <span class="comment">% [nnodes x 1]</span>
-</pre><h2>assign input structures to main model structure<a name="3"></a></h2><pre class="codeinput">model.sys = sys;
+</pre><h2>setup nfa solver info<a name="2"></a></h2><p>Note that nfa.coords [x,y] is an optional input - nfa will snap or default to all nodes</p><pre class="codeinput">lsa = LSA();
+lsa.name = fullfile(sys.pathname,[sys.filename(1:end-4) <span class="string">'.LSA'</span>]);
+lsa.run = 1;
+lsa.inputid = 3; <span class="comment">% point load at nodeid=3</span>
+lsa.inputcase = 1; <span class="comment">% loadcase = 1</span>
+lsa.fcase = 1; <span class="comment">% freedom case</span>
+lsa.force = [0 0 -1e3]; <span class="comment">% -1kip load at dof3</span>
+lsa.outputid = 1:11; <span class="comment">% output at all nodes</span>
+lsa.outputcase = ones(size(lsa.outputid));
+</pre><h2>setup node restraints<a name="3"></a></h2><pre class="codeinput">bc = boundaryNode();
+bc.nodeid = [1 11]; <span class="comment">% boundary nodes</span>
+bc.restraint = [1 1 1 0 0 0; 0 1 1 0 0 0]; <span class="comment">% [nnodes x 6dof] - simple beam</span>
+bc.fcase = ones(size(bc.nodeid));          <span class="comment">% [nnodes x 1] - assign to case1</span>
+</pre><h2>assign input structures to main model structure<a name="4"></a></h2><pre class="codeinput">model.sys = sys;
+model.lsa = lsa;
 model.bc = bc;
-</pre><h2>run the apis-shell using main function<a name="4"></a></h2><pre class="codeinput">fcn = @main;
+</pre><h2>run the apis-shell using main function<a name="5"></a></h2><pre class="codeinput">fcn = @main;
 results = apish(fcn,model);
 </pre><pre class="codeoutput">Loading ST7API.DLL... Done. 
 	 Getting spatial information... 	Sorting boundary nodes... Done.Done. 
-	 NFA Analysis... 
-		Populating Mode Shapes... Done. 	Running Linear Static Analysis... 
-Done. </pre><h2>view results<a name="5"></a></h2><pre class="codeinput">fprintf(<span class="string">'Number of nodes: %i\n'</span>,results.nodes.nnodes);
-fprintf(<span class="string">'UCS Name: %s\n'</span>,results.nodes.ucsname{1});
-fprintf(<span class="string">'Coordinates [ft]:\n'</span>);
-fprintf(<span class="string">'\t%f %f %f\n'</span>,results.nodes.coords);
-</pre><pre class="codeoutput">Number of nodes: 11
-UCS Name: Global XYZ
-Coordinates [ft]:
-	0.000000 1.000000 2.000000
-	3.000000 4.000000 5.000000
-	6.000000 7.000000 8.000000
-	9.000000 10.000000 0.000000
-	0.000000 0.000000 0.000000
-	0.000000 0.000000 0.000000
-	0.000000 0.000000 0.000000
-	0.000000 0.000000 0.000000
-	0.000000 0.000000 0.000000
-	0.000000 0.000000 0.000000
-	0.000000 0.000000 0.000000
+	Running Linear Static Analysis... 
+Done. </pre><h2>view frequencies<a name="6"></a></h2><pre class="codeinput">fprintf(<span class="string">'The nodal displacements are: \n'</span>);
+fprintf(<span class="string">'\t\tDZ\n'</span>)
+fprintf(<span class="string">'\t%f\n'</span>,results.lsa.resp(:,3));
+</pre><pre class="codeoutput">The nodal displacements are: 
+		DZ
+	0.000000
+	-0.001363
+	-0.002434
+	-0.002888
+	-0.002881
+	-0.002535
+	-0.001973
+	-0.001316
+	-0.000687
+	-0.000207
+	0.000000
 </pre><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2014b</a><br></p></div><!--
 ##### SOURCE BEGIN #####
-%% Beam1 - Assign Boundary Conditions (node restraints) and get node info
+%% Beam1 Simply Supported Linear Static Solver
 %
-% jdv 08172016
+% jdv 08232016
 
 %% setup st7model class
 sys = st7model();
@@ -112,24 +119,40 @@ sys.pathname = 'C:\Users\John\Documents\MATLAB\repos\st7api\models';
 sys.filename = 'beam1.st7';
 sys.scratchpath = 'C:\Temp';
 
+%% setup nfa solver info
+% Note that nfa.coords [x,y] is an optional input - nfa will snap or 
+% default to all nodes
+lsa = LSA();
+lsa.name = fullfile(sys.pathname,[sys.filename(1:end-4) '.LSA']);
+lsa.run = 1;
+lsa.inputid = 3; % point load at nodeid=3
+lsa.inputcase = 1; % loadcase = 1
+lsa.fcase = 1; % freedom case
+lsa.force = [0 0 -1e3]; % -1kip load at dof3
+lsa.outputid = 1:11; % output at all nodes
+lsa.outputcase = ones(size(lsa.outputid));
+
+
+
 %% setup node restraints
 bc = boundaryNode();
-bc.nodeid = [1 11]; % fully fixed at nodes 1 and 11
-bc.restraint = ones(length(bc.nodeid),6); % [nnodes x 6dof]
-bc.fcase = ones(size(bc.nodeid));         % [nnodes x 1]
+bc.nodeid = [1 11]; % boundary nodes
+bc.restraint = [1 1 1 0 0 0; 0 1 1 0 0 0]; % [nnodes x 6dof] - simple beam
+bc.fcase = ones(size(bc.nodeid));          % [nnodes x 1] - assign to case1
 
 %% assign input structures to main model structure
 model.sys = sys;
+model.lsa = lsa;
 model.bc = bc;
 
 %% run the apis-shell using main function
 fcn = @main;
 results = apish(fcn,model);
 
-%% view results
-fprintf('Number of nodes: %i\n',results.nodes.nnodes);
-fprintf('UCS Name: %s\n',results.nodes.ucsname{1});
-fprintf('Coordinates [ft]:\n');
-fprintf('\t%f %f %f\n',results.nodes.coords);
+%% view frequencies
+fprintf('The nodal displacements are: \n');
+fprintf('\t\tDZ\n')
+fprintf('\t%f\n',results.lsa.resp(:,3));
+
 ##### SOURCE END #####
 --></body></html>
