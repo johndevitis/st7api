@@ -44,6 +44,6 @@ results = apish(fcn,inputs);
 A compiled PDF of the published example files can be found [here](johndevitis.github.io/st7api/examples/html/index.pdf)
 
 #### Simple Beam
-1. [assign boundary conditions to beam](examples/html/beam_restraints.html)
+1. [linear transient solver - nodal load](johndevitis.github.io/st7api/examples/html/beam_restraints.html)
 2. [natural frequency analysis](examples/beam1_nfa.html)
 3. [assign discrete springs to the beam](examples/beam1_springs.html)
