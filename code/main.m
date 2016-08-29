@@ -32,7 +32,7 @@ function results = main(uID,model)
     results.nodes = nodes;
     
     
-%% Beam
+%% Beam - broken
 
     % check for beam struct
     if isfield(model,'beam')
@@ -40,7 +40,7 @@ function results = main(uID,model)
         out = getBeamInfo(uID,beam.num);
         results.beam = out;
     end
-
+    
     
 %% NFA
     if isfield(model,'nfa') && model.nfa.run == 1
@@ -51,22 +51,12 @@ function results = main(uID,model)
         results.nfa = nfa;
     end
          
-%% LSA
+%% LSA 
     if isfield(model,'lsa') && model.lsa.run == 1        
         lsa = model.lsa;
-        loads = lsa.loads;
-        resps = lsa.resps;
-        % check coords in load and response structs
-        loads = snapcoords(dof,loads);
-        resps = snapcoords(dof,resps);
         % call lsa solver
-        res = get_lsa(uID,lsa.resultname, ...
-                          loads.lc, loads.ind, loads.force,...
-                          resps.lc, resps.ind);
-        % save to stuct
-        resps.disp = res; 
-        lsa.loads = loads; 
-        lsa.resps = resps;
+        lsa.runLSA(uID)
+        % save to modle struct
         results.lsa = lsa;
     end
 end

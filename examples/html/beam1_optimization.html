@@ -1,0 +1,566 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>Beam1 - update with dynamic info</title><meta name="generator" content="MATLAB 8.4"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2016-08-23"><meta name="DC.source" content="beam1_optimization.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; } 
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><h1>Beam1 - update with dynamic info</h1><!--introduction--><p>Structure:   simply supported beam with rotational spring at pinned end.   spring value is randomly created within the sensitive range (determined   in beam1_sensitivity example)</p><p>Experiment:   the 'experimental' data is the first three modes of the beam</p><p>jdv 08182016</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Setup structure and get "experimental" data from random spring value</a></li><li><a href="#2">setup optimization</a></li></ul></div><h2>Setup structure and get "experimental" data from random spring value<a name="1"></a></h2><pre class="codeinput"><span class="comment">% setup st7 file info</span>
+sys = st7model();
+sys.pathname = <span class="string">'C:\Users\John\Documents\MATLAB\repos\st7api\models'</span>;
+sys.filename = <span class="string">'beam1.st7'</span>;
+sys.scratchpath = <span class="string">'C:\Temp'</span>;
+<span class="comment">% setup nfa info</span>
+nfa = NFA();
+nfa.name = fullfile(sys.pathname,[sys.filename(1:end-4) <span class="string">'.NFA'</span>]);
+nfa.nmodes = 3;
+nfa.run = 1;
+<span class="comment">% setup node restraints</span>
+bc = boundaryNode();
+bc.nodeid = [1 11];
+bc.restraint = zeros(length(bc.nodeid),6); <span class="comment">% no restraints</span>
+bc.restraint(1,1:3) = 1; <span class="comment">% pinned</span>
+bc.restraint(11,2:3) = 1; <span class="comment">% roller (x kept released)</span>
+bc.fcase = ones(size(bc.nodeid));
+
+<span class="comment">% spring value:</span>
+<span class="comment">%  generate a random number between 1e7 and 1e11</span>
+lb = 1e5; ub = 1e9;
+k = (ub-lb)*rand(1,1)+lb;
+springs = spring();
+springs.nodeid = 1;
+springs.Kr = [0 k 0];  <span class="comment">%assign spring value</span>
+springs.Kfc = 1;
+
+<span class="comment">% assign to beam struct and call api</span>
+beam.sys = sys;
+beam.nfa = nfa;
+beam.bc = bc;
+beam.springs = springs;
+results = apish(@main,beam);
+
+efreq = results.nfa.freq;
+</pre><pre class="codeoutput">Loading ST7API.DLL... Done. 
+	 Getting spatial information... 	Sorting boundary nodes... Done.Done. 
+	 NFA Analysis... 
+		Populating Mode Shapes... Done. </pre><h2>setup optimization<a name="2"></a></h2><pre class="codeinput">tic
+
+<span class="comment">% use random starting guess</span>
+lb = 1e7;
+ub = 1e11;
+initpara = (ub-lb)*rand(1,1)+lb;
+
+
+options = PSOSET(<span class="string">'SWARM_SIZE'</span>, 10  , <span class="keyword">...</span>
+                 <span class="string">'MAX_ITER'</span>  , 10  , <span class="keyword">...</span>
+                 <span class="string">'TOLFUN'</span>    , 1e-6 , <span class="keyword">...</span>
+                 <span class="string">'TOLX'</span>      , 1e-6 , <span class="keyword">...</span>
+                 <span class="string">'DISPLAY'</span>   , <span class="string">'iter'</span>);
+
+<span class="comment">% create anonymous function that generates the data (residuals) to minimize</span>
+<span class="comment">% * re-use the beam structure for api calls</span>
+obj = @(para)beam1_obj(para,beam,efreq);
+
+[para,fval,exitflag,output] = PSO(obj,initpara,lb,ub,options);
+
+
+toc
+</pre><pre class="codeoutput">Loading ST7API.DLL... Done. 
+	 Getting spatial information... 	Sorting boundary nodes... Done.Done. 
+	 NFA Analysis... 
+		Populating Mode Shapes... Done. Loading ST7API.DLL... Done. 
+	 Getting spatial information... 	Sorting boundary nodes... Done.Done. 
+	 NFA Analysis... 
+		Populating Mode Shapes... Done. Loading ST7API.DLL... Done. 
+	 Getting spatial information... 	Sorting boundary nodes... Done.Done. 
+	 NFA Analysis... 
+		Populating Mode Shapes... Done. Loading ST7API.DLL... Done. 
+	 Getting spatial information... 	Sorting boundary nodes... Done.Done. 
+	 NFA Analysis... 
+		Populating Mode Shapes... Done. Loading ST7API.DLL... Done. 
+	 Getting spatial information... 	Sorting boundary nodes... Done.Done. 
+	 NFA Analysis... 
+		Populating Mode Shapes... Done. Loading ST7API.DLL... Done. 
+	 Getting spatial information... 	Sorting boundary nodes... Done.Done. 
+	 NFA Analysis... 
+		Populating Mode Shapes... Done. Loading ST7API.DLL... Done. 
+	 Getting spatial information... 	Sorting boundary nodes... Done.Done. 
+	 NFA Analysis... 
+		Populating Mode Shapes... Done. Loading ST7API.DLL... Done. 
+	 Getting spatial information... 	Sorting boundary nodes... Done.Done. 
+	 NFA Analysis... 
+		Populating Mode Shapes... Done. Loading ST7API.DLL... Done. 
+	 Getting spatial information... 	Sorting boundary nodes... Done.Done. 
+	 NFA Analysis... 
+		Populating Mode Shapes... Done. Loading ST7API.DLL... Done. 
+	 Getting spatial information... 	Sorting boundary nodes... Done.Done. 
+	 NFA Analysis... 
+		Populating Mode Shapes... Done. Warning: repmat(A,M,N) where M or N is a row vector will return an error in a
+future release. Use repmat(A,[M,N]) instead. 
+ Nr Iter  Nr Fun Eval    Current best function    Current worst function       Best function
+     1        10                0.0802611                 0.0830823                 0.0802611
+Loading ST7API.DLL... Done. 
+	 Getting spatial information... 	Sorting boundary nodes... Done.Done. 
+	 NFA Analysis... 
+		Populating Mode Shapes... Done. Loading ST7API.DLL... Done. 
+	 Getting spatial information... 	Sorting boundary nodes... Done.Done. 
+	 NFA Analysis... 
+		Populating Mode Shapes... Done. Loading ST7API.DLL... Done. 
+	 Getting spatial information... 	Sorting boundary nodes... Done.Done. 
+	 NFA Analysis... 
+		Populating Mode Shapes... Done. Loading ST7API.DLL... Done. 
+	 Getting spatial information... 	Sorting boundary nodes... Done.Done. 
+	 NFA Analysis... 
+		Populating Mode Shapes... Done. Loading ST7API.DLL... Done. 
+	 Getting spatial information... 	Sorting boundary nodes... Done.Done. 
+	 NFA Analysis... 
+		Populating Mode Shapes... Done. Loading ST7API.DLL... Done. 
+	 Getting spatial information... 	Sorting boundary nodes... Done.Done. 
+	 NFA Analysis... 
+		Populating Mode Shapes... Done. Loading ST7API.DLL... Done. 
+	 Getting spatial information... 	Sorting boundary nodes... Done.Done. 
+	 NFA Analysis... 
+		Populating Mode Shapes... Done. Loading ST7API.DLL... Done. 
+	 Getting spatial information... 	Sorting boundary nodes... Done.Done. 
+	 NFA Analysis... 
+		Populating Mode Shapes... Done. Loading ST7API.DLL... Done. 
+	 Getting spatial information... 	Sorting boundary nodes... Done.Done. 
+	 NFA Analysis... 
+		Populating Mode Shapes... Done. Loading ST7API.DLL... Done. 
+	 Getting spatial information... 	Sorting boundary nodes... Done.Done. 
+	 NFA Analysis... 
+		Populating Mode Shapes... Done. Warning: repmat(A,M,N) where M or N is a row vector will return an error in a
+future release. Use repmat(A,[M,N]) instead. 
+     2        20                0.0802611                 0.0829027                 0.0802611
+Loading ST7API.DLL... Done. 
+	 Getting spatial information... 	Sorting boundary nodes... Done.Done. 
+	 NFA Analysis... 
+		Populating Mode Shapes... Done. Loading ST7API.DLL... Done. 
+	 Getting spatial information... 	Sorting boundary nodes... Done.Done. 
+	 NFA Analysis... 
+		Populating Mode Shapes... Done. Loading ST7API.DLL... Done. 
+	 Getting spatial information... 	Sorting boundary nodes... Done.Done. 
+	 NFA Analysis... 
+		Populating Mode Shapes... Done. Loading ST7API.DLL... Done. 
+	 Getting spatial information... 	Sorting boundary nodes... Done.Done. 
+	 NFA Analysis... 
+		Populating Mode Shapes... Done. Loading ST7API.DLL... Done. 
+	 Getting spatial information... 	Sorting boundary nodes... Done.Done. 
+	 NFA Analysis... 
+		Populating Mode Shapes... Done. Loading ST7API.DLL... Done. 
+	 Getting spatial information... 	Sorting boundary nodes... Done.Done. 
+	 NFA Analysis... 
+		Populating Mode Shapes... Done. Loading ST7API.DLL... Done. 
+	 Getting spatial information... 	Sorting boundary nodes... Done.Done. 
+	 NFA Analysis... 
+		Populating Mode Shapes... Done. Loading ST7API.DLL... Done. 
+	 Getting spatial information... 	Sorting boundary nodes... Done.Done. 
+	 NFA Analysis... 
+		Populating Mode Shapes... Done. Loading ST7API.DLL... Done. 
+	 Getting spatial information... 	Sorting boundary nodes... Done.Done. 
+	 NFA Analysis... 
+		Populating Mode Shapes... Done. Loading ST7API.DLL... Done. 
+	 Getting spatial information... 	Sorting boundary nodes... Done.Done. 
+	 NFA Analysis... 
+		Populating Mode Shapes... Done. Warning: repmat(A,M,N) where M or N is a row vector will return an error in a
+future release. Use repmat(A,[M,N]) instead. 
+     3        30                0.0745763                 0.0827166                 0.0745763
+Loading ST7API.DLL... Done. 
+	 Getting spatial information... 	Sorting boundary nodes... Done.Done. 
+	 NFA Analysis... 
+		Populating Mode Shapes... Done. Loading ST7API.DLL... Done. 
+	 Getting spatial information... 	Sorting boundary nodes... Done.Done. 
+	 NFA Analysis... 
+		Populating Mode Shapes... Done. Loading ST7API.DLL... Done. 
+	 Getting spatial information... 	Sorting boundary nodes... Done.Done. 
+	 NFA Analysis... 
+		Populating Mode Shapes... Done. Loading ST7API.DLL... Done. 
+	 Getting spatial information... 	Sorting boundary nodes... Done.Done. 
+	 NFA Analysis... 
+		Populating Mode Shapes... Done. Loading ST7API.DLL... Done. 
+	 Getting spatial information... 	Sorting boundary nodes... Done.Done. 
+	 NFA Analysis... 
+		Populating Mode Shapes... Done. Loading ST7API.DLL... Done. 
+	 Getting spatial information... 	Sorting boundary nodes... Done.Done. 
+	 NFA Analysis... 
+		Populating Mode Shapes... Done. Loading ST7API.DLL... Done. 
+	 Getting spatial information... 	Sorting boundary nodes... Done.Done. 
+	 NFA Analysis... 
+		Populating Mode Shapes... Done. Loading ST7API.DLL... Done. 
+	 Getting spatial information... 	Sorting boundary nodes... Done.Done. 
+	 NFA Analysis... 
+		Populating Mode Shapes... Done. Loading ST7API.DLL... Done. 
+	 Getting spatial information... 	Sorting boundary nodes... Done.Done. 
+	 NFA Analysis... 
+		Populating Mode Shapes... Done. Loading ST7API.DLL... Done. 
+	 Getting spatial information... 	Sorting boundary nodes... Done.Done. 
+	 NFA Analysis... 
+		Populating Mode Shapes... Done. Warning: repmat(A,M,N) where M or N is a row vector will return an error in a
+future release. Use repmat(A,[M,N]) instead. 
+     4        40                0.0047995                  0.082538                 0.0047995
+Loading ST7API.DLL... Done. 
+	 Getting spatial information... 	Sorting boundary nodes... Done.Done. 
+	 NFA Analysis... 
+		Populating Mode Shapes... Done. Loading ST7API.DLL... Done. 
+	 Getting spatial information... 	Sorting boundary nodes... Done.Done. 
+	 NFA Analysis... 
+		Populating Mode Shapes... Done. Loading ST7API.DLL... Done. 
+	 Getting spatial information... 	Sorting boundary nodes... Done.Done. 
+	 NFA Analysis... 
+		Populating Mode Shapes... Done. Loading ST7API.DLL... Done. 
+	 Getting spatial information... 	Sorting boundary nodes... Done.Done. 
+	 NFA Analysis... 
+		Populating Mode Shapes... Done. Loading ST7API.DLL... Done. 
+	 Getting spatial information... 	Sorting boundary nodes... Done.Done. 
+	 NFA Analysis... 
+		Populating Mode Shapes... Done. Loading ST7API.DLL... Done. 
+	 Getting spatial information... 	Sorting boundary nodes... Done.Done. 
+	 NFA Analysis... 
+		Populating Mode Shapes... Done. Loading ST7API.DLL... Done. 
+	 Getting spatial information... 	Sorting boundary nodes... Done.Done. 
+	 NFA Analysis... 
+		Populating Mode Shapes... Done. Loading ST7API.DLL... Done. 
+	 Getting spatial information... 	Sorting boundary nodes... Done.Done. 
+	 NFA Analysis... 
+		Populating Mode Shapes... Done. Loading ST7API.DLL... Done. 
+	 Getting spatial information... 	Sorting boundary nodes... Done.Done. 
+	 NFA Analysis... 
+		Populating Mode Shapes... Done. Loading ST7API.DLL... Done. 
+	 Getting spatial information... 	Sorting boundary nodes... Done.Done. 
+	 NFA Analysis... 
+		Populating Mode Shapes... Done. Warning: repmat(A,M,N) where M or N is a row vector will return an error in a
+future release. Use repmat(A,[M,N]) instead. 
+     5        50               0.00288653                 0.0819713                0.00288653
+Loading ST7API.DLL... Done. 
+	 Getting spatial information... 	Sorting boundary nodes... Done.Done. 
+	 NFA Analysis... 
+		Populating Mode Shapes... Done. Loading ST7API.DLL... Done. 
+	 Getting spatial information... 	Sorting boundary nodes... Done.Done. 
+	 NFA Analysis... 
+		Populating Mode Shapes... Done. Loading ST7API.DLL... Done. 
+	 Getting spatial information... 	Sorting boundary nodes... Done.Done. 
+	 NFA Analysis... 
+		Populating Mode Shapes... Done. Loading ST7API.DLL... Done. 
+	 Getting spatial information... 	Sorting boundary nodes... Done.Done. 
+	 NFA Analysis... 
+		Populating Mode Shapes... Done. Loading ST7API.DLL... Done. 
+	 Getting spatial information... 	Sorting boundary nodes... Done.Done. 
+	 NFA Analysis... 
+		Populating Mode Shapes... Done. Loading ST7API.DLL... Done. 
+	 Getting spatial information... 	Sorting boundary nodes... Done.Done. 
+	 NFA Analysis... 
+		Populating Mode Shapes... Done. Loading ST7API.DLL... Done. 
+	 Getting spatial information... 	Sorting boundary nodes... Done.Done. 
+	 NFA Analysis... 
+		Populating Mode Shapes... Done. Loading ST7API.DLL... Done. 
+	 Getting spatial information... 	Sorting boundary nodes... Done.Done. 
+	 NFA Analysis... 
+		Populating Mode Shapes... Done. Loading ST7API.DLL... Done. 
+	 Getting spatial information... 	Sorting boundary nodes... Done.Done. 
+	 NFA Analysis... 
+		Populating Mode Shapes... Done. Loading ST7API.DLL... Done. 
+	 Getting spatial information... 	Sorting boundary nodes... Done.Done. 
+	 NFA Analysis... 
+		Populating Mode Shapes... Done. Warning: repmat(A,M,N) where M or N is a row vector will return an error in a
+future release. Use repmat(A,[M,N]) instead. 
+     6        60                0.0194893                  0.198702                0.00288653
+Loading ST7API.DLL... Done. 
+	 Getting spatial information... 	Sorting boundary nodes... Done.Done. 
+	 NFA Analysis... 
+		Populating Mode Shapes... Done. Loading ST7API.DLL... Done. 
+	 Getting spatial information... 	Sorting boundary nodes... Done.Done. 
+	 NFA Analysis... 
+		Populating Mode Shapes... Done. Loading ST7API.DLL... Done. 
+	 Getting spatial information... 	Sorting boundary nodes... Done.Done. 
+	 NFA Analysis... 
+		Populating Mode Shapes... Done. Loading ST7API.DLL... Done. 
+	 Getting spatial information... 	Sorting boundary nodes... Done.Done. 
+	 NFA Analysis... 
+		Populating Mode Shapes... Done. Loading ST7API.DLL... Done. 
+	 Getting spatial information... 	Sorting boundary nodes... Done.Done. 
+	 NFA Analysis... 
+		Populating Mode Shapes... Done. Loading ST7API.DLL... Done. 
+	 Getting spatial information... 	Sorting boundary nodes... Done.Done. 
+	 NFA Analysis... 
+		Populating Mode Shapes... Done. Loading ST7API.DLL... Done. 
+	 Getting spatial information... 	Sorting boundary nodes... Done.Done. 
+	 NFA Analysis... 
+		Populating Mode Shapes... Done. Loading ST7API.DLL... Done. 
+	 Getting spatial information... 	Sorting boundary nodes... Done.Done. 
+	 NFA Analysis... 
+		Populating Mode Shapes... Done. Loading ST7API.DLL... Done. 
+	 Getting spatial information... 	Sorting boundary nodes... Done.Done. 
+	 NFA Analysis... 
+		Populating Mode Shapes... Done. Loading ST7API.DLL... Done. 
+	 Getting spatial information... 	Sorting boundary nodes... Done.Done. 
+	 NFA Analysis... 
+		Populating Mode Shapes... Done. Warning: repmat(A,M,N) where M or N is a row vector will return an error in a
+future release. Use repmat(A,[M,N]) instead. 
+     7        70               0.00241086                  0.253085                0.00241086
+Loading ST7API.DLL... Done. 
+	 Getting spatial information... 	Sorting boundary nodes... Done.Done. 
+	 NFA Analysis... 
+		Populating Mode Shapes... Done. Loading ST7API.DLL... Done. 
+	 Getting spatial information... 	Sorting boundary nodes... Done.Done. 
+	 NFA Analysis... 
+		Populating Mode Shapes... Done. Loading ST7API.DLL... Done. 
+	 Getting spatial information... 	Sorting boundary nodes... Done.Done. 
+	 NFA Analysis... 
+		Populating Mode Shapes... Done. Loading ST7API.DLL... Done. 
+	 Getting spatial information... 	Sorting boundary nodes... Done.Done. 
+	 NFA Analysis... 
+		Populating Mode Shapes... Done. Loading ST7API.DLL... Done. 
+	 Getting spatial information... 	Sorting boundary nodes... Done.Done. 
+	 NFA Analysis... 
+		Populating Mode Shapes... Done. Loading ST7API.DLL... Done. 
+	 Getting spatial information... 	Sorting boundary nodes... Done.Done. 
+	 NFA Analysis... 
+		Populating Mode Shapes... Done. Loading ST7API.DLL... Done. 
+	 Getting spatial information... 	Sorting boundary nodes... Done.Done. 
+	 NFA Analysis... 
+		Populating Mode Shapes... Done. Loading ST7API.DLL... Done. 
+	 Getting spatial information... 	Sorting boundary nodes... Done.Done. 
+	 NFA Analysis... 
+		Populating Mode Shapes... Done. Loading ST7API.DLL... Done. 
+	 Getting spatial information... 	Sorting boundary nodes... Done.Done. 
+	 NFA Analysis... 
+		Populating Mode Shapes... Done. Loading ST7API.DLL... Done. 
+	 Getting spatial information... 	Sorting boundary nodes... Done.Done. 
+	 NFA Analysis... 
+		Populating Mode Shapes... Done. Warning: repmat(A,M,N) where M or N is a row vector will return an error in a
+future release. Use repmat(A,[M,N]) instead. 
+     8        80               0.00119783                  0.125437                0.00119783
+Loading ST7API.DLL... Done. 
+	 Getting spatial information... 	Sorting boundary nodes... Done.Done. 
+	 NFA Analysis... 
+		Populating Mode Shapes... Done. Loading ST7API.DLL... Done. 
+	 Getting spatial information... 	Sorting boundary nodes... Done.Done. 
+	 NFA Analysis... 
+		Populating Mode Shapes... Done. Loading ST7API.DLL... Done. 
+	 Getting spatial information... 	Sorting boundary nodes... Done.Done. 
+	 NFA Analysis... 
+		Populating Mode Shapes... Done. Loading ST7API.DLL... Done. 
+	 Getting spatial information... 	Sorting boundary nodes... Done.Done. 
+	 NFA Analysis... 
+		Populating Mode Shapes... Done. Loading ST7API.DLL... Done. 
+	 Getting spatial information... 	Sorting boundary nodes... Done.Done. 
+	 NFA Analysis... 
+		Populating Mode Shapes... Done. Loading ST7API.DLL... Done. 
+	 Getting spatial information... 	Sorting boundary nodes... Done.Done. 
+	 NFA Analysis... 
+		Populating Mode Shapes... Done. Loading ST7API.DLL... Done. 
+	 Getting spatial information... 	Sorting boundary nodes... Done.Done. 
+	 NFA Analysis... 
+		Populating Mode Shapes... Done. Loading ST7API.DLL... Done. 
+	 Getting spatial information... 	Sorting boundary nodes... Done.Done. 
+	 NFA Analysis... 
+		Populating Mode Shapes... Done. Loading ST7API.DLL... Done. 
+	 Getting spatial information... 	Sorting boundary nodes... Done.Done. 
+	 NFA Analysis... 
+		Populating Mode Shapes... Done. Loading ST7API.DLL... Done. 
+	 Getting spatial information... 	Sorting boundary nodes... Done.Done. 
+	 NFA Analysis... 
+		Populating Mode Shapes... Done. Warning: repmat(A,M,N) where M or N is a row vector will return an error in a
+future release. Use repmat(A,[M,N]) instead. 
+     9        90                 0.007362                  0.195115                0.00119783
+Loading ST7API.DLL... Done. 
+	 Getting spatial information... 	Sorting boundary nodes... Done.Done. 
+	 NFA Analysis... 
+		Populating Mode Shapes... Done. Loading ST7API.DLL... Done. 
+	 Getting spatial information... 	Sorting boundary nodes... Done.Done. 
+	 NFA Analysis... 
+		Populating Mode Shapes... Done. Loading ST7API.DLL... Done. 
+	 Getting spatial information... 	Sorting boundary nodes... Done.Done. 
+	 NFA Analysis... 
+		Populating Mode Shapes... Done. Loading ST7API.DLL... Done. 
+	 Getting spatial information... 	Sorting boundary nodes... Done.Done. 
+	 NFA Analysis... 
+		Populating Mode Shapes... Done. Loading ST7API.DLL... Done. 
+	 Getting spatial information... 	Sorting boundary nodes... Done.Done. 
+	 NFA Analysis... 
+		Populating Mode Shapes... Done. Loading ST7API.DLL... Done. 
+	 Getting spatial information... 	Sorting boundary nodes... Done.Done. 
+	 NFA Analysis... 
+		Populating Mode Shapes... Done. Loading ST7API.DLL... Done. 
+	 Getting spatial information... 	Sorting boundary nodes... Done.Done. 
+	 NFA Analysis... 
+		Populating Mode Shapes... Done. Loading ST7API.DLL... Done. 
+	 Getting spatial information... 	Sorting boundary nodes... Done.Done. 
+	 NFA Analysis... 
+		Populating Mode Shapes... Done. Loading ST7API.DLL... Done. 
+	 Getting spatial information... 	Sorting boundary nodes... Done.Done. 
+	 NFA Analysis... 
+		Populating Mode Shapes... Done. Loading ST7API.DLL... Done. 
+	 Getting spatial information... 	Sorting boundary nodes... Done.Done. 
+	 NFA Analysis... 
+		Populating Mode Shapes... Done. Warning: repmat(A,M,N) where M or N is a row vector will return an error in a
+future release. Use repmat(A,[M,N]) instead. 
+    10       100              0.000604798                 0.0553223               0.000604798
+Maximum number of function evaluations or iterations reached.
+Elapsed time is 162.550885 seconds.
+</pre><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2014b</a><br></p></div><!--
+##### SOURCE BEGIN #####
+%% Beam1 - update with dynamic info
+%
+% Structure:
+%   simply supported beam with rotational spring at pinned end. 
+%   spring value is randomly created within the sensitive range (determined
+%   in beam1_sensitivity example)
+%
+% Experiment: 
+%   the 'experimental' data is the first three modes of the beam
+%
+% 
+% jdv 08182016
+
+%% Setup structure and get "experimental" data from random spring value
+
+% setup st7 file info
+sys = st7model();
+sys.pathname = 'C:\Users\John\Documents\MATLAB\repos\st7api\models';
+sys.filename = 'beam1.st7';
+sys.scratchpath = 'C:\Temp';
+% setup nfa info
+nfa = NFA();
+nfa.name = fullfile(sys.pathname,[sys.filename(1:end-4) '.NFA']);
+nfa.nmodes = 3; 
+nfa.run = 1;
+% setup node restraints
+bc = boundaryNode();
+bc.nodeid = [1 11];
+bc.restraint = zeros(length(bc.nodeid),6); % no restraints
+bc.restraint(1,1:3) = 1; % pinned
+bc.restraint(11,2:3) = 1; % roller (x kept released)
+bc.fcase = ones(size(bc.nodeid));
+
+% spring value:
+%  generate a random number between 1e7 and 1e11
+lb = 1e5; ub = 1e9;
+k = (ub-lb)*rand(1,1)+lb;
+springs = spring();
+springs.nodeid = 1;
+springs.Kr = [0 k 0];  %assign spring value
+springs.Kfc = 1;
+
+% assign to beam struct and call api
+beam.sys = sys;
+beam.nfa = nfa;
+beam.bc = bc;
+beam.springs = springs;
+results = apish(@main,beam);
+
+efreq = results.nfa.freq;
+
+%% setup optimization
+
+tic
+
+% use random starting guess
+lb = 1e7; 
+ub = 1e11;
+initpara = (ub-lb)*rand(1,1)+lb;
+
+
+options = PSOSET('SWARM_SIZE', 10  , ...
+                 'MAX_ITER'  , 10  , ...
+                 'TOLFUN'    , 1e-6 , ...
+                 'TOLX'      , 1e-6 , ...
+                 'DISPLAY'   , 'iter');
+
+% create anonymous function that generates the data (residuals) to minimize
+% * re-use the beam structure for api calls
+obj = @(para)beam1_obj(para,beam,efreq);
+
+[para,fval,exitflag,output] = PSO(obj,initpara,lb,ub,options);
+
+
+toc
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+##### SOURCE END #####
+--></body></html>

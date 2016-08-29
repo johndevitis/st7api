@@ -41,7 +41,18 @@ results = apish(fcn,inputs);
 
 ### Examples
 
+A compiled PDF of the published example files can be found [here](examples/html/index.pdf)
+
 #### Simple Beam
-1. [assign boundary conditions to beam](examples/html/beam_restraints.html)
-2. [natural frequency analysis](examples/beam1_nfa.html)
-3. [assign discrete springs to the beam](examples/beam1_springs.html)
+(in no particular order)
+5. [assign nodal restraints](examples/html/beam1_restraints.html) - apply nodal restraints to beam boundary conditions.
+
+1. [linear transient solver - nodal load](examples/html/beam1_lsa.html) - use the linear transient solver to pull nodal displacements due to a 1kip point load at DOF3.
+
+2. [natural frequency analysis](examples/html/beam1_nfa.html) - assign fixed-fixed boundary conditions and perform a natural frequency analysis. frequencies, mode shapes, and mass participation are extracted.
+
+3. [assign discrete springs to the beam](examples/html/beam1_springs.html) - assign discrete springs to the beams boundary nodes
+
+6. [spring stiffness sensitivity study](examples/html/beam1_sensitivitystudy.html) - perform a sensitivity study of a rotational spring applied at the pinned end of the simply-supported beam. track and plot the changes in the natural frequencies. 
+
+4. [update spring values based on natural frequencies](examples/html/beam1_optimization.html) - a random spring stiffness is generated and assigned to the pinned end of a simply-supported beam. a natural frequency analysis is performed and used as the 'experimental' data. particle swarm optimization is then used to update the spring value based on the first three natural frequencies obtained by the 'experiment'

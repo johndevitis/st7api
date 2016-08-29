@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>Beam1 - Assign Boundary Conditions (node restraints) and get node info</title><meta name="generator" content="MATLAB 8.4"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2016-08-23"><meta name="DC.source" content="beam1_restraints.m"><style type="text/css">
+      --><title>beam1_obj</title><meta name="generator" content="MATLAB 8.4"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2016-08-23"><meta name="DC.source" content="beam1_obj.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -66,70 +66,55 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
 
 
 
-  </style></head><body><div class="content"><h1>Beam1 - Assign Boundary Conditions (node restraints) and get node info</h1><!--introduction--><p>jdv 08172016</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">setup st7model class</a></li><li><a href="#2">setup node restraints</a></li><li><a href="#3">assign input structures to main model structure</a></li><li><a href="#4">run the apis-shell using main function</a></li><li><a href="#5">view results</a></li></ul></div><h2>setup st7model class<a name="1"></a></h2><pre class="codeinput">sys = st7model();
-sys.pathname = <span class="string">'C:\Users\John\Documents\MATLAB\repos\st7api\models'</span>;
-sys.filename = <span class="string">'beam1.st7'</span>;
-sys.scratchpath = <span class="string">'C:\Temp'</span>;
-</pre><h2>setup node restraints<a name="2"></a></h2><pre class="codeinput">bc = boundaryNode();
-bc.nodeid = [1 11]; <span class="comment">% fully fixed at nodes 1 and 11</span>
-bc.restraint = ones(length(bc.nodeid),6); <span class="comment">% [nnodes x 6dof]</span>
-bc.fcase = ones(size(bc.nodeid));         <span class="comment">% [nnodes x 1]</span>
-</pre><h2>assign input structures to main model structure<a name="3"></a></h2><pre class="codeinput">model.sys = sys;
-model.bc = bc;
-</pre><h2>run the apis-shell using main function<a name="4"></a></h2><pre class="codeinput">fcn = @main;
-results = apish(fcn,model);
-</pre><pre class="codeoutput">Loading ST7API.DLL... Done. 
-	 Getting spatial information... 	Sorting boundary nodes... Done.Done. 
-	 NFA Analysis... 
-		Populating Mode Shapes... Done. 	Running Linear Static Analysis... 
-Done. </pre><h2>view results<a name="5"></a></h2><pre class="codeinput">fprintf(<span class="string">'Number of nodes: %i\n'</span>,results.nodes.nnodes);
-fprintf(<span class="string">'UCS Name: %s\n'</span>,results.nodes.ucsname{1});
-fprintf(<span class="string">'Coordinates [ft]:\n'</span>);
-fprintf(<span class="string">'\t%f %f %f\n'</span>,results.nodes.coords);
-</pre><pre class="codeoutput">Number of nodes: 11
-UCS Name: Global XYZ
-Coordinates [ft]:
-	0.000000 1.000000 2.000000
-	3.000000 4.000000 5.000000
-	6.000000 7.000000 8.000000
-	9.000000 10.000000 0.000000
-	0.000000 0.000000 0.000000
-	0.000000 0.000000 0.000000
-	0.000000 0.000000 0.000000
-	0.000000 0.000000 0.000000
-	0.000000 0.000000 0.000000
-	0.000000 0.000000 0.000000
-	0.000000 0.000000 0.000000
+  </style></head><body><div class="content"><pre class="codeinput"><span class="keyword">function</span> obj = beam1_obj(para,beam,efreq)
+
+    <span class="comment">% set spring value</span>
+    beam.springs.Kr = [0 para 0];
+
+    <span class="comment">% call api to get frequencies due to current para</span>
+    opts.keepLoaded = 1; <span class="comment">% keeps library loaded</span>
+    results = apish(@main,beam);
+
+    <span class="comment">% get frequencies</span>
+    afreq = results.nfa.freq;
+
+    <span class="comment">% form residual for each mode</span>
+    <span class="keyword">for</span> ii = 1:results.nfa.nmodes
+        obj(ii) = (afreq(ii)-efreq(ii))/efreq(ii);
+    <span class="keyword">end</span>
+    <span class="comment">%   return sum of squares as objective function value (this isn't</span>
+    <span class="comment">%   necesasry for lsqnonlin)</span>
+
+    obj = sqrt(sum(sum(obj.^2),2));
+
+
+<span class="keyword">end</span>
+</pre><pre class="codeoutput error">Error using beam1_obj (line 4)
+Not enough input arguments.
 </pre><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2014b</a><br></p></div><!--
 ##### SOURCE BEGIN #####
-%% Beam1 - Assign Boundary Conditions (node restraints) and get node info
-%
-% jdv 08172016
+function obj = beam1_obj(para,beam,efreq)
 
-%% setup st7model class
-sys = st7model();
-sys.pathname = 'C:\Users\John\Documents\MATLAB\repos\st7api\models';
-sys.filename = 'beam1.st7';
-sys.scratchpath = 'C:\Temp';
-
-%% setup node restraints
-bc = boundaryNode();
-bc.nodeid = [1 11]; % fully fixed at nodes 1 and 11
-bc.restraint = ones(length(bc.nodeid),6); % [nnodes x 6dof]
-bc.fcase = ones(size(bc.nodeid));         % [nnodes x 1]
-
-%% assign input structures to main model structure
-model.sys = sys;
-model.bc = bc;
-
-%% run the apis-shell using main function
-fcn = @main;
-results = apish(fcn,model);
-
-%% view results
-fprintf('Number of nodes: %i\n',results.nodes.nnodes);
-fprintf('UCS Name: %s\n',results.nodes.ucsname{1});
-fprintf('Coordinates [ft]:\n');
-fprintf('\t%f %f %f\n',results.nodes.coords);
+    % set spring value
+    beam.springs.Kr = [0 para 0];
+    
+    % call api to get frequencies due to current para
+    opts.keepLoaded = 1; % keeps library loaded
+    results = apish(@main,beam);
+    
+    % get frequencies
+    afreq = results.nfa.freq;
+    
+    % form residual for each mode
+    for ii = 1:results.nfa.nmodes
+        obj(ii) = (afreq(ii)-efreq(ii))/efreq(ii);
+    end
+    %   return sum of squares as objective function value (this isn't
+    %   necesasry for lsqnonlin)
+    
+    obj = sqrt(sum(sum(obj.^2),2));
+    
+    
+end
 ##### SOURCE END #####
 --></body></html>

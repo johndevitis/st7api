@@ -9,3 +9,12 @@ opts.username = 'john devitis';
 opts.ignore = {'St7APIConst'};
 
 makeindex(root,opts)
+
+
+
+
+root = 'C:\Users\John\Documents\MATLAB\repos\st7api\code\examples';
+opts.username = 'john devitis';
+opts.ignore = {'St7APIConst'};
+
+makeindex(root,opts)

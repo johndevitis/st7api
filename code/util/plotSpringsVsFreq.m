@@ -13,15 +13,16 @@ function plotSpringsVsFreq(results)
     
     lins = {'+b','or','xg','*m'};
     
-    for jj = 1:4
+    for jj = 1:results(1).nfa.nmodes % loop modes
         mode = jj;
         for ii = 1:steps
-            freq = results(ii).nfa.freq;
+            % get x value - discrete spring stiffness
             springs = results(ii).springs;
-
-
+            xx = springs.Kr(1,2);  % plot spring k about y
+            
+            % get y value - freq
+            freq = results(ii).nfa.freq;
             yy = freq(mode);
-            xx = ones(size(yy))*springs.Kt(1);
             plot(xx,yy,lins{jj})
             hold on
         end

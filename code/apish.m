@@ -1,4 +1,4 @@
-function results = apish(main,model)
+function results = apish(main,model,opts)
 %% Self-contained API execution wrapper
 % SYNTAX: model = apish(main,model)
 %
@@ -26,8 +26,19 @@ function results = apish(main,model)
         for ii = 1:length(model)
             results(ii) = main(uID,model(ii));
         end
-        % close model file
-        CloseAndUnload(uID);      
+        
+        % load default options if none provided
+        if nargin < 3
+            opts = apiOptions();
+        end
+        
+        % check whether or not to unload library
+        if opts.keepLoaded == 0
+            CloseAndUnload(uID);
+        elseif opts.keepOpen == 0
+            api.closeModel(uID)     
+        end
+        
     catch % force close close all refs
         fprintf('Force close');
         CloseAndUnload(uID);

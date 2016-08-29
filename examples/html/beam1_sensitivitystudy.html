@@ -1,0 +1,713 @@
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      -->
+    <title>Beam1 - sensitivity study</title>
+    <meta name="generator" content="MATLAB 8.4">
+    <link rel="schema.DC" href="http://purl.org/dc/elements/1.1/">
+    <meta name="DC.date" content="2016-08-23">
+    <meta name="DC.source" content="beam1_sensitivitystudy.m">
+    <style type="text/css">
+        html,
+        body,
+        div,
+        span,
+        applet,
+        object,
+        iframe,
+        h1,
+        h2,
+        h3,
+        h4,
+        h5,
+        h6,
+        p,
+        blockquote,
+        pre,
+        a,
+        abbr,
+        acronym,
+        address,
+        big,
+        cite,
+        code,
+        del,
+        dfn,
+        em,
+        font,
+        img,
+        ins,
+        kbd,
+        q,
+        s,
+        samp,
+        small,
+        strike,
+        strong,
+        sub,
+        sup,
+        tt,
+        var,
+        b,
+        u,
+        i,
+        center,
+        dl,
+        dt,
+        dd,
+        ol,
+        ul,
+        li,
+        fieldset,
+        form,
+        label,
+        legend,
+        table,
+        caption,
+        tbody,
+        tfoot,
+        thead,
+        tr,
+        th,
+        td {
+            margin: 0;
+            padding: 0;
+            border: 0;
+            outline: 0;
+            font-size: 100%;
+            vertical-align: baseline;
+            background: transparent
+        }
+
+        body {
+            line-height: 1
+        }
+
+        ol,
+        ul {
+            list-style: none
+        }
+
+        blockquote,
+        q {
+            quotes: none
+        }
+
+        blockquote:before,
+        blockquote:after,
+        q:before,
+        q:after {
+            content: '';
+            content: none
+        }
+
+        :focus {
+            outine: 0
+        }
+
+        ins {
+            text-decoration: none
+        }
+
+        del {
+            text-decoration: line-through
+        }
+
+        table {
+            border-collapse: collapse;
+            border-spacing: 0
+        }
+
+        html {
+            min-height: 100%;
+            margin-bottom: 1px;
+        }
+
+        html body {
+            height: 100%;
+            margin: 0px;
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 10px;
+            color: #000;
+            line-height: 140%;
+            background: #fff none;
+            overflow-y: scroll;
+        }
+
+        html body td {
+            vertical-align: top;
+            text-align: left;
+        }
+
+        h1 {
+            padding: 0px;
+            margin: 0px 0px 25px;
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 1.5em;
+            color: #d55000;
+            line-height: 100%;
+            font-weight: normal;
+        }
+
+        h2 {
+            padding: 0px;
+            margin: 0px 0px 8px;
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 1.2em;
+            color: #000;
+            font-weight: bold;
+            line-height: 140%;
+            border-bottom: 1px solid #d6d4d4;
+            display: block;
+        }
+
+        h3 {
+            padding: 0px;
+            margin: 0px 0px 5px;
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 1.1em;
+            color: #000;
+            font-weight: bold;
+            line-height: 140%;
+        }
+
+        a {
+            color: #005fce;
+            text-decoration: none;
+        }
+
+        a:hover {
+            color: #005fce;
+            text-decoration: underline;
+        }
+
+        a:visited {
+            color: #004aa0;
+            text-decoration: none;
+        }
+
+        p {
+            padding: 0px;
+            margin: 0px 0px 20px;
+        }
+
+        img {
+            padding: 0px;
+            margin: 0px 0px 20px;
+            border: none;
+        }
+
+        p img,
+        pre img,
+        tt img,
+        li img,
+        h1 img,
+        h2 img {
+            margin-bottom: 0px;
+        }
+
+        ul {
+            padding: 0px;
+            margin: 0px 0px 20px 23px;
+            list-style: square;
+        }
+
+        ul li {
+            padding: 0px;
+            margin: 0px 0px 7px 0px;
+        }
+
+        ul li ul {
+            padding: 5px 0px 0px;
+            margin: 0px 0px 7px 23px;
+        }
+
+        ul li ol li {
+            list-style: decimal;
+        }
+
+        ol {
+            padding: 0px;
+            margin: 0px 0px 20px 0px;
+            list-style: decimal;
+        }
+
+        ol li {
+            padding: 0px;
+            margin: 0px 0px 7px 23px;
+            list-style-type: decimal;
+        }
+
+        ol li ol {
+            padding: 5px 0px 0px;
+            margin: 0px 0px 7px 0px;
+        }
+
+        ol li ol li {
+            list-style-type: lower-alpha;
+        }
+
+        ol li ul {
+            padding-top: 7px;
+        }
+
+        ol li ul li {
+            list-style: square;
+        }
+
+        .content {
+            font-size: 1.2em;
+            line-height: 140%;
+            padding: 20px;
+        }
+
+        pre,
+        code {
+            font-size: 12px;
+        }
+
+        tt {
+            font-size: 1.2em;
+        }
+
+        pre {
+            margin: 0px 0px 20px;
+        }
+
+        pre.codeinput {
+            padding: 10px;
+            border: 1px solid #d3d3d3;
+            background: #f7f7f7;
+        }
+
+        pre.codeoutput {
+            padding: 10px 11px;
+            margin: 0px 0px 20px;
+            color: #4c4c4c;
+        }
+
+        pre.error {
+            color: red;
+        }
+
+        @media print {
+            pre.codeinput,
+            pre.codeoutput {
+                word-wrap: break-word;
+                width: 100%;
+            }
+        }
+
+        span.keyword {
+            color: #0000FF
+        }
+
+        span.comment {
+            color: #228B22
+        }
+
+        span.string {
+            color: #A020F0
+        }
+
+        span.untermstring {
+            color: #B20000
+        }
+
+        span.syscmd {
+            color: #B28C00
+        }
+
+        .footer {
+            width: auto;
+            padding: 10px 0px;
+            margin: 25px 0px 0px;
+            border-top: 1px dotted #878787;
+            font-size: 0.8em;
+            line-height: 140%;
+            font-style: italic;
+            color: #878787;
+            text-align: left;
+            float: none;
+        }
+
+        .footer p {
+            margin: 0px;
+        }
+
+        .footer a {
+            color: #878787;
+        }
+
+        .footer a:hover {
+            color: #878787;
+            text-decoration: underline;
+        }
+
+        .footer a:visited {
+            color: #878787;
+        }
+
+        table th {
+            padding: 7px 5px;
+            text-align: left;
+            vertical-align: middle;
+            border: 1px solid #d6d4d4;
+            font-weight: bold;
+        }
+
+        table td {
+            padding: 7px 5px;
+            text-align: left;
+            vertical-align: top;
+            border: 1px solid #d6d4d4;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="content">
+        <h1>Beam1 - sensitivity study</h1>
+        <!--introduction-->
+        <div>
+            <ul>
+                <li>multiple runs</li>
+            </ul>
+        </div>
+        <p>jdv 08142016</p>
+        <!--/introduction-->
+        <h2>Contents</h2>
+        <div>
+            <ul>
+                <li><a href="#1">setup st7 file info</a></li>
+                <li><a href="#2">setup nfa info</a></li>
+                <li><a href="#3">setup node restraints</a></li>
+                <li><a href="#4">setup spring sensitivity study</a></li>
+                <li><a href="#5">run the shell</a></li>
+                <li><a href="#6">view nfa info</a></li>
+            </ul>
+        </div>
+        <h2>setup st7 file info<a name="1"></a></h2><pre class="codeinput">sys = st7model();
+sys.pathname = <span class="string">'C:\Users\John\Documents\MATLAB\repos\st7api\models'</span>;
+sys.filename = <span class="string">'beam1.st7'</span>;
+sys.scratchpath = <span class="string">'C:\Temp'</span>;
+</pre>
+        <h2>setup nfa info<a name="2"></a></h2><pre class="codeinput">nfa = NFA();
+nfa.name = fullfile(sys.pathname,[sys.filename(1:end-4) <span class="string">'.NFA'</span>]);
+nfa.nmodes = 4; <span class="comment">% set number of modes to compute</span>
+nfa.run = 1;
+</pre>
+        <h2>setup node restraints<a name="3"></a></h2><pre class="codeinput">bc = boundaryNode();
+bc.nodeid = [1 11];
+bc.restraint = zeros(length(bc.nodeid),6); <span class="comment">% no restraints</span>
+bc.restraint(1,1:3) = 1; <span class="comment">% pinned</span>
+bc.restraint(11,2:3) = 1; <span class="comment">% roller (x kept released)</span>
+bc.fcase = ones(size(bc.nodeid));
+</pre>
+        <h2>setup spring sensitivity study<a name="4"></a></h2>
+        <p>Create rotational springs about the y-axis for boundary nodes</p>
+        <p><b>pay attention, this section is tricky</b></p><pre class="codeinput">springs = spring();
+springs.nodeid = 1;
+<span class="comment">% create unit spring force at desired dof</span>
+Kr = [0 1 0];
+
+<span class="comment">% create spring range from 10^2 to 10*12 with 10 increments. start at 5 for</span>
+<span class="comment">% stability</span>
+<span class="comment">% note its a row vector</span>
+steps = 20;
+springrange = logspace(7,11,steps)';
+
+<span class="comment">% build model array</span>
+<span class="keyword">for</span> ii = 1:steps
+    <span class="comment">% the class st7model is not a handle subclass. it is just a value</span>
+    <span class="comment">% class, like a hard-coded structure. because of this we can create</span>
+    <span class="comment">% copies of it</span>
+    beam(ii).sys = sys;
+
+    <span class="comment">% the same goes with the boundaryNodes class</span>
+    beam(ii).bc = bc;
+
+    <span class="comment">% create new instance of nfa class</span>
+    <span class="comment">% * this is because nfa subclasses the handle class. handles are</span>
+    <span class="comment">% persistent. if you create a copy and change it, the original changes</span>
+    <span class="comment">% too. we we need to create a new instance.</span>
+    beam(ii).nfa = NFA();
+    beam(ii).nfa.name = strcat(fullfile(sys.pathname,sys.filename(1:end-4)), <span class="keyword">...</span>
+        <span class="string">'_step'</span>,num2str(ii),<span class="string">'.NFA'</span>);
+    beam(ii).nfa.nmodes = 4;
+    beam(ii).nfa.run = 1;
+
+    <span class="comment">% springs</span>
+    <span class="comment">% this class is also *not* a subclass of handles. we can use copies.</span>
+    springs.Kr = Kr*springrange(ii);
+    springs.Kfc = ones(size(springs.Kr,1),1); <span class="comment">% default to freedom case 1</span>
+    beam(ii).springs = springs;
+<span class="keyword">end</span>
+</pre>
+        <h2>run the shell<a name="5"></a></h2><pre class="codeinput">tic
+
+results = apish(@main,beam);
+
+toc
+</pre><pre class="codeoutput">Loading ST7API.DLL... Done.
+	 Getting spatial information... 	Sorting boundary nodes... Done.Done.
+	 NFA Analysis...
+		Populating Mode Shapes... Done. 	 Getting spatial information... 	Sorting boundary nodes... Done.Done.
+	 NFA Analysis...
+		Populating Mode Shapes... Done. 	 Getting spatial information... 	Sorting boundary nodes... Done.Done.
+	 NFA Analysis...
+		Populating Mode Shapes... Done. 	 Getting spatial information... 	Sorting boundary nodes... Done.Done.
+	 NFA Analysis...
+		Populating Mode Shapes... Done. 	 Getting spatial information... 	Sorting boundary nodes... Done.Done.
+	 NFA Analysis...
+		Populating Mode Shapes... Done. 	 Getting spatial information... 	Sorting boundary nodes... Done.Done.
+	 NFA Analysis...
+		Populating Mode Shapes... Done. 	 Getting spatial information... 	Sorting boundary nodes... Done.Done.
+	 NFA Analysis...
+		Populating Mode Shapes... Done. 	 Getting spatial information... 	Sorting boundary nodes... Done.Done.
+	 NFA Analysis...
+		Populating Mode Shapes... Done. 	 Getting spatial information... 	Sorting boundary nodes... Done.Done.
+	 NFA Analysis...
+		Populating Mode Shapes... Done. 	 Getting spatial information... 	Sorting boundary nodes... Done.Done.
+	 NFA Analysis...
+		Populating Mode Shapes... Done. 	 Getting spatial information... 	Sorting boundary nodes... Done.Done.
+	 NFA Analysis...
+		Populating Mode Shapes... Done. 	 Getting spatial information... 	Sorting boundary nodes... Done.Done.
+	 NFA Analysis...
+		Populating Mode Shapes... Done. 	 Getting spatial information... 	Sorting boundary nodes... Done.Done.
+	 NFA Analysis...
+		Populating Mode Shapes... Done. 	 Getting spatial information... 	Sorting boundary nodes... Done.Done.
+	 NFA Analysis...
+		Populating Mode Shapes... Done. 	 Getting spatial information... 	Sorting boundary nodes... Done.Done.
+	 NFA Analysis...
+		Populating Mode Shapes... Done. 	 Getting spatial information... 	Sorting boundary nodes... Done.Done.
+	 NFA Analysis...
+		Populating Mode Shapes... Done. 	 Getting spatial information... 	Sorting boundary nodes... Done.Done.
+	 NFA Analysis...
+		Populating Mode Shapes... Done. 	 Getting spatial information... 	Sorting boundary nodes... Done.Done.
+	 NFA Analysis...
+		Populating Mode Shapes... Done. 	 Getting spatial information... 	Sorting boundary nodes... Done.Done.
+	 NFA Analysis...
+		Populating Mode Shapes... Done. 	 Getting spatial information... 	Sorting boundary nodes... Done.Done.
+	 NFA Analysis...
+		Populating Mode Shapes... Done. Elapsed time is 16.013345 seconds.
+</pre>
+        <h2>view nfa info<a name="6"></a></h2><pre class="codeinput">plotSpringsVsFreq(results)
+
+
+
+
+<span class="comment">% %% plot displaced shapes</span>
+<span class="comment">%</span>
+<span class="comment">% dof = results(1).dof;</span>
+<span class="comment">%</span>
+<span class="comment">% fh = figure('PaperPositionMode','auto');</span>
+<span class="comment">% ah = axes();</span>
+<span class="comment">%</span>
+<span class="comment">% % nfa - mode shape vector</span>
+<span class="comment">% nfa = results(1).nfa;</span>
+<span class="comment">%</span>
+<span class="comment">% mode = 5;</span>
+<span class="comment">% scale = 1;</span>
+<span class="comment">% z = nfa.U(:,3,mode)*scale;</span>
+<span class="comment">%</span>
+<span class="comment">%</span>
+<span class="comment">% % plot undeformed shape</span>
+<span class="comment">% plot(dof.coords(:,1),dof.coords(:,3),...</span>
+<span class="comment">%     'Marker','.',...</span>
+<span class="comment">%     'MarkerEdgeColor','k',...</span>
+<span class="comment">%     'MarkerFaceColo','k');</span>
+<span class="comment">%</span>
+<span class="comment">% hold(ah,'all')</span>
+<span class="comment">%</span>
+<span class="comment">% % plot mode</span>
+<span class="comment">% plot(dof.coords(:,1),z,...</span>
+<span class="comment">%     'color','b',...</span>
+<span class="comment">%     'Marker','o',...</span>
+<span class="comment">%     'MarkerEdgeColor','b',...</span>
+<span class="comment">%     'MarkerFaceColor','b');</span>
+<span class="comment">%</span>
+<span class="comment">% % plot boundaries</span>
+<span class="comment">% scatter(dof.bcoords(:,1),dof.bcoords(:,2),...</span>
+<span class="comment">%     'MarkerEdgeColor','m',...</span>
+<span class="comment">%     'MarkerFaceColor','m');</span>
+<span class="comment">%</span>
+<span class="comment">% hold(ah,'off')</span>
+<span class="comment">%</span>
+<span class="comment">% xlabel(ah,'Beam Length [ft]');</span>
+<span class="comment">% ylabel(ah,'Modal Amplitude');</span>
+<span class="comment">%</span>
+<span class="comment">% ylim(ah,[-1.5 1.5]);</span>
+<span class="comment">%</span>
+<span class="comment">% grid(ah,'on');</span>
+<span class="comment">% grid(ah,'minor');</span>
+<span class="comment">%</span>
+<span class="comment">%</span>
+<span class="comment">%</span>
+<span class="comment">%</span>
+</pre><img vspace="5" hspace="5" src="beam1_sensitivitystudy_01.png" alt="">
+        <p class="footer">
+            <br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2014b</a>
+            <br>
+        </p>
+    </div>
+    <!--
+##### SOURCE BEGIN #####
+%% Beam1 - sensitivity study
+%
+% * multiple runs
+%
+%
+% jdv 08142016
+
+%% setup st7 file info
+sys = st7model();
+sys.pathname = 'C:\Users\John\Documents\MATLAB\repos\st7api\models';
+sys.filename = 'beam1.st7';
+sys.scratchpath = 'C:\Temp';
+
+%% setup nfa info
+nfa = NFA();
+nfa.name = fullfile(sys.pathname,[sys.filename(1:end-4) '.NFA']);
+nfa.nmodes = 4; % set number of modes to compute
+nfa.run = 1;
+
+%% setup node restraints
+bc = boundaryNode();
+bc.nodeid = [1 11];
+bc.restraint = zeros(length(bc.nodeid),6); % no restraints
+bc.restraint(1,1:3) = 1; % pinned
+bc.restraint(11,2:3) = 1; % roller (x kept released)
+bc.fcase = ones(size(bc.nodeid));
+
+%% setup spring sensitivity study
+% Create rotational springs about the y-axis for boundary nodes
+%
+% *pay attention, this section is tricky*
+springs = spring();
+springs.nodeid = 1;
+% create unit spring force at desired dof
+Kr = [0 1 0];
+
+% create spring range from 10^2 to 10*12 with 10 increments. start at 5 for
+% stability
+% note its a row vector
+steps = 20;
+springrange = logspace(7,11,steps)';
+
+% build model array
+for ii = 1:steps
+    % the class st7model is not a handle subclass. it is just a value
+    % class, like a hard-coded structure. because of this we can create
+    % copies of it
+    beam(ii).sys = sys;
+
+    % the same goes with the boundaryNodes class
+    beam(ii).bc = bc;
+
+    % create new instance of nfa class
+    % * this is because nfa subclasses the handle class. handles are
+    % persistent. if you create a copy and change it, the original changes
+    % too. we we need to create a new instance.
+    beam(ii).nfa = NFA();
+    beam(ii).nfa.name = strcat(fullfile(sys.pathname,sys.filename(1:end-4)), ...
+        '_step',num2str(ii),'.NFA');
+    beam(ii).nfa.nmodes = 4;
+    beam(ii).nfa.run = 1;
+
+    % springs
+    % this class is also *not* a subclass of handles. we can use copies.
+    springs.Kr = Kr*springrange(ii);
+    springs.Kfc = ones(size(springs.Kr,1),1); % default to freedom case 1
+    beam(ii).springs = springs;
+end
+
+
+%% run the shell
+tic
+
+results = apish(@main,beam);
+
+toc
+
+%% view nfa info
+
+plotSpringsVsFreq(results)
+
+
+
+
+% %% plot displaced shapes
+%
+% dof = results(1).dof;
+%
+% fh = figure('PaperPositionMode','auto');
+% ah = axes();
+%
+% % nfa - mode shape vector
+% nfa = results(1).nfa;
+%
+% mode = 5;
+% scale = 1;
+% z = nfa.U(:,3,mode)*scale;
+%
+%
+% % plot undeformed shape
+% plot(dof.coords(:,1),dof.coords(:,3),...
+%     'Marker','.',...
+%     'MarkerEdgeColor','k',...
+%     'MarkerFaceColo','k');
+%
+% hold(ah,'all')
+%
+% % plot mode
+% plot(dof.coords(:,1),z,...
+%     'color','b',...
+%     'Marker','o',...
+%     'MarkerEdgeColor','b',...
+%     'MarkerFaceColor','b');
+%
+% % plot boundaries
+% scatter(dof.bcoords(:,1),dof.bcoords(:,2),...
+%     'MarkerEdgeColor','m',...
+%     'MarkerFaceColor','m');
+%
+% hold(ah,'off')
+%
+% xlabel(ah,'Beam Length [ft]');
+% ylabel(ah,'Modal Amplitude');
+%
+% ylim(ah,[-1.5 1.5]);
+%
+% grid(ah,'on');
+% grid(ah,'minor');
+%
+%
+%
+%
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+##### SOURCE END #####
+-->
+</body>
+
+</html>

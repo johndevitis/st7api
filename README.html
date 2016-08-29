@@ -499,21 +499,11 @@ pre.editor-colors .fold-marker:after,
 <pre class="editor-colors lang-text"><div class="line"><span class="text plain"><span class="meta paragraph text"><span>function&nbsp;apiCalls()</span></span></span></div><div class="line"><span class="text plain"><span>&nbsp;&nbsp;</span><span class="meta paragraph text"><span>try</span></span></span></div><div class="line"><span class="text plain"><span>&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="meta paragraph text"><span>apiInit();</span></span></span></div><div class="line"><span class="text plain"><span class="meta paragraph text"><span>&nbsp;&nbsp;&nbsp;&nbsp;results&nbsp;=&nbsp;main(input);</span></span></span></div><div class="line"><span class="text plain"><span class="meta paragraph text"><span>&nbsp;&nbsp;&nbsp;&nbsp;apiClose();</span></span></span></div><div class="line"><span class="text plain"><span>&nbsp;&nbsp;</span><span class="meta paragraph text"><span>catch</span></span></span></div><div class="line"><span class="text plain"><span>&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="meta paragraph text"><span>apiForceClose();</span></span></span></div><div class="line"><span class="text plain"><span class="meta paragraph text"><span>&nbsp;&nbsp;&nbsp;&nbsp;rethrow(lasterror);</span></span></span></div><div class="line"><span class="text plain"><span>&nbsp;&nbsp;</span><span class="meta paragraph text"><span>end</span></span></span></div><div class="line"><span class="text plain"><span class="meta paragraph text"><span>end</span></span></span></div><div class="line"><span class="text plain"><span>&nbsp;</span></span></div><div class="line"><span class="text plain"><span class="meta paragraph text"><span>function&nbsp;results&nbsp;=&nbsp;main(input)</span></span></span></div><div class="line"><span class="text plain"><span>&nbsp;&nbsp;</span><span class="meta paragraph text"><span>%&nbsp;do&nbsp;some&nbsp;things...</span></span></span></div><div class="line"><span class="text plain"><span class="meta paragraph text"><span>end</span></span></span></div></pre><p><code>apish.m</code> handles this boiler plate code and acts as a self-contained wrapper for executing your main function.</p>
 <p>Refactoring the above code using apish becomes:</p>
 <pre class="editor-colors lang-text"><div class="line"><span class="text plain"><span class="meta paragraph text"><span>fcn&nbsp;=&nbsp;@main;&nbsp;%&nbsp;create&nbsp;a&nbsp;function&nbsp;handle</span></span></span></div><div class="line"><span class="text plain"><span class="meta paragraph text"><span>results&nbsp;=&nbsp;apish(fcn,inputs);</span></span></span></div></pre><h3 id="examples">Examples</h3>
-<p>A compiled PDF of the published example files can be found <a href="examples/html/index.pdf">here</a></p>
+<p>A compiled PDF of the published example files can be found <a href="johndevitis.github.io/st7api/examples/html/index.pdf">here</a></p>
 <h4 id="simple-beam">Simple Beam</h4>
-<p>(in no particular order)</p>
 <ol>
-<li><p><a href="examples/html/beam1_restraints.html">assign nodal restraints</a> - apply nodal restraints to beam boundary conditions.</p>
-</li>
-<li><p><a href="examples/html/beam1_lsa.html">linear transient solver - nodal load</a> - use the linear transient solver to pull nodal displacements due to a 1kip point load at DOF3.</p>
-</li>
-<li><p><a href="examples/html/beam1_nfa.html">natural frequency analysis</a> - assign fixed-fixed boundary conditions and perform a natural frequency analysis. frequencies, mode shapes, and mass participation are extracted.</p>
-</li>
-<li><p><a href="examples/html/beam1_springs.html">assign discrete springs to the beam</a> - assign discrete springs to the beams boundary nodes</p>
-</li>
-<li><p><a href="examples/html/beam1_sensitivitystudy.html">spring stiffness sensitivity study</a> - perform a sensitivity study of a rotational spring applied at the pinned end of the simply-supported beam. track and plot the changes in the natural frequencies. </p>
-</li>
-<li><p><a href="examples/html/beam1_optimization.html">update spring values based on natural frequencies</a> - a random spring stiffness is generated and assigned to the pinned end of a simply-supported beam. a natural frequency analysis is performed and used as the &#39;experimental&#39; data. particle swarm optimization is then used to update the spring value based on the first three natural frequencies obtained by the &#39;experiment&#39;</p>
-</li>
+<li><a href="johndevitis.github.io/st7api/examples/html/beam_restraints.html">linear transient solver - nodal load</a></li>
+<li><a href="examples/beam1_nfa.html">natural frequency analysis</a></li>
+<li><a href="examples/beam1_springs.html">assign discrete springs to the beam</a></li>
 </ol></body>
 </html>

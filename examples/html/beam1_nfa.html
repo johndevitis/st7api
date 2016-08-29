@@ -1,101 +1,434 @@
-
 <!DOCTYPE html
   PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
-<html><head>
-      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-   <!--
+<html>
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>Beam1 Fixed-Fixed NFA example</title><meta name="generator" content="MATLAB 8.4"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2016-08-17"><meta name="DC.source" content="beam1_nfa.m"><style type="text/css">
-html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+      -->
+    <title>Beam1 Fixed-Fixed NFA example</title>
+    <meta name="generator" content="MATLAB 8.4">
+    <link rel="schema.DC" href="http://purl.org/dc/elements/1.1/">
+    <meta name="DC.date" content="2016-08-23">
+    <meta name="DC.source" content="beam1_nfa.m">
+    <style type="text/css">
+        html,
+        body,
+        div,
+        span,
+        applet,
+        object,
+        iframe,
+        h1,
+        h2,
+        h3,
+        h4,
+        h5,
+        h6,
+        p,
+        blockquote,
+        pre,
+        a,
+        abbr,
+        acronym,
+        address,
+        big,
+        cite,
+        code,
+        del,
+        dfn,
+        em,
+        font,
+        img,
+        ins,
+        kbd,
+        q,
+        s,
+        samp,
+        small,
+        strike,
+        strong,
+        sub,
+        sup,
+        tt,
+        var,
+        b,
+        u,
+        i,
+        center,
+        dl,
+        dt,
+        dd,
+        ol,
+        ul,
+        li,
+        fieldset,
+        form,
+        label,
+        legend,
+        table,
+        caption,
+        tbody,
+        tfoot,
+        thead,
+        tr,
+        th,
+        td {
+            margin: 0;
+            padding: 0;
+            border: 0;
+            outline: 0;
+            font-size: 100%;
+            vertical-align: baseline;
+            background: transparent
+        }
 
-html { min-height:100%; margin-bottom:1px; }
-html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
-html body td { vertical-align:top; text-align:left; }
+        body {
+            line-height: 1
+        }
 
-h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
-h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
-h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+        ol,
+        ul {
+            list-style: none
+        }
 
-a { color:#005fce; text-decoration:none; }
-a:hover { color:#005fce; text-decoration:underline; }
-a:visited { color:#004aa0; text-decoration:none; }
+        blockquote,
+        q {
+            quotes: none
+        }
 
-p { padding:0px; margin:0px 0px 20px; }
-img { padding:0px; margin:0px 0px 20px; border:none; }
-p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; } 
+        blockquote:before,
+        blockquote:after,
+        q:before,
+        q:after {
+            content: '';
+            content: none
+        }
 
-ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
-ul li { padding:0px; margin:0px 0px 7px 0px; }
-ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
-ul li ol li { list-style:decimal; }
-ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
-ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
-ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
-ol li ol li { list-style-type:lower-alpha; }
-ol li ul { padding-top:7px; }
-ol li ul li { list-style:square; }
+        :focus {
+            outine: 0
+        }
 
-.content { font-size:1.2em; line-height:140%; padding: 20px; }
+        ins {
+            text-decoration: none
+        }
 
-pre, code { font-size:12px; }
-tt { font-size: 1.2em; }
-pre { margin:0px 0px 20px; }
-pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
-pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
-pre.error { color:red; }
+        del {
+            text-decoration: line-through
+        }
 
-@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+        table {
+            border-collapse: collapse;
+            border-spacing: 0
+        }
 
-span.keyword { color:#0000FF }
-span.comment { color:#228B22 }
-span.string { color:#A020F0 }
-span.untermstring { color:#B20000 }
-span.syscmd { color:#B28C00 }
+        html {
+            min-height: 100%;
+            margin-bottom: 1px;
+        }
 
-.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
-.footer p { margin:0px; }
-.footer a { color:#878787; }
-.footer a:hover { color:#878787; text-decoration:underline; }
-.footer a:visited { color:#878787; }
+        html body {
+            height: 100%;
+            margin: 0px;
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 10px;
+            color: #000;
+            line-height: 140%;
+            background: #fff none;
+            overflow-y: scroll;
+        }
 
-table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
-table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+        html body td {
+            vertical-align: top;
+            text-align: left;
+        }
 
+        h1 {
+            padding: 0px;
+            margin: 0px 0px 25px;
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 1.5em;
+            color: #d55000;
+            line-height: 100%;
+            font-weight: normal;
+        }
 
+        h2 {
+            padding: 0px;
+            margin: 0px 0px 8px;
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 1.2em;
+            color: #000;
+            font-weight: bold;
+            line-height: 140%;
+            border-bottom: 1px solid #d6d4d4;
+            display: block;
+        }
 
+        h3 {
+            padding: 0px;
+            margin: 0px 0px 5px;
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 1.1em;
+            color: #000;
+            font-weight: bold;
+            line-height: 140%;
+        }
 
+        a {
+            color: #005fce;
+            text-decoration: none;
+        }
 
-  </style></head><body><div class="content"><h1>Beam1 Fixed-Fixed NFA example</h1><!--introduction--><p>jdv 08172016</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">setup st7model class</a></li><li><a href="#2">setup nfa solver info</a></li><li><a href="#3">setup node restraints</a></li><li><a href="#4">assign input structures to main model structure</a></li><li><a href="#5">run the apis-shell using main function</a></li><li><a href="#6">view frequencies</a></li></ul></div><h2>setup st7model class<a name="1"></a></h2><pre class="codeinput">sys = st7model();
+        a:hover {
+            color: #005fce;
+            text-decoration: underline;
+        }
+
+        a:visited {
+            color: #004aa0;
+            text-decoration: none;
+        }
+
+        p {
+            padding: 0px;
+            margin: 0px 0px 20px;
+        }
+
+        img {
+            padding: 0px;
+            margin: 0px 0px 20px;
+            border: none;
+        }
+
+        p img,
+        pre img,
+        tt img,
+        li img,
+        h1 img,
+        h2 img {
+            margin-bottom: 0px;
+        }
+
+        ul {
+            padding: 0px;
+            margin: 0px 0px 20px 23px;
+            list-style: square;
+        }
+
+        ul li {
+            padding: 0px;
+            margin: 0px 0px 7px 0px;
+        }
+
+        ul li ul {
+            padding: 5px 0px 0px;
+            margin: 0px 0px 7px 23px;
+        }
+
+        ul li ol li {
+            list-style: decimal;
+        }
+
+        ol {
+            padding: 0px;
+            margin: 0px 0px 20px 0px;
+            list-style: decimal;
+        }
+
+        ol li {
+            padding: 0px;
+            margin: 0px 0px 7px 23px;
+            list-style-type: decimal;
+        }
+
+        ol li ol {
+            padding: 5px 0px 0px;
+            margin: 0px 0px 7px 0px;
+        }
+
+        ol li ol li {
+            list-style-type: lower-alpha;
+        }
+
+        ol li ul {
+            padding-top: 7px;
+        }
+
+        ol li ul li {
+            list-style: square;
+        }
+
+        .content {
+            font-size: 1.2em;
+            line-height: 140%;
+            padding: 20px;
+        }
+
+        pre,
+        code {
+            font-size: 12px;
+        }
+
+        tt {
+            font-size: 1.2em;
+        }
+
+        pre {
+            margin: 0px 0px 20px;
+        }
+
+        pre.codeinput {
+            padding: 10px;
+            border: 1px solid #d3d3d3;
+            background: #f7f7f7;
+        }
+
+        pre.codeoutput {
+            padding: 10px 11px;
+            margin: 0px 0px 20px;
+            color: #4c4c4c;
+        }
+
+        pre.error {
+            color: red;
+        }
+
+        @media print {
+            pre.codeinput,
+            pre.codeoutput {
+                word-wrap: break-word;
+                width: 100%;
+            }
+        }
+
+        span.keyword {
+            color: #0000FF
+        }
+
+        span.comment {
+            color: #228B22
+        }
+
+        span.string {
+            color: #A020F0
+        }
+
+        span.untermstring {
+            color: #B20000
+        }
+
+        span.syscmd {
+            color: #B28C00
+        }
+
+        .footer {
+            width: auto;
+            padding: 10px 0px;
+            margin: 25px 0px 0px;
+            border-top: 1px dotted #878787;
+            font-size: 0.8em;
+            line-height: 140%;
+            font-style: italic;
+            color: #878787;
+            text-align: left;
+            float: none;
+        }
+
+        .footer p {
+            margin: 0px;
+        }
+
+        .footer a {
+            color: #878787;
+        }
+
+        .footer a:hover {
+            color: #878787;
+            text-decoration: underline;
+        }
+
+        .footer a:visited {
+            color: #878787;
+        }
+
+        table th {
+            padding: 7px 5px;
+            text-align: left;
+            vertical-align: middle;
+            border: 1px solid #d6d4d4;
+            font-weight: bold;
+        }
+
+        table td {
+            padding: 7px 5px;
+            text-align: left;
+            vertical-align: top;
+            border: 1px solid #d6d4d4;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="content">
+        <h1>Beam1 Fixed-Fixed NFA example</h1>
+        <!--introduction-->
+        <p>jdv 08172016</p>
+        <!--/introduction-->
+        <h2>Contents</h2>
+        <div>
+            <ul>
+                <li><a href="#1">setup st7model class</a></li>
+                <li><a href="#2">setup nfa solver info</a></li>
+                <li><a href="#3">setup node restraints</a></li>
+                <li><a href="#4">assign input structures to main model structure</a></li>
+                <li><a href="#5">run the apis-shell using main function</a></li>
+                <li><a href="#6">view frequencies</a></li>
+            </ul>
+        </div>
+        <h2>setup st7model class<a name="1"></a></h2><pre class="codeinput">sys = st7model();
 sys.pathname = <span class="string">'C:\Users\John\Documents\MATLAB\repos\st7api\models'</span>;
 sys.filename = <span class="string">'beam1.st7'</span>;
 sys.scratchpath = <span class="string">'C:\Temp'</span>;
-</pre><h2>setup nfa solver info<a name="2"></a></h2><p>Note that nfa.coords [x,y] is an optional input - nfa will snap or default to all nodes</p><pre class="codeinput">nfa = NFA();
+</pre>
+        <h2>setup nfa solver info<a name="2"></a></h2>
+        <p>Note that nfa.coords [x,y] is an optional input - nfa will snap or default to all nodes</p><pre class="codeinput">nfa = NFA();
 nfa.name = fullfile(sys.pathname,[sys.filename(1:end-4) <span class="string">'.NFA'</span>]);
 nfa.nmodes = 4; <span class="comment">% set number of modes to compute</span>
 nfa.run = 1;
-</pre><h2>setup node restraints<a name="3"></a></h2><pre class="codeinput">bc = boundaryNode();
+</pre>
+        <h2>setup node restraints<a name="3"></a></h2><pre class="codeinput">bc = boundaryNode();
 bc.nodeid = [1 11]; <span class="comment">% fully fixed at nodes 1 and 11</span>
 bc.restraint = ones(length(bc.nodeid),6); <span class="comment">% [nnodes x 6dof]</span>
 bc.fcase = ones(size(bc.nodeid));         <span class="comment">% [nnodes x 1]</span>
-</pre><h2>assign input structures to main model structure<a name="4"></a></h2><pre class="codeinput">model.sys = sys;
+</pre>
+        <h2>assign input structures to main model structure<a name="4"></a></h2><pre class="codeinput">model.sys = sys;
 model.nfa = nfa;
 model.bc = bc;
-</pre><h2>run the apis-shell using main function<a name="5"></a></h2><pre class="codeinput">fcn = @main;
+</pre>
+        <h2>run the apis-shell using main function<a name="5"></a></h2><pre class="codeinput">fcn = @main;
 results = apish(fcn,model);
-</pre><pre class="codeoutput">Loading ST7API.DLL... Done. 
-	 Getting spatial information... 	Sorting boundary nodes... Done.Done. 
-	 NFA Analysis... 
-		Populating Mode Shapes... Done.
-Exiting API...  Done
-</pre><h2>view frequencies<a name="6"></a></h2><pre class="codeinput">fprintf(<span class="string">'Natural Frequencies [Hz]:\n'</span>);
-fprintf(<span class="string">'%f\n'</span>,results.nfa.freq);
+</pre><pre class="codeoutput">Loading ST7API.DLL... Done.
+	 Getting spatial information... 	Sorting boundary nodes... Done.Done.
+	 NFA Analysis...
+		Populating Mode Shapes... Done. 	Running Linear Static Analysis...
+Done. </pre>
+        <h2>view frequencies<a name="6"></a></h2><pre class="codeinput">fprintf(<span class="string">'Natural Frequencies [Hz]:\n'</span>);
+fprintf(<span class="string">'\t%f\n'</span>,results.nfa.freq);
 </pre><pre class="codeoutput">Natural Frequencies [Hz]:
-159.787149
-411.388830
-750.091076
-830.361348
-</pre><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2014b</a><br></p></div><!--
+	159.787149
+	411.388830
+	750.091076
+	830.361348
+</pre>
+        <p class="footer">
+            <br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2014b</a>
+            <br>
+        </p>
+    </div>
+    <!--
 ##### SOURCE BEGIN #####
 %% Beam1 Fixed-Fixed NFA example
 %
@@ -108,7 +441,7 @@ sys.filename = 'beam1.st7';
 sys.scratchpath = 'C:\Temp';
 
 %% setup nfa solver info
-% Note that nfa.coords [x,y] is an optional input - nfa will snap or 
+% Note that nfa.coords [x,y] is an optional input - nfa will snap or
 % default to all nodes
 nfa = NFA();
 nfa.name = fullfile(sys.pathname,[sys.filename(1:end-4) '.NFA']);
@@ -132,6 +465,10 @@ results = apish(fcn,model);
 
 %% view frequencies
 fprintf('Natural Frequencies [Hz]:\n');
-fprintf('%f\n',results.nfa.freq);
+fprintf('\t%f\n',results.nfa.freq);
+
 ##### SOURCE END #####
---></body></html>
+-->
+</body>
+
+</html>
