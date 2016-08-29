@@ -16,6 +16,8 @@ classdef node < handle
         ucsid = 1 % default ucs index = 1 = Global XYZ
         ucsname
         units % [length force stress mass temperature energy]
+        Mns % non-structural nodal mass
+        
 	end
 
 %% dependent properties
