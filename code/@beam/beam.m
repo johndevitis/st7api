@@ -1,4 +1,4 @@
-classdef beam < handle
+classdef beam < material
 %% classdef beam
 % 
 % 
