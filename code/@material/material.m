@@ -1,4 +1,4 @@
-classdef material < matlab.mixin.SetGet
+classdef material < handle
 %% classdef material
 % 
 % 
@@ -11,11 +11,14 @@ classdef material < matlab.mixin.SetGet
         name
         density
         modulus
+        
+        poisson
         thermal
 	end
 
 %% dependent properties
 	properties (Dependent)
+        shearmod
 	end
 
 %% private properties
@@ -29,11 +32,13 @@ classdef material < matlab.mixin.SetGet
 		end
 
 	%% dependent methods
-
+    function get.shearmod
+    end
 	end
 
 %% static methods
 	methods (Static)
+        
 	end
 
 %% protected methods
