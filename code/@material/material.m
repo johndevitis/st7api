@@ -1,4 +1,4 @@
-classdef material < matlab.mixin.SetGet
+classdef material < handle
 %% classdef material
 % 
 % 
