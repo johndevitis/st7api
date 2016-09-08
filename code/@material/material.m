@@ -10,10 +10,13 @@ classdef material < handle
 	properties
         name
         density
-        modulus
-        
+        E
         poisson
-        thermal
+        thermalexp
+        damping
+        dampR
+        thermalcond
+        heat
 	end
 
 %% dependent properties
@@ -32,7 +35,8 @@ classdef material < handle
 		end
 
 	%% dependent methods
-    function get.shearmod
+    function shearmod = get.shearmod(self)
+        shearmod = self.E/(2*(1+self.poisson));
     end
 	end
 

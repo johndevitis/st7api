@@ -41,6 +41,19 @@ function results = main(uID,model)
         results.beam = out;
     end
     
+
+%% Material
+
+    % check for material structure
+    if isfield(model,'materials')
+        beams = model.materials;
+        % call get material fcn
+        mat = beams.getBeamMaterial(uID);
+        % Populate empty material property fields
+        beams = fillempty(beams, mat);
+        % set new material properties 
+        beams.setMaterialData(uID)
+    end
     
 %% NFA
     if isfield(model,'nfa') && model.nfa.run == 1
