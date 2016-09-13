@@ -1,4 +1,4 @@
-function section = getBeamSection(self, uID)
+function sxn = getBeamSection(self, uID)
 %% getBeamSection
 % 
 % 
@@ -17,22 +17,23 @@ int = 0;
 propNum = self.propNum;
 
 % Retrieve section data from strand7 model
-[iErr, int, sectionData]  = calllib('St7API','St7SetBeamSectionPropertyData',uID,propNum,...
+[iErr, int, sectionData]  = calllib('St7API','St7GetBeamSectionPropertyData',uID,propNum,...
     int, sectionData);
 HandleError(iErr)
 
 %% Populate section structure with data
-section.area = secData(1);
-section.I11 = sectionData(2);
-section.I22 = sectionData(3);
-section.J = sectionData(4);
-section.SL1 = sectionData(5);
-section.SL2  = sectionData(6);
-section.SA1 = sectionData(7);
-section.SA2 = sectionData(8);
-section.XBAR = sectionData(9);
-section.YBAR = sectionData(10);
-section.ANGLE = sectionData(11);
+sxn = section();
+sxn.A = sectionData(1);
+sxn.I11 = sectionData(2);
+sxn.I22 = sectionData(3);
+sxn.J = sectionData(4);
+sxn.SL1 = sectionData(5);
+sxn.SL2  = sectionData(6);
+sxn.SA1 = sectionData(7);
+sxn.SA2 = sectionData(8);
+sxn.XBAR = sectionData(9);
+sxn.YBAR = sectionData(10);
+sxn.ANGLE = sectionData(11);
 
 % self.section = section;	
 	

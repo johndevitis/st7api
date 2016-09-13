@@ -10,23 +10,23 @@ function setBeamSection(self, uID)
 if nargin<2; uID = 1; end
 
 %% Populate Section Data vector
-sectionData = [self.section.area... % Area
-    self.section.I11... % Second moment of area about the principal 1 axis
-    self.section.I22... % Second moment of area about the principal 2 axis
-    self.section.J... % Torsion constant
-    self.section.SL1... % Shear center offset in the principle 1 axis
-    self.section.SL2... % Shear center offset in the principle 2 axis
-    self.section.SA1... % Shear area in the princliple 1 axis
-    self.section.SA2... % Shear area in the principle 2 axis
-    self.section.XBAR... % Centroid offset in the principle 1 axis
-    self.section.YBAR... % Centroid offset in the principle 2 axis
-    self.section.ANGLE]; % Principle axis angle
+sectionData = [self.A... % Area
+    self.I11... % Second moment of area about the principal 1 axis
+    self.I22... % Second moment of area about the principal 2 axis
+    self.J... % Torsion constant
+    self.SL1... % Shear center offset in the principle 1 axis
+    self.SL2... % Shear center offset in the principle 2 axis
+    self.SA1... % Shear area in the princliple 1 axis
+    self.SA2... % Shear area in the principle 2 axis
+    self.XBAR... % Centroid offset in the principle 1 axis
+    self.YBAR... % Centroid offset in the principle 2 axis
+    self.ANGLE]; % Principle axis angle
 	
 % Integration slices
 int = 5;
 
 % Beam Strand7 property identifier
-propNum = self.beamID;
+propNum = self.propNum;
 
 % set material data for Strand7 beam property
 iErr = calllib('St7API','St7SetBeamSectionPropertyData',uID,propNum,...

@@ -1,7 +1,7 @@
 %% Beam1 - sensitivity study
 %
 % * multiple runs
-% Changes density of material
+% Changes beam section - Ix
 %
 % jbb 09072016
 
@@ -17,26 +17,17 @@ nfa.name = fullfile(sys.pathname,[sys.filename(1:end-4) '.NFA']);
 nfa.nmodes = 4; % set number of modes to compute
 nfa.run = 1;
 
-% %% setup node restraints
-% bc = boundaryNode();
-% bc.nodeid = [1 11];
-% bc.restraint = zeros(length(bc.nodeid),6); % no restraints
-% bc.restraint(1,1:3) = 1; % pinned
-% bc.restraint(11,2:3) = 1; % roller (x kept released)
-% bc.fcase = ones(size(bc.nodeid));
-
-%% setup material density sensitivity study
-% Alter density of beam material
+%% setup beam section sensitivity study
+% Alter section property of beam material
 %
 % *pay attention, this section is tricky*
 beams = beam(); % create instance of beam class
 beams.propNum = 1; % Identify beam property number
-beams.density = 0.284; % Set base density
 
-% create density range from 0.5 to 5 with 10 increments. 
+% create Ix range from 10 to 500 with 10 increments. 
 % note its a row vector
 steps = 10;
-dalpha = linspace(.5,5,steps)';
+ixx = linspace(10,500,steps)';
 
 % build model array
 for ii = 1:steps
@@ -58,9 +49,9 @@ for ii = 1:steps
     % Beam properties
     % Create new instance of beam class
     % Instance labeled as materials for functionality
-    cantilever(ii).materials = beam();
-    cantilever(ii).materials.density = beams.density*dalpha(ii);
-    cantilever(ii).materials.propNum = 1;
+    cantilever(ii).sections = beam();
+    cantilever(ii).sections.I11 = ixx(ii);
+    cantilever(ii).sections.propNum = 1;
     
 end
 
@@ -73,8 +64,8 @@ results = apish(@main,cantilever);
 toc
 
 %% view nfa info
-field = 'density';
-plotMaterialVsFreq(results,field)
+field = 'I11';
+plotSectionVsFreq(results,field)
 
 
 

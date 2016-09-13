@@ -20,8 +20,9 @@ propNum = self.propNum;
     MatData);
 HandleError(iErr)
 
+mat = material();
 mat.E = MatData(1); % Modulus
-mat.shearmod = MatData(2); % Shear modulus
+% mat.shearmod = MatData(2); % Shear modulus
 mat.poisson = MatData(3); % Poisson's Ratio
 mat.density = MatData(4); % Density
 mat.thermalexp = MatData(5); % Thermal expansion coefficient

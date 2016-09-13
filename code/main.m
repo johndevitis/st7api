@@ -28,6 +28,13 @@ function results = main(uID,model)
         results.springs = springs;
     end
     
+    if isfield(model,'NSMass')
+        % set node non-structural mass
+        nsm = model.NSMass;
+        nsm.setNodeNSMass(uID);
+        results.NSMass = nsm;        
+    end
+    
     % save to results structure
     results.nodes = nodes;
     
@@ -42,7 +49,7 @@ function results = main(uID,model)
     end
     
 
-%% Material
+%% Beam Material
 
     % check for material structure
     if isfield(model,'materials')
@@ -52,8 +59,25 @@ function results = main(uID,model)
         % Populate empty material property fields
         beams = fillempty(beams, mat);
         % set new material properties 
-        beams.setMaterialData(uID)
+        beams.setBeamMaterial(uID)
+        % save to results structure
+        results.materials = beams;
     end
+    
+%% Beam Section
+    % check for material structure
+    if isfield(model,'sections')
+        beams = model.sections;
+        % call get material fcn
+        sxn = beams.getBeamSection(uID);
+        % Populate empty material property fields
+        beams = fillempty(beams, sxn);
+        % set new material properties 
+        beams.setBeamSection(uID)
+        % save to results structure
+        results.sections = beams;
+    end
+
     
 %% NFA
     if isfield(model,'nfa') && model.nfa.run == 1

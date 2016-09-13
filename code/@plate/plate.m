@@ -1,4 +1,4 @@
-classdef plate < handle
+classdef plate < material
 %% classdef plate
 % 
 % 
@@ -11,8 +11,8 @@ classdef plate < handle
         t % thickness
         propNum % St7 property number
         plateID % St7 element ID
-        density % Deck material density
-        E       % Modulus of Elasticity (psi) 
+%         density % Deck material density
+%         E       % Modulus of Elasticity (psi) 
         propName % St7 property name
         plane   % string describing the resident plane (e.g. 'XY')
         layer   % elevation coordinate of plate

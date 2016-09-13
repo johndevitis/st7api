@@ -1,4 +1,4 @@
-classdef beam < material
+classdef beam < material & section
 %% classdef beam
 % 
 % 
@@ -13,7 +13,7 @@ classdef beam < material
 %         density % Deck material density
 %         E       % Modulus of Elasticity (psi) 
         propName % St7 property name
-        section % structure containing all the beam section info
+%         section  % structure containing all the beam section info
         
 	end
 

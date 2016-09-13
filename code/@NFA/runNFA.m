@@ -53,6 +53,18 @@ function runNFA(self,uID,nodeInd)
         btTrue);
     HandleError(iErr);
     
+    % enable non-structural mass load cases
+    if ~isempty(self.NSMcase)
+        % Get total number of load cases - to be added
+        % Disable all other load cases
+        % If not all load cases 
+        for ii = 1:length(self.NSMcase)
+            iErr = calllib('St7API','St7EnableNFANonStructuralMassCase',uID,...
+            self.NSMcase(ii));
+            HandleError(iErr);
+        end
+    end
+    
     % run NFA solver
     iErr = calllib('St7API','St7RunSolver', uID, stNaturalFrequencySolver,...
         smBackgroundRun,btTrue);

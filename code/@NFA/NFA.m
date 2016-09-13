@@ -15,6 +15,7 @@ classdef NFA < handle
         freq % undamped natural freqs [hz]
         modal % st7 modal results
         nodeid % strand7 node index (where results are pulled)
+        NSMcase % load cases for which nonstructural mass is to be enabled
 	end
 
 %% dependent properties
