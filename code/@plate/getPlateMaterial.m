@@ -1,4 +1,4 @@
-function getPlateMaterial(self,uID)
+function mat = getPlateMaterial(self,uID)
 %% getPlateMaterial
 % 
 % 

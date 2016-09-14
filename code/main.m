@@ -28,6 +28,7 @@ function results = main(uID,model)
         results.springs = springs;
     end
     
+    % Assign non-structural mass to nodes (mass applied to LC 1)
     if isfield(model,'NSMass')
         % set node non-structural mass
         nsm = model.NSMass;
@@ -68,16 +69,38 @@ function results = main(uID,model)
     % check for material structure
     if isfield(model,'sections')
         beams = model.sections;
-        % call get material fcn
+        % call get section fcn
         sxn = beams.getBeamSection(uID);
-        % Populate empty material property fields
+        % Populate empty section property fields
         beams = fillempty(beams, sxn);
-        % set new material properties 
+        % set new section properties 
         beams.setBeamSection(uID)
         % save to results structure
         results.sections = beams;
     end
 
+%% Plate
+    % check for deck structure (assumes material is to altered)
+    if isfield(model,'deck')
+        plate = model.deck;
+        % call get plate material fcn
+        mat = plate.getPlateMaterial(uID);
+        %populate empty material property fields
+        plate = fillempty(plate, mat);
+        % set new material properties
+        plate.setPlateMaterial
+        % save reults to results structure
+        results.deck = plate;
+    end
+    
+    % check for deckt structure (assumes thickness is to altered)
+    if isfield(model,'deckt')
+        plate = model.deckt;
+        % set new material properties
+        plate.setPlateThickness(uID)
+        % save reults to results structure
+        results.deckt = plate;
+    end
     
 %% NFA
     if isfield(model,'nfa') && model.nfa.run == 1

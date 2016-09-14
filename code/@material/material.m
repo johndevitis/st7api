@@ -38,11 +38,12 @@ classdef material < handle
     function shearmod = get.shearmod(self)
         shearmod = self.E/(2*(1+self.poisson));
     end
+    
 	end
 
 %% static methods
 	methods (Static)
-        
+
 	end
 
 %% protected methods

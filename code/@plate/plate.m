@@ -38,6 +38,7 @@ classdef plate < material
 
 %% static methods
 	methods (Static)
+        
 	end
 
 %% protected methods
