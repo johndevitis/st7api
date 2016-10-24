@@ -66,7 +66,7 @@ function results = main(uID,model)
     end
     
 %% Beam Section
-    % check for material structure
+    % check for sections structure
     if isfield(model,'sections')
         beams = model.sections;
         % call get section fcn
@@ -77,6 +77,19 @@ function results = main(uID,model)
         beams.setBeamSection(uID)
         % save to results structure
         results.sections = beams;
+    end
+    
+    % check for comp structure
+    if isfield(model,'comp')
+        connection = model.comp;
+        % call get connection fcn
+        stiffness = connection.getConnection(uID);
+        % Populate empty section property fields
+        connection = fillempty(connection, stiffness);
+        % set new section properties 
+        connection.setConnection(uID)
+        % save to results structure
+        results.comp = connection;
     end
 
 %% Plate
