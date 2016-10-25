@@ -22,7 +22,7 @@ bc = boundaryNode();
 bc.nodeid = [1 11];
 bc.restraint = zeros(length(bc.nodeid),6); % no restraints
 bc.restraint(1,1:3) = 1; % pinned
-bc.restraint(11,2:3) = 1; % roller (x kept released)
+bc.restraint(2,2:3) = 1; % roller (x kept released)
 bc.fcase = ones(size(bc.nodeid));
 
 %% setup spring sensitivity study
