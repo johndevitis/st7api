@@ -11,7 +11,7 @@ function plotSpringsVsFreq(results)
     hold on
     steps = length(results);
     
-    lins = {'+b','or','xg','*m'};
+    lins = {'+b','or','xg','*m','ob'};
     
     for jj = 1:results(1).nfa.nmodes % loop modes
         mode = jj;
