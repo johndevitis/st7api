@@ -1,5 +1,5 @@
-%% Sensitivity study on grid1.st7 of composite action
-% connection element stiffness to be altered
+%% Sensitivity study on grid1.st7 of rotational springs at boundaries
+% 
 %
 %           jbb - 10242016
 
@@ -15,16 +15,17 @@ nfa.name = fullfile(sys.pathname,[sys.filename(1:end-4) '.NFA']);
 nfa.nmodes = 5; % set number of modes to compute
 nfa.run = 1;
 
-%% Run Sensitivity studies on parameters.
+%% setup spring sensitivity study
+% Create rotational springs about the x-axis for boundary nodes
+springs = spring();
+springs.nodeid = [7 8 9 855 856 857]; 
+% create unit spring force at desired dof
+Kr = [0 1 0];
 
-
-%% setup node restraints
-bc = boundaryNode();
-bc.nodeid = [7 8 9 855 856 857];
-bc.restraint = zeros(length(bc.nodeid),6); % no restraints
-bc.restraint(1,1:3) = 1; % pinned
-bc.restraint(11,2:3) = 1; % roller (x kept released)
-bc.fcase = ones(size(bc.nodeid));
+% create spring range from 10^5 to 10*15 with 10 increments. 
+% note its a row vector
+steps = 10;
+springrange = logspace(5,15,steps)';
 
 % build model array
 for ii = 1:steps
@@ -40,14 +41,17 @@ for ii = 1:steps
     grid(ii).nfa = NFA();
     grid(ii).nfa.name = strcat(fullfile(sys.pathname,sys.filename(1:end-4)), ...
         '_step',num2str(ii),'.NFA');
-    grid(ii).nfa.nmodes = 10;
+    grid(ii).nfa.nmodes = 5;
     grid(ii).nfa.run = 1;
     
-    % Beam properties
-    % Create new instance of beam class
-    % Instance labeled as materials for functionality
-    grid(ii).comp = ca;
-    grid(ii).comp.Tstiffness = [stif(ii) stif(ii) 1e9];
+    % springs
+    % this class is also *not* a subclass of handles. we can use copies. 
+    % note that a row of rotational stiffness values is defined for each
+    % nodeid. In this case they are all the same, but could be defined
+    % separately
+    springs.Kr = padarray(Kr*springrange(ii),length(springs.nodeid)-1,'replicate','post');
+    springs.Kfc = ones(size(springs.Kr,1),1); % default to freedom case 1
+    grid(ii).springs = springs;
     
 end
 
@@ -57,6 +61,8 @@ tic
 results = apish(@main,grid);
 
 toc
-% plot frequency vs. connection element stiffness
-field = 'Tstiffness';
-plotCompVsFreq(results,field);
+
+
+%% view nfa info
+
+plotSpringsVsFreq(results)
