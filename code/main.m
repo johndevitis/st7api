@@ -10,9 +10,9 @@ function results = main(uID,model)
 %  node() is the object,
 %  nodes is the instance of the object.
     
-    nodes = node();         % create instance of node class
-    nodes.getNodes(uID);    % index all nodes
-    nodes.getUCSinfo(uID);  % get UCS info 
+%     nodes = node();         % create instance of node class
+%     nodes.getNodes(uID);    % index all nodes
+%     nodes.getUCSinfo(uID);  % get UCS info 
     
     % assign restraints if present
     if isfield(model,'bc')
@@ -36,8 +36,8 @@ function results = main(uID,model)
         results.NSMass = nsm;        
     end
     
-    % save to results structure
-    results.nodes = nodes;
+%     % save to results structure
+%     results.nodes = nodes;
     
     
 %% Beam - broken

@@ -1,15 +1,7 @@
-%% Update grid1.st7 model using natural frequency data
-%
+%% Sensitivity study on grid1.st7 of composite action
+% connection element stiffness to be altered
 %
 %           jbb - 10242016
-%% Parameters to be updated:
-% ca - composite action connection element stiffness [1e4 - 1e12] 
-% dE - deck stiffness (E) fc = [1500 10000] -> E = [2.2e6 5.7e6] 
-% gI - girder Ix (I11) - [.8X 1.5X]
-% NSM - nodal mass at deck edges (to simulate barrier) - [0 1500]
-% boundary conditions (rotational stiffness) - 
-% dia - Diaphragm stiffness (E) - [0.5X - 2X]
-
 
 %% setup st7 file info
 sys = st7model();
