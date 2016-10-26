@@ -12,7 +12,7 @@ classdef node < handle
         coords
         totalXYZ
         bcoords
-        id
+        id % St7 node ID number
         ucsid = 1 % default ucs index = 1 = Global XYZ
         ucsname
         units % [length force stress mass temperature energy]

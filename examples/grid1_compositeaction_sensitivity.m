@@ -23,7 +23,7 @@ ca = connection(); % create instance of connection class
 ca.propNum = 3; % Identify beam property number
 % Create stiffness range
 steps = 12;
-stif = logspace(3,15,steps)';
+stif = logspace(4,12,steps)';
 
 % build model array
 for ii = 1:steps
@@ -42,9 +42,9 @@ for ii = 1:steps
     grid(ii).nfa.nmodes = 10;
     grid(ii).nfa.run = 1;
     
-    % Beam properties
-    % Create new instance of beam class
-    % Instance labeled as materials for functionality
+    % Connection element properties
+    % Create copy of connection instance
+    % Instance labeled as comp for functionality
     grid(ii).comp = ca;
     grid(ii).comp.Tstiffness = [stif(ii) stif(ii) 1e9];
     
