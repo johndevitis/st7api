@@ -1,144 +1,115 @@
-%% Main Function
+%% Update Function
 % to be used with apish.m
-% jdv
+% jbb
 
-function results = update(uID,model)
+function results = update(uID,optrun)
 %% Main function, edit as you like. 
 
-%% Node 
-% note the convention:
-%  node() is the object,
-%  nodes is the instance of the object.
-    
-    %     nodes = node();         % create instance of node class
-    %     nodes.getUCSinfo(uID);  % get UCS info       
-    %     nodes.getNodes(uID);    % index all nodes
-        
-    
-    % assign restraints if present
-    if isfield(model,'bc')
-        bc = model.bc;
-        if ~exist('nodes','var')
-            nodes = node();         % create instance of node class
-            nodes.getUCSinfo(uID);  % get UCS info 
+%% Get porperty names for material and section classes for future string comparison
+info = ?material;
+for ii = 1:length(info.PropertyList)
+    matprop{ii} = info.PropertyList(ii).Name;
+end
+info = ?section;
+for ii = 1:length(info.PropertyList)
+    sxnprop{ii} = info.PropertyList(ii).Name;
+end    
+
+model = optrun.modelPara;
+%% Make changes to St7 Model
+for ii = 1:length(model)
+    para = model{ii}.obj;
+    % Operate on st7 plate elements
+    if isa(para,'plate')
+        % Alter plate material
+        if any(strcmp(model{ii}.name,matprop))
+            % call get plate material fcn
+            mat = para.getPlateMaterial(uID);
+            %populate empty material property fields
+            para = fillempty(para, mat);
+            % set new material properties
+            para.setPlateMaterial
+        else
+            % set new plate thickness
+            para.setPlateThickness(uID)
         end
-        nodes.setRestraint(uID,bc.nodeid,bc.fcase,bc.restraint);
     end
 
-    % assign stiffness if present
-    if isfield(model,'springs')
-        % set node stiffnesses using st7indices
-        springs = model.springs;
-        if ~exist('nodes','var')
-            nodes = node();         % create instance of node class
-            nodes.getUCSinfo(uID);  % get UCS info 
+    % Operate on st7 beam elements
+    if isa(para,'beam')
+        % Alter material property
+        if any(strcmp(model{ii}.name,matprop))
+            % call get material fcn
+            mat = para.getBeamMaterial(uID);
+            % Populate empty material property fields
+            para = fillempty(para, mat);
+            % set new material properties 
+            para.setBeamMaterial(uID);
+        elseif any(strcmp(model{ii}.name,sxnprop))
+            % Alter section property
+            % call get section fcn
+            sxn = para.getBeamSection(uID);
+            % Populate empty section property fields
+            para = fillempty(para, sxn);
+            % set new section properties 
+            para.setBeamSection(uID)
         end
-        nodes.setNodeK(uID,springs);
-        results.springs = springs;
     end
-    
-    % Assign non-structural mass to nodes (mass applied to LC 1)
-    if isfield(model,'NSMass')
+
+    % Operate on nodes
+    if isa(para,'node')
         % set node non-structural mass
-        nsm = model.NSMass;
-        nsm.setNodeNSMass(uID);
-        results.NSMass = nsm;        
+        if strcmp(model{ii}.name,'Mns')
+            para.setNodeNSMass(uID); 
+        end
     end
-    
-%     % save to results structure
-%     results.nodes = nodes;
-    
-    
-%% Beam - broken
 
-    % check for beam struct
-    if isfield(model,'beam')
-        beam = model.beam;
-        out = getBeamInfo(uID,beam.num);
-        results.beam = out;
+    % Apply boundary restraints
+    if isa(para,'boundaryNode')
+        if ~exist('nodes','var')
+            nodes = node();         % create instance of node class
+            nodes.getUCSinfo(uID);  % get UCS info 
+        end
+        nodes.setRestraint(uID,para.nodeid,para.fcase,para.restraint);
     end
-    
 
-%% Beam Material
+    % Alter node stiffness
+    if isa(para, 'spring')
+        % set node stiffnesses using st7indices
+        if ~exist('nodes','var')
+            nodes = node();         % create instance of node class
+            nodes.getUCSinfo(uID);  % get UCS info 
+        end
+        nodes.setNodeK(uID,para);
+    end
 
-    % check for material structure
-    if isfield(model,'materials')
-        beams = model.materials;
-        % call get material fcn
-        mat = beams.getBeamMaterial(uID);
-        % Populate empty material property fields
-        beams = fillempty(beams, mat);
-        % set new material properties 
-        beams.setBeamMaterial(uID)
-        % save to results structure
-        results.materials = beams;
-    end
-    
-%% Beam Section
-    % check for sections structure
-    if isfield(model,'sections')
-        beams = model.sections;
-        % call get section fcn
-        sxn = beams.getBeamSection(uID);
-        % Populate empty section property fields
-        beams = fillempty(beams, sxn);
-        % set new section properties 
-        beams.setBeamSection(uID)
-        % save to results structure
-        results.sections = beams;
-    end
-    
-    % check for comp structure
-    if isfield(model,'comp')
-        connection = model.comp;
+    % Operate on st7 connection elements
+    if isa(para,'connection')
+        % Change stiffness    
         % call get connection fcn
-        stiffness = connection.getConnection(uID);
+        vals = para.getConnection(uID);
         % Populate empty section property fields
-        connection = fillempty(connection, stiffness);
+        para = fillempty(para, vals);
         % set new section properties 
-        connection.setConnection(uID)
-        % save to results structure
-        results.comp = connection;
+        para.setConnection(uID)
     end
-
-%% Plate
-    % check for deck structure (assumes material is to altered)
-    if isfield(model,'deck')
-        plate = model.deck;
-        % call get plate material fcn
-        mat = plate.getPlateMaterial(uID);
-        %populate empty material property fields
-        plate = fillempty(plate, mat);
-        % set new material properties
-        plate.setPlateMaterial
-        % save reults to results structure
-        results.deck = plate;
-    end
-    
-    % check for deckt structure (assumes thickness is to altered)
-    if isfield(model,'deckt')
-        plate = model.deckt;
-        % set new material properties
-        plate.setPlateThickness(uID)
-        % save reults to results structure
-        results.deckt = plate;
-    end
-    
+end
+     
 %% NFA
-    if isfield(model,'nfa') && model.nfa.run == 1
-        nfa = model.nfa;
-        % call api fcn
-        nfa.runNFA(uID);
-        % save to model struct 
-        results.nfa = nfa;
-    end
+if isa(optrun.solver,'NFA') && optrun.solver.run == 1
+    nfa = optrun.solver;
+    % call api fcn
+    nfa.runNFA(uID);
+    % save to model struct 
+    results.nfa = nfa;
+end
          
 %% LSA 
-    if isfield(model,'lsa') && model.lsa.run == 1        
-        lsa = model.lsa;
-        % call lsa solver
-        lsa.runLSA(uID)
-        % save to modle struct
-        results.lsa = lsa;
-    end
+if isa(optrun.solver,'LSA') && optrun.solver.run == 1
+    lsa = optrun.solver;
+    % call lsa solver
+    lsa.runLSA(uID)
+    % save to modle struct
+    results.lsa = lsa;
+end
 end

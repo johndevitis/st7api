@@ -7,10 +7,9 @@ function assemblePara(self)
 % author: John Braley
 % create date: 26-Oct-2016 14:50:10
 pp = self.modelPara;
-fields = fieldnames(pp);
-for ii = 1:length(fields)
-    paraind{ii} = fields{ii};
-    para = pp.(fields{ii});
+for ii = 1:length(pp)
+    self.paraind{ii} = pp{ii}.name;
+    para = pp{ii};
     if ~isempty(para.ub)
     self.ub(ii) = para.ub;
     end
@@ -19,5 +18,5 @@ for ii = 1:length(fields)
     end
     if ~isempty(para.start)
     self.start(ii) = para.start;
-    end	
+    end
 end

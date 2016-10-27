@@ -1,4 +1,4 @@
-classdef connection
+classdef connection < handle
 %% classdef beam
 % 
 % axial stiffness of elelements is assumed to be the 3rd dimension of
@@ -13,12 +13,15 @@ classdef connection
         propNum % St7 property number
         beamID % St7 element ID
         propName % St7 property name
-        Tstiffness = [0 0 1e12]; % translational stiffness. 3 element array: 1,2,3 element axes
+        Xstif = 1e12;
+        Ystif = 1e12;
+        Zstif = 1e12
         Rstiffness = [0 0 0]; % rotational stiffness. 3 element array: 4,5,6 element axes
 	end
 
 %% dependent properties
 	properties (Dependent)
+        Tstiffness
 	end
 
 %% private properties
@@ -32,6 +35,9 @@ classdef connection
 		end
 
 	%% dependent methods
+    function Tstiffness = get.Tstiffness(self)
+        Tstiffness = cat(1, self.Xstif, self.Ystif, self.Zstif);
+    end
 
 	end
 

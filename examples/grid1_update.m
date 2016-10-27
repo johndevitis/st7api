@@ -10,7 +10,8 @@
 % boundary conditions (rotational stiffness) - [1e5 1e11]
 % dia - Diaphragm stiffness (E) - [0.5X - 2X]
 
-
+%% Import experimental data
+efreq = [2.1 3.2 3.5 5.5];
 %% setup st7 file info
 sys = st7model();
 sys.pathname = 'C:\Users\John\Projects_Git\st7api\models';
@@ -20,27 +21,28 @@ sys.scratchpath = 'C:\Temp';
 %% setup nfa info
 nfa = NFA();
 nfa.name = fullfile(sys.pathname,[sys.filename(1:end-4) '.NFA']);
-nfa.nmodes = 12; % set number of modes to compute
+nfa.nmodes = 4; % set number of modes to compute
 nfa.run = 1;
 
 %% setup updating parameters
 
-                
+modelPara = {};                
 % Composite Action
 CA = parameter();
+CA.name = 'Xstif';
 CA.obj = connection();
 CA.obj.propNum = 3;
-CA.obj.Tstiffness(1:2) = 1;
 CA.lb = 1e4;
 CA.ub = 1e12;
-grid.CA = CA;
+modelPara{end+1} = CA;
 
 % Deck Stiffness
 DE = parameter();
+DE.name = 'E';
 DE.obj = plate();
 DE.obj.propNum = 1;
-DE.lb = 1500; DE.ub = 10000;
-grid.DE = DE;
+DE.lb = 57000*sqrt(1500); DE.ub = 57000*sqrt(10000);
+modelPara{end+1} = DE;
 
 % % Girder Moment of Inertia
 % gI = paramter();
@@ -67,8 +69,8 @@ grid.DE = DE;
 %% Combine parameters
 % assemble parameter start points and bounds
 run = optimize();
-run.modelPara = grid;
-run.model = sys;
+run.modelPara = modelPara;
+run.sys = sys;
 run.solver = nfa;
 run.assemblePara();
 % Create randomn starting points for parameters
@@ -76,7 +78,7 @@ run.start = (run.ub-run.lb)*rand(length(run.ub),1)+run.lb;
 
 %% set algoritm options
 run.algorithm = 'PSO';
-run.options = PSOSET('SWARM_SIZE', 10  , ...
+run.algOpt = PSOSET('SWARM_SIZE', 10  , ...
                  'MAX_ITER'  , 10  , ...
                  'TOLFUN'    , 1e-6 , ...
                  'TOLX'      , 1e-6 , ...
@@ -88,7 +90,7 @@ run.options = PSOSET('SWARM_SIZE', 10  , ...
 obj = @(para)grid1_obj(para,run,efreq);
 
 
-[para,fval,exitflag,output] = PSO(obj,run.start,run.lb,run.ub,run.options);
+[para,fval,exitflag,output] = PSO(obj,run.start,run.lb,run.ub,run.algOpt);
 
 
 %% save model with different name

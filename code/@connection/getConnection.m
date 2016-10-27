@@ -20,7 +20,9 @@ propNum = self.propNum;
     stiffness);
 HandleError(iErr)
 
-stiff.Tstiffness = stiffness(1:3); % translational stiffness. 3 element array: 1,2,3 element axes
+stiff.Xstif = stiffness(1); % translational stiffness. 3 element array: 1,2,3 element axes
+stiff.Ystif = stiffness(2); % translational stiffness. 3 element array: 1,2,3 element axes
+stiff.Zstif = stiffness(3); % translational stiffness. 3 element array: 1,2,3 element axes
 stiff.Rstiffness = stiffness(4:6); % rotational stiffness. 3 element array: 4,5,6 element axes
 
 	

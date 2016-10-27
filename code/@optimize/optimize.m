@@ -15,13 +15,14 @@ classdef optimize < handle
         paraind % index of parameters (for start and bounds)
         algorithm % name of updating algorithm
         solver % solver object
-        model % St7 model object with file info
-        options % algorithm options
+        sys % St7 model object with file info
+        algOpt % algorithm options
         edata % experimental data set (to be compared with analytical data -- model results)       
 	end
 
 %% dependent properties
 	properties (Dependent)
+        numPara
 	end
 
 %% private properties
@@ -35,6 +36,9 @@ classdef optimize < handle
 		end
 
 	%% dependent methods
+    function numPara = get.numPara(self)
+        numPara = length(self.modelPara);
+    end
 
 	end
 
