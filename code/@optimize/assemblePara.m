@@ -6,11 +6,11 @@ function assemblePara(self)
 % 
 % author: John Braley
 % create date: 26-Oct-2016 14:50:10
-parameters = self.parameters;
-fields = fieldnames(parameters);
+pp = self.modelPara;
+fields = fieldnames(pp);
 for ii = 1:length(fields)
     paraind{ii} = fields{ii};
-    para = parameters.(fields{ii});
+    para = pp.(fields{ii});
     if ~isempty(para.ub)
     self.ub(ii) = para.ub;
     end

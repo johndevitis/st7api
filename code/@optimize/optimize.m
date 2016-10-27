@@ -1,4 +1,4 @@
-classdef optimize
+classdef optimize < handle
 %% classdef update
 % 
 % for the purpose of FE model updating
@@ -8,7 +8,7 @@ classdef optimize
 
 %% object properties
 	properties
-        parameters % model parameters to be adjusted during updating
+        modelPara % model parameters to be adjusted during updating
         ub  % corresponding upper bound for parameters
         lb % lower bounds for parameters
         start % starting point of parameters for updating run
@@ -31,7 +31,7 @@ classdef optimize
 %% dynamic methods
 	methods
 	%% constructor
-		function self = update()
+		function self = optimize()
 		end
 
 	%% dependent methods

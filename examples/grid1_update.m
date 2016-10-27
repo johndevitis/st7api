@@ -67,7 +67,7 @@ grid.DE = DE;
 %% Combine parameters
 % assemble parameter start points and bounds
 run = optimize();
-run.parameters = grid;
+run.modelPara = grid;
 run.model = sys;
 run.solver = nfa;
 run.assemblePara();
