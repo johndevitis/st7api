@@ -14,6 +14,8 @@ classdef optimize
         start % starting point of parameters for updating run
         paraind % index of parameters (for start and bounds)
         algorithm % name of updating algorithm
+        solver % solver object
+        model % St7 model object with file info
         options % algorithm options
         edata % experimental data set (to be compared with analytical data -- model results)       
 	end

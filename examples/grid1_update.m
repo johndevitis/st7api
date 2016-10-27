@@ -16,14 +16,12 @@ sys = st7model();
 sys.pathname = 'C:\Users\John\Projects_Git\st7api\models';
 sys.filename = 'grid1.st7';
 sys.scratchpath = 'C:\Temp';
-grid.sys = sys;
 
 %% setup nfa info
 nfa = NFA();
 nfa.name = fullfile(sys.pathname,[sys.filename(1:end-4) '.NFA']);
 nfa.nmodes = 12; % set number of modes to compute
 nfa.run = 1;
-grid.nfa = nfa;
 
 %% setup updating parameters
 
@@ -44,33 +42,35 @@ DE.obj.propNum = 1;
 DE.lb = 1500; DE.ub = 10000;
 grid.DE = DE;
 
-% Girder Moment of Inertia
-gI = paramter();
-gI.obj = beam();
-gI.propNum = 1;
-lb = 0.8; ub = 1.5;
-
-% Non-structural nodal mass
-NSM = node();
-NSM.id = [];
-lb = 0; ub = 500;
-
-% Rotational springs at boundary conditions about y-axis
-BC = spring();
-BC.nodeid = [];
-lb = 1e5; ub = 1e11;
-
-% Diaphragm  stiffness
-dia = beam();
-dia.propNum = 2;
-lb = 0.5; ub = 2;
+% % Girder Moment of Inertia
+% gI = paramter();
+% gI.obj = beam();
+% gI.propNum = 1;
+% lb = 0.8; ub = 1.5;
+% 
+% % Non-structural nodal mass
+% NSM = node();
+% NSM.id = [];
+% lb = 0; ub = 500;
+% 
+% % Rotational springs at boundary conditions about y-axis
+% BC = spring();
+% BC.nodeid = [];
+% lb = 1e5; ub = 1e11;
+% 
+% % Diaphragm  stiffness
+% dia = beam();
+% dia.propNum = 2;
+% lb = 0.5; ub = 2;
 
 
 %% Combine parameters
 % assemble parameter start points and bounds
 run = optimize();
-run = run.assemblePara(grid);
 run.parameters = grid;
+run.model = sys;
+run.solver = nfa;
+run.assemblePara();
 % Create randomn starting points for parameters
 run.start = (run.ub-run.lb)*rand(length(run.ub),1)+run.lb;
 
@@ -90,14 +90,5 @@ obj = @(para)grid1_obj(para,run,efreq);
 
 [para,fval,exitflag,output] = PSO(obj,run.start,run.lb,run.ub,run.options);
 
-
-
-
-%% run the shell
-tic
-
-results = apish(@update,grid,APIop);
-
-toc
 
 %% save model with different name
