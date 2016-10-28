@@ -1,4 +1,4 @@
-classdef st7model
+classdef st7model < handle
 %% classdef st7model
 % 
 % 
@@ -11,6 +11,8 @@ classdef st7model
         pathname
         filename
         scratchpath
+        open = 0; % boolean indicating if the model file is already open
+        uID = 1 % file identifier for api commands
 	end
 
 %% dependent properties

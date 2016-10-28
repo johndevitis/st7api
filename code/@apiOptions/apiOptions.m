@@ -1,4 +1,4 @@
-classdef apiOptions 
+classdef apiOptions
 %% classdef apiOptions
 % 
 % 

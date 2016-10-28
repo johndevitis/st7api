@@ -18,9 +18,11 @@ function results = apish(main,model,opts)
 %
 %
 % jdv 09212015; 10281015; 10292015; 08142016
-    uID = 1; % default session id
+
+
     try % execute main fcn in try/catch
         % load libs and models
+        uID = model(1).sys.uID;
         apiInit(uID,model(1).sys); 
         % main fcn
         for ii = 1:length(model)
@@ -35,13 +37,16 @@ function results = apish(main,model,opts)
         % check whether or not to unload library
         if opts.keepLoaded == 0
             CloseAndUnload(uID);
+            model(1).sys.open=0;
         elseif opts.keepOpen == 0
-            api.closeModel(uID)     
+            api.closeModel(uID)
+            model(1).sys.open=0;
         end
         
     catch % force close close all refs
         fprintf('Force close');
         CloseAndUnload(uID);
+        model(1).sys.open=0;
         rethrow(lasterror);
     end
 end 
@@ -57,11 +62,14 @@ function apiInit(uID,para)
         HandleError(iErr);
     end
     % open st7 model file
-    fname = fullfile(para.pathname, para.filename); 
-    sname = para.scratchpath;
-    iErr = calllib('St7API', 'St7OpenFile', uID, fname, sname);
-    HandleError(iErr);
-    fprintf('Done. \n');
+    if para.open==0 || isempty(para.open)
+        fname = fullfile(para.pathname, para.filename); 
+        sname = para.scratchpath;
+        iErr = calllib('St7API', 'St7OpenFile', uID, fname, sname);
+        HandleError(iErr);
+        para.open=1;
+        fprintf('Done. \n');
+    end        
 end 
 
 function HandleError(iErr)

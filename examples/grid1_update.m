@@ -10,8 +10,12 @@
 % boundary conditions (rotational stiffness) - [1e5 1e11]
 % dia - Diaphragm stiffness (E) - [0.5X - 2X]
 
+%% Name of update run
+Name = 'update_1';
+
 %% Import experimental data
 efreq = [2.1 3.2 3.5 5.5];
+
 %% setup st7 file info
 sys = st7model();
 sys.pathname = 'C:\Users\John\Projects_Git\st7api\models';
@@ -75,6 +79,10 @@ run.solver = nfa;
 run.assemblePara();
 % Create randomn starting points for parameters
 run.start = (run.ub-run.lb)*rand(length(run.ub),1)+run.lb;
+%% Import experimental data
+run.edata.efreq = efreq;
+% Initialize analytical data
+run.adata = {};
 
 %% set algoritm options
 run.algorithm = 'PSO';
@@ -87,10 +95,18 @@ run.algOpt = PSOSET('SWARM_SIZE', 10  , ...
 
 % anonymous objective function to be minimized
 % create anonymous function that generates the data (residuals) to minimize
-obj = @(para)grid1_obj(para,run,efreq);
+obj = @(para)grid1_obj(para,run,run.edata);
 
 
 [para,fval,exitflag,output] = PSO(obj,run.start,run.lb,run.ub,run.algOpt);
 
-
 %% save model with different name
+new_filename = [run.sys.filename(1:end-4) '_' Name '.st7'];
+api.saveas(run.sys.uID,sys.pathname,new_filename);
+
+%% Close Model
+api.closeModel(run.sys.uID)
+run.sys.open=0;
+
+%% results and model parameter values for each iteration and resulting frequencies
+% can be found in run.adata

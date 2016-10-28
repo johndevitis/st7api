@@ -6,14 +6,10 @@ function results = update(uID,optrun)
 %% Main function, edit as you like. 
 
 %% Get porperty names for material and section classes for future string comparison
-info = ?material;
-for ii = 1:length(info.PropertyList)
-    matprop{ii} = info.PropertyList(ii).Name;
-end
-info = ?section;
-for ii = 1:length(info.PropertyList)
-    sxnprop{ii} = info.PropertyList(ii).Name;
-end    
+info_m = ?material;
+matprop = {info_m.PropertyList.Name};
+info_s = ?section;
+sxnprop = {info_s.PropertyList.Name};
 
 model = optrun.modelPara;
 %% Make changes to St7 Model

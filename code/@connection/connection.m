@@ -36,7 +36,7 @@ classdef connection < handle
 
 	%% dependent methods
     function Tstiffness = get.Tstiffness(self)
-        Tstiffness = cat(1, self.Xstif, self.Ystif, self.Zstif);
+        Tstiffness = cat(2, self.Xstif, self.Ystif, self.Zstif);
     end
 
 	end

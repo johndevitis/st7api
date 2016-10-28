@@ -15,8 +15,6 @@ for ii = 1:length(para)
     % Assign new model parameter value to appropriate parameter object
     optrun.modelPara{ii}.obj.(optrun.modelPara{ii}.name) = para(ii);
 end
-results.paraVal = para;
-results.paraName = optrun.paraind;
 
 % api options
 APIop = apiOptions();
@@ -28,15 +26,23 @@ results = apish(@update,optrun,APIop);
 
 % get frequencies
 afreq = results.nfa.freq;
+
     
 % form residual for each mode
 efreq = edata.efreq;
 for ii = 1:results.nfa.nmodes
     obj(ii) = (afreq(ii)-efreq(ii))/efreq(ii);
 end
+
 %   return sum of squares as objective function value (this isn't
 %   necesasry for lsqnonlin)
-
 obj = sqrt(sum(sum(obj.^2),2));
+res.obj = obj;
+
+% write results to optrun object
+res.paraVal = para;
+res.paraName = optrun.paraind;
+res.afreq = afreq;
+optrun.adata{end+1} = res;
 
 
