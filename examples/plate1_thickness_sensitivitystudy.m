@@ -6,14 +6,13 @@
 % jbb 09142016
 
 %% setup st7 file info
-sys = st7model();
-sys.pathname = 'C:\Users\John\Projects_Git\st7api\models';
-sys.filename = 'plate1.st7';
-sys.scratchpath = 'C:\Temp';
+pathname = 'C:\Users\John\Projects_Git\st7api\models';
+filename = 'plate1.st7';
+scratchpath = 'C:\Temp';
 
 %% setup nfa info
 nfa = NFA();
-nfa.name = fullfile(sys.pathname,[sys.filename(1:end-4) '.NFA']);
+nfa.name = fullfile(pathname,[filename(1:end-4) '.NFA']);
 nfa.nmodes = 4; % set number of modes to compute
 nfa.run = 1;
 
@@ -42,6 +41,10 @@ for ii = 1:steps
     % the class st7model is not a handle subclass. it is just a value
     % class, like a hard-coded structure. because of this we can create
     % copies of it
+    sys = st7model();
+    sys.filename = filename;
+    sys.pathname = pathname;
+    sys.scratchpath = scratchpath;
     beam(ii).sys = sys;
     
     % create new instance of nfa class
