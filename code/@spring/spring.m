@@ -1,4 +1,4 @@
-classdef spring 
+classdef spring < handle
 %% classdef spring
 % 
 % 
@@ -8,14 +8,20 @@ classdef spring
 
 %% object properties
 	properties
-        Kt % [nodeInd(ii) x 3] translational stiffness
-        Kr % [nodeInd(ii) x 3] rotational stiffness
+        KtX
+        KtY
+        KtZ
+        KrX
+        KrY
+        KrZ
         Kfc % freedom case to be applied
         nodeid % node index
 	end
 
 %% dependent properties
 	properties (Dependent)
+        Kt % [nodeInd(ii) x 3] translational stiffness
+        Kr % [nodeInd(ii) x 3] rotational stiffness
 	end
 
 %% private properties
@@ -29,6 +35,26 @@ classdef spring
 		end
 
 	%% dependent methods
+    function Kt = get.Kt(self)
+        Kt = cat(2, self.KtX, self.KtY, self.KtZ);
+    end
+    function Kr = get.Kr(self)
+        Kr = cat(2, self.KrX, self.KrY, self.KrZ);
+    end
+    function set.Kt(self,value)
+        if length(value) == 3
+            self.KtX = value(1);
+            self.KtY = value(2);
+            self.KtZ = value(3);
+        end
+    end
+    function set.Kr(self,value)
+        if length(value) == 3
+            self.KrX = value(1);
+            self.KrY = value(2);
+            self.KrZ = value(3);
+        end
+    end
 
 	end
 

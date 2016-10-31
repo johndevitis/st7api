@@ -27,8 +27,8 @@ bc.fcase = ones(size(bc.nodeid));
 % Add discrete longitudinal (x) and vertical (z) translational springs.
 % No rotational springs added
 springs = spring();
-springs.Kt = [1e5 0 1e5; 1e5 0 1e5];
-springs.Kr = [0 1 0; 0 1 0];
+springs.Kt = [1e5 0 1e5];
+springs.Kr = [0 1 0];
 springs.Kfc = ones(size(springs.Kt,1),1);   
 springs.nodeid = [1 11];
 

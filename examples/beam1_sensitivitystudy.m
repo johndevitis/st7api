@@ -28,8 +28,7 @@ bc.fcase = ones(size(bc.nodeid));
 % Create rotational springs about the y-axis for boundary nodes
 %
 % *pay attention, this section is tricky*
-springs = spring();
-springs.nodeid = 1; 
+nodeid = 1; 
 % create unit spring force at desired dof
 Kr = [0 1 0];
 
@@ -64,9 +63,11 @@ for ii = 1:steps
     beam(ii).nfa.run = 1;
     
     % springs
-    % this class is also *not* a subclass of handles. we can use copies. 
+    % this class is a subclass of handles. we cannot use copies.
+    springs = spring();
     springs.Kr = Kr*springrange(ii);
     springs.Kfc = ones(size(springs.Kr,1),1); % default to freedom case 1
+    springs.nodeid = nodeid;
     beam(ii).springs = springs;
 end
 
