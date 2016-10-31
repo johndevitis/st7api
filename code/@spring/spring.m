@@ -36,10 +36,40 @@ classdef spring < handle
 
 	%% dependent methods
     function Kt = get.Kt(self)
-        Kt = cat(2, self.KtX, self.KtY, self.KtZ);
+        KtX = self.KtX;
+        KtY = self.KtY;
+        KtZ = self.KtZ;
+        if isempty(KtX)
+            KtX = 0;
+        end
+        if isempty(KtY)
+            KtY = 0;
+        end
+        if isempty(KtZ)
+            KtZ = 0;
+        end
+        Kt = cat(2, KtX, KtY, KtZ);
+        if all(~Kt)
+            Kt = [];
+        end
     end
     function Kr = get.Kr(self)
-        Kr = cat(2, self.KrX, self.KrY, self.KrZ);
+        KrX = self.KrX;
+        KrY = self.KrY;
+        KrZ = self.KrZ;
+        if isempty(KrX)
+            KrX = 0;
+        end
+        if isempty(KrY)
+            KrY = 0;
+        end
+        if isempty(KrZ)
+            KrZ = 0;
+        end
+        Kr = cat(2, KrX, KrY, KrZ);
+        if all(~Kr)
+            Kr = [];
+        end
     end
     function set.Kt(self,value)
         if length(value) == 3
