@@ -17,11 +17,6 @@ nfa.nmodes = 4; % set number of modes to compute
 nfa.run = 1;
 
 %% setup beam section sensitivity study
-% Alter section property of beam material
-%
-% *pay attention, this section is tricky*
-beams = beam(); % create instance of beam class
-beams.propNum = 1; % Identify beam property number
 
 % create Ix range from 10 to 500 with 10 increments. 
 % note its a row vector

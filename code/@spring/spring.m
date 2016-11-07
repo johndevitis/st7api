@@ -20,8 +20,8 @@ classdef spring < handle
 
 %% dependent properties
 	properties (Dependent)
-        Kt % [nodeInd(ii) x 3] translational stiffness
-        Kr % [nodeInd(ii) x 3] rotational stiffness
+        Kt % [1 x 3] translational stiffness
+        Kr % [1 x 3] rotational stiffness
 	end
 
 %% private properties

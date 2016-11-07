@@ -10,11 +10,7 @@ classdef beam < material & section
 	properties
         propNum % St7 property number
         beamID % St7 element ID
-%         density % Deck material density
-%         E       % Modulus of Elasticity (psi) 
-        propName % St7 property name
-%         section  % structure containing all the beam section info
-        
+        propName % St7 property name        
 	end
 
 %% dependent properties

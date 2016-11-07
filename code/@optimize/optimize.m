@@ -18,7 +18,7 @@ classdef optimize < handle
         sys % St7 model object with file info
         algOpt % algorithm options
         edata % experimental data set (to be compared with analytical data -- model results)       
-        adata % analytical data, saved during run
+        adata = {}; % analytical data, saved during run
 	end
 
 %% dependent properties

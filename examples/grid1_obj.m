@@ -27,6 +27,12 @@ results = apish(@update,optrun,APIop);
 % get frequencies
 afreq = results.nfa.freq;
 
+% pair modes
+u1 = optrun.edata.U;
+u2 = results.nfa.U;
+id = pairModes(u1,u2);
+% sort frequencies
+afreq = afreq(id);
     
 % form residual for each mode
 efreq = edata.efreq;

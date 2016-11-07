@@ -95,7 +95,7 @@ end
 if isa(optrun.solver,'NFA') && optrun.solver.run == 1
     nfa = optrun.solver;
     % call api fcn
-    nfa.runNFA(uID);
+    nfa.runNFA(uID,nfa.nodeid);
     % save to model struct 
     results.nfa = nfa;
 end

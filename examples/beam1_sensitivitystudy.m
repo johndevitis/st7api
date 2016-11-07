@@ -6,7 +6,7 @@
 % jdv 08142016
 
 %% setup st7 file info
-pathname = 'C:\Users\John\Documents\MATLAB\repos\st7api\models';
+pathname = 'C:\Users\John\Projects_Git\st7api\models';
 filename = 'beam1.st7';
 scratchpath = 'C:\Temp';
 

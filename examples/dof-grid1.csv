@@ -1,0 +1,13 @@
+crio,fileids,dof_ind,dof_type,x,y,z,orientation
+ref2,0,1,fixed,13.5,-2,8,1
+ref2,0,3,fixed,27,-2,8,1
+ref1,0,4,fixed,40.5,18,8,1
+ref1,0,5,fixed,13.5,18,8,1
+ref1,0,6,fixed,27,18,8,1
+ref2,0,2,fixed,40.5,-2,8,1
+trailer,1,7,roving,13.5,3,8,1
+trailer,2,8,roving,27,3,8,1
+trailer,3,9,roving,40.5,3,8,1
+trailer,4,10,roving,13.5,13,8,1
+trailer,5,11,roving,27,13,8,1
+trailer,6,12,roving,40.5,13,8,1
