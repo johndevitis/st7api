@@ -15,6 +15,9 @@ Name = 'update_1';
 
 %% Import experimental data
 efreq = [1.86 3.45 6.868 8.811 10.4];
+% read in dof locations
+edof = dof();
+edof.read('dof-grid1.csv','delimiter',',');
 
 %% setup st7 file info
 sys = st7model();
@@ -91,17 +94,20 @@ run.solver = nfa;
 run.assemblePara();
 % Create randomn starting points for parameters
 run.start = (run.ub-run.lb).*rand(1,length(run.ub))+run.lb;
+
+
 %% Import experimental data
 run.edata.efreq = efreq;
-run.edata
+run.edata.dof = edof;
+
 %% Get model nodeID numbers that match experimental output DOF
 % api options
 APIop = apiOptions();
 APIop.keepLoaded = 1;
 APIop.keepOpen = 1;
-meta = apish(@findNodes,run,APIop);
-% Pull all model nodes
 
+% Pull all model nodes and match with DOF locations
+run.edata.nodes = apish(@findNodes,run,APIop);
 
 % Initialize analytical data
 run.adata = {};

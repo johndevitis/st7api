@@ -60,7 +60,7 @@ function getNodes(self,uID,zz)
                 % assign to struct IN FEET
                 coords(count,1) = totalXYZ(ii,1)/scale; % x - coord
                 coords(count,2) = totalXYZ(ii,2)/scale; % y - coord
-                coords(count,3) = zz; % z - coord
+                coords(count,3) = zz/scale; % z - coord
                 ind(count) = ii; % save strand7 node index
                 count = count+1; % advance counter
             end
