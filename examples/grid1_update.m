@@ -13,8 +13,14 @@
 %% Name of update run
 Name = 'update_1';
 
+%% Import vma libraries
+pname{1} = 'C:\Users\John\Projects_Git\vma';
+pname{2} = 'C:\Users\John\Projects_Git\classio';
+for ii = 1:length(pname)
+    addpath(genpath(pname{ii}));
+end
+
 %% Import experimental data
-efreq = [1.86 3.45 6.868 8.811 10.4];
 % read in dof locations
 edof = dof();
 edof.read('dof-grid1.csv','delimiter',',');
@@ -28,7 +34,7 @@ sys.scratchpath = 'C:\Temp';
 %% setup nfa info
 nfa = NFA();
 nfa.name = fullfile(sys.pathname,[sys.filename(1:end-4) '.NFA']);
-nfa.nmodes = 5; % set number of modes to compute
+nfa.nmodes = 9; % set number of modes to compute
 nfa.run = 1;
 
 %% setup updating parameters
@@ -39,8 +45,10 @@ CA = parameter();
 CA.name = 'Xstif'; % name parameter consistant with object property
 CA.obj = connection();
 CA.obj.propNum = 3;
-CA.lb = 1e4;
-CA.ub = 1e12;
+CA.base = 1;
+CA.scale = 'log';
+CA.lba = 4;
+CA.uba = 12;
 modelPara{end+1} = CA;
 
 % Deck Stiffness
@@ -48,6 +56,8 @@ DE = parameter();
 DE.name = 'E';
 DE.obj = plate();
 DE.obj.propNum = 1;
+DE.base = 57000*sqrt(3500);
+DE.scale = 'lin';
 DE.lb = 57000*sqrt(1500); DE.ub = 57000*sqrt(10000);
 modelPara{end+1} = DE;
 
@@ -56,7 +66,9 @@ gI = parameter();
 gI.obj = beam();
 gI.name = 'I11';
 gI.obj.propNum = 1;
-gI.lb = 0.8*292.3958333333; gI.ub = 1.5*292.3958333333;
+gI.base = 292.3958;
+gi.scale = 'lin';
+gI.lba = 0.8; gI.uba = 1.5;
 modelPara{end+1} = gI;
 
 % Non-structural nodal mass
@@ -64,7 +76,9 @@ NSM = parameter();
 NSM.obj = node();
 NSM.obj.id = [364 421];
 NSM.name = 'Mns'; 
-NSM.lb = 0; NSM.ub = 500;
+NSM.base = 500;
+NSM.scale = 'lin';
+NSM.lba = 0; NSM.uba = 1;
 modelPara{end+1} = NSM;
 
 % Rotational springs at boundary conditions about y-axis
@@ -73,7 +87,9 @@ BC.obj = spring();
 BC.obj.nodeid = [855 856 857 7 8 9];
 BC.name = 'KrY';
 BC.obj.Kfc = 1;
-BC.lb = 1e5; BC.ub = 1e11;
+BC.base = 1;
+BC.scale = 'log';
+BC.lba = 5; BC.uba = 11;
 modelPara{end+1} = BC;
 
 % Diaphragm  stiffness
@@ -81,7 +97,9 @@ dia = parameter();
 dia.obj = beam();
 dia.obj.propNum = 2;
 dia.name = 'E';
-dia.lb = 0.5*29e6; dia.ub = 2*29e6;
+dia.base = 29e6;
+dia.scale = 'lin';
+dia.lba = 0.5; dia.uba = 2;
 modelPara{end+1} = dia;
 
 
@@ -96,27 +114,43 @@ run.assemblePara();
 run.start = (run.ub-run.lb).*rand(1,length(run.ub))+run.lb;
 
 
-%% Import experimental data
-run.edata.efreq = efreq;
-run.edata.dof = edof;
 
-%% Get model nodeID numbers that match experimental output DOF
+%% Import experimental data
+edata.dof = edof;
+
+% Get model nodeID numbers that match experimental output DOF
 % api options
 APIop = apiOptions();
 APIop.keepLoaded = 1;
 APIop.keepOpen = 1;
 
 % Pull all model nodes and match with DOF locations
-run.edata.nodes = apish(@findNodes,run,APIop);
+run.edata = edata;
+edata.nodes = apish(@findNodes,run,APIop);
+
+% Run nfa on reference model
+ref = st7model();
+ref.pathname = 'C:\Users\John\Projects_Git\st7api\models';
+ref.filename = 'grid1_mod.st7';
+ref.scratchpath = 'C:\Temp';
+ref.uID = 2;
+init = optimize();
+init.sys = ref;
+init.solver = nfa;
+init.edata = edata;
+results = apish(@update,init,APIop);
+% assign nfa results to edata
+edata.freq = results.nfa.freq;
+edata.U = results.nfa.U;
+run.edata = edata;
 
 % Initialize analytical data
 run.adata = {};
-
-%% set algoritm options
+%% set algoritm options for particle swarm
 run.algorithm = 'PSO';
-run.algOpt = PSOSET('SWARM_SIZE', 10  , ...
+run.algOpt = PSOSET('SWARM_SIZE', 5  , ...
                  'MAX_ITER'  , 10  , ...
-                 'TOLFUN'    , 1e-6 , ...
+                 'TOLFUN'    , 1e-2 , ...
                  'TOLX'      , 1e-6 , ...
                  'DISPLAY'   , 'iter');
 
@@ -127,6 +161,15 @@ obj = @(para)grid1_obj(para,run,run.edata);
 
 
 [para,fval,exitflag,output] = PSO(obj,run.start,run.lb,run.ub,run.algOpt);
+
+%% gradient based
+run.algorithm = 'lsqnonlin';
+run.algOpt = optimoptions(@lsqnonlin,'Algorithm','trust-region-reflective',...
+                'TolFun',1e-6,...
+                'TolX',1e-6,...
+                'Display','final',...
+                'OutputFcn',obj);
+[x,resnorm,residual,exitflag,output] = lsqnonlin(obj,run.start,run.lb,run.ub,run.algOpt);
 
 %% apply final parameters and save model with different name
 out = obj(para);

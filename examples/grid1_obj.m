@@ -13,7 +13,11 @@ function obj = grid1_obj(para,optrun,edata)
 
 for ii = 1:length(para)
     % Assign new model parameter value to appropriate parameter object
-    optrun.modelPara{ii}.obj.(optrun.modelPara{ii}.name) = para(ii);
+    if strcmp(optrun.modelPara{ii}.scale,'log')
+        optrun.modelPara{ii}.obj.(optrun.modelPara{ii}.name) = 10^para(ii)*optrun.modelPara{ii}.base;
+    else
+        optrun.modelPara{ii}.obj.(optrun.modelPara{ii}.name) = para(ii)*optrun.modelPara{ii}.base;
+    end
 end
 
 % api options
@@ -27,15 +31,18 @@ results = apish(@update,optrun,APIop);
 % get frequencies
 afreq = results.nfa.freq;
 
-% pair modes
-u1 = optrun.edata.U;
-u2 = results.nfa.U;
-id = pairModes(u1,u2);
+%% pair modes
+u1c = num2cell(permute(optrun.edata.U(:,1:3,:),[1 3 2]),[1 2]);
+u2c = num2cell(permute(results.nfa.U(:,1:3,:),[1 3 2]),[1 2]);
+u1 = vertcat(u1c{:});
+u2 = vertcat(u2c{:});
+import vibs.*
+id = vibs.pairModes(u1,u2);
 % sort frequencies
 afreq = afreq(id);
     
 % form residual for each mode
-efreq = edata.efreq;
+efreq = edata.freq;
 for ii = 1:results.nfa.nmodes
     obj(ii) = (afreq(ii)-efreq(ii))/efreq(ii);
 end

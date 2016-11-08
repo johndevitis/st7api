@@ -94,6 +94,8 @@ end
 %% NFA
 if isa(optrun.solver,'NFA') && optrun.solver.run == 1
     nfa = optrun.solver;
+    % grab node ids from edata
+    nfa.nodeid = optrun.edata.nodes.id;
     % call api fcn
     nfa.runNFA(uID,nfa.nodeid);
     % save to model struct 

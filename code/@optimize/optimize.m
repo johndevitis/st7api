@@ -9,9 +9,9 @@ classdef optimize < handle
 %% object properties
 	properties
         modelPara % model parameters to be adjusted during updating
-        ub  % corresponding upper bound for parameters
-        lb % lower bounds for parameters
-        start % starting point of parameters for updating run
+        ub  % corresponding upper bound (alpha) for parameters
+        lb % lower bounds (alpha) for parameters
+        start % starting point (alpha) of parameters for updating run
         paraind % index of parameters (for start and bounds)
         algorithm % name of updating algorithm
         solver % solver object

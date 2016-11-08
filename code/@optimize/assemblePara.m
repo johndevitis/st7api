@@ -10,13 +10,13 @@ pp = self.modelPara;
 for ii = 1:length(pp)
     self.paraind{ii} = pp{ii}.name;
     para = pp{ii};
-    if ~isempty(para.ub)
-    self.ub(ii) = para.ub;
+    if ~isempty(para.uba)
+    self.ub(ii) = para.uba;
     end
-    if ~isempty(para.lb)
-    self.lb(ii) = para.lb;
+    if ~isempty(para.lba)
+    self.lb(ii) = para.lba;
     end
-    if ~isempty(para.start)
-    self.start(ii) = para.start;
+    if ~isempty(para.starta)
+    self.start(ii) = para.starta;
     end
 end
