@@ -13,10 +13,10 @@ classdef connection < handle
         propNum % St7 property number
         beamID % St7 element ID
         propName % St7 property name
-        Xstif = 1e12;
-        Ystif = 1e12;
-        Zstif = 1e12
-        Rstiffness = [0 0 0]; % rotational stiffness. 3 element array: 4,5,6 element axes
+        Xstif
+        Ystif
+        Zstif
+        Rstiffness % rotational stiffness. 3 element array: 4,5,6 element axes
 	end
 
 %% dependent properties

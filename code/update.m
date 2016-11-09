@@ -19,10 +19,6 @@ for ii = 1:length(model)
     if isa(para,'plate')
         % Alter plate material
         if any(strcmp(model{ii}.name,matprop))
-            % call get plate material fcn
-            mat = para.getPlateMaterial(uID);
-            %populate empty material property fields
-            para = fillempty(para, mat);
             % set new material properties
             para.setPlateMaterial
         else
@@ -35,18 +31,10 @@ for ii = 1:length(model)
     if isa(para,'beam')
         % Alter material property
         if any(strcmp(model{ii}.name,matprop))
-            % call get material fcn
-            mat = para.getBeamMaterial(uID);
-            % Populate empty material property fields
-            para = fillempty(para, mat);
             % set new material properties 
             para.setBeamMaterial(uID);
         elseif any(strcmp(model{ii}.name,sxnprop))
             % Alter section property
-            % call get section fcn
-            sxn = para.getBeamSection(uID);
-            % Populate empty section property fields
-            para = fillempty(para, sxn);
             % set new section properties 
             para.setBeamSection(uID)
         end
@@ -82,10 +70,6 @@ for ii = 1:length(model)
     % Operate on st7 connection elements
     if isa(para,'connection')
         % Change stiffness    
-        % call get connection fcn
-        vals = para.getConnection(uID);
-        % Populate empty section property fields
-        para = fillempty(para, vals);
         % set new section properties 
         para.setConnection(uID)
     end
@@ -99,7 +83,7 @@ if isa(optrun.solver,'NFA') && optrun.solver.run == 1
     % call api fcn
     nfa.runNFA(uID,nfa.nodeid);
     % save to model struct 
-    results.nfa = nfa;
+%     results.nfa = nfa;
 end
          
 %% LSA 
@@ -108,6 +92,8 @@ if isa(optrun.solver,'LSA') && optrun.solver.run == 1
     % call lsa solver
     lsa.runLSA(uID)
     % save to modle struct
-    results.lsa = lsa;
+%     results.lsa = lsa;
 end
+
+results = 0;
 end

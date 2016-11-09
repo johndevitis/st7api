@@ -29,33 +29,32 @@ APIop.keepOpen = 1;
 results = apish(@update,optrun,APIop);
 
 % get frequencies
-afreq = results.nfa.freq;
+afreq = optrun.solver.freq;
 
 %% pair modes
 u1c = num2cell(permute(optrun.edata.U(:,1:3,:),[1 3 2]),[1 2]);
-u2c = num2cell(permute(results.nfa.U(:,1:3,:),[1 3 2]),[1 2]);
+u2c = num2cell(permute(optrun.solver.U(:,1:3,:),[1 3 2]),[1 2]);
 u1 = vertcat(u1c{:});
 u2 = vertcat(u2c{:});
-import vibs.*
 id = vibs.pairModes(u1,u2);
 % sort frequencies
 afreq = afreq(id);
     
 % form residual for each mode
 efreq = edata.freq;
-for ii = 1:results.nfa.nmodes
+for ii = 1:length(afreq)
     obj(ii) = (afreq(ii)-efreq(ii))/efreq(ii);
 end
 
 %   return sum of squares as objective function value (this isn't
 %   necesasry for lsqnonlin)
-obj = sqrt(sum(sum(obj.^2),2));
-res.obj = obj;
-
-% write results to optrun object
-res.paraVal = para;
-res.paraName = optrun.paraind;
-res.afreq = afreq;
-optrun.adata{end+1} = res;
+% obj = sqrt(sum(sum(obj.^2),2));
+% res.obj = obj;
+% 
+% % write results to optrun object
+% res.paraVal = para;
+% res.paraName = optrun.paraind;
+% res.afreq = afreq;
+% optrun.adata{end+1} = res;
 
 

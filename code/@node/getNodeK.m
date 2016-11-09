@@ -1,4 +1,4 @@
-function [Kt,Kr] = getNodeK(self,uID,fcase)
+function [Kt,Kr] = getNodeK(self,uID,springs)
 %% getNodeK 
 %
 % NOT WORKING
@@ -28,14 +28,14 @@ function [Kt,Kr] = getNodeK(self,uID,fcase)
 % author: john devitis
 % create date: 12-Aug-2016 15:29:10
 
-    Kt = zeros(length(nodes),3);
-    Kr = zeros(length(nodes),3);
+    Kt = zeros(length(springs.nodeid),3);
+    Kr = zeros(length(springs.nodeid),3);
 
-    for ii = 1:length(nodes)   
+    for ii = 1:length(springs.nodeid)   
         
         % get translation spring stiffnesses
         [iErr,kt] = calllib('St7API','St7GetNodeKTranslation3F',uID,...
-            self.id(ii), fcase, self.ucsid, [0 0 0]);
+            springs.nodeid(ii),springs.Kfc,self.ucsid, [0 0 0]);
         % check for empty sping values
         %  (this happens when there's no discrete spring at the node)
         if iErr == 10
@@ -47,7 +47,7 @@ function [Kt,Kr] = getNodeK(self,uID,fcase)
         
         % get rotation spring stiffnesses
         [iErr,kr] = calllib('St7API','St7GetNodeKRotation3F',uID,...
-            self.id(ii), fcase, self.ucsid, [1 1 1]);
+            springs.nodeid(ii),springs.Kfc,self.ucsid, [1 1 1]);
         % check for empty sping values
         %  (this happens when there's no discrete spring at the node)
         if iErr == 10
@@ -58,4 +58,3 @@ function [Kt,Kr] = getNodeK(self,uID,fcase)
         end
     end
 end
-	

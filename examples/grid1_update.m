@@ -20,11 +20,6 @@ for ii = 1:length(pname)
     addpath(genpath(pname{ii}));
 end
 
-%% Import experimental data
-% read in dof locations
-edof = dof();
-edof.read('dof-grid1.csv','delimiter',',');
-
 %% setup st7 file info
 sys = st7model();
 sys.pathname = 'C:\Users\John\Projects_Git\st7api\models';
@@ -38,27 +33,27 @@ nfa.nmodes = 9; % set number of modes to compute
 nfa.run = 1;
 
 %% setup updating parameters
+modelPara = {};    
 
-modelPara = {};                
-% Composite Action
-CA = parameter();
-CA.name = 'Xstif'; % name parameter consistant with object property
-CA.obj = connection();
-CA.obj.propNum = 3;
-CA.base = 1;
-CA.scale = 'log';
-CA.lba = 4;
-CA.uba = 12;
-modelPara{end+1} = CA;
+
+% % Composite Action
+% CA = parameter();
+% CA.name = 'Xstif'; % name parameter consistant with object property
+% CA.obj = connection();
+% CA.obj.propNum = 3;
+% % CA.base = 1;
+% CA.scale = 'log';
+% CA.lba = 4;
+% CA.uba = 12;
+% modelPara{end+1} = CA;
 
 % Deck Stiffness
 DE = parameter();
 DE.name = 'E';
 DE.obj = plate();
 DE.obj.propNum = 1;
-DE.base = 57000*sqrt(3500);
 DE.scale = 'lin';
-DE.lb = 57000*sqrt(1500); DE.ub = 57000*sqrt(10000);
+DE.lba = .5; DE.uba = 2;
 modelPara{end+1} = DE;
 
 % Girder Moment of Inertia
@@ -66,21 +61,20 @@ gI = parameter();
 gI.obj = beam();
 gI.name = 'I11';
 gI.obj.propNum = 1;
-gI.base = 292.3958;
 gi.scale = 'lin';
 gI.lba = 0.8; gI.uba = 1.5;
 modelPara{end+1} = gI;
-
-% Non-structural nodal mass
-NSM = parameter();
-NSM.obj = node();
-NSM.obj.id = [364 421];
-NSM.name = 'Mns'; 
-NSM.base = 500;
-NSM.scale = 'lin';
-NSM.lba = 0; NSM.uba = 1;
-modelPara{end+1} = NSM;
-
+% 
+% % Non-structural nodal mass
+% NSM = parameter();
+% NSM.obj = node();
+% NSM.obj.id = [364 421];
+% NSM.name = 'Mns'; 
+% NSM.base = 500;
+% NSM.scale = 'lin';
+% NSM.lba = 0; NSM.uba = 1;
+% modelPara{end+1} = NSM;
+% 
 % Rotational springs at boundary conditions about y-axis
 BC = parameter();
 BC.obj = spring();
@@ -97,7 +91,6 @@ dia = parameter();
 dia.obj = beam();
 dia.obj.propNum = 2;
 dia.name = 'E';
-dia.base = 29e6;
 dia.scale = 'lin';
 dia.lba = 0.5; dia.uba = 2;
 modelPara{end+1} = dia;
@@ -113,16 +106,20 @@ run.assemblePara();
 % Create randomn starting points for parameters
 run.start = (run.ub-run.lb).*rand(1,length(run.ub))+run.lb;
 
-
+%% Pull existing property values from model and populate any empty parameter "base" values 
+setParaBase(run);
 
 %% Import experimental data
+% read in dof locations
+edof = dof();
+edof.read('dof-grid1.csv','delimiter',',');
 edata.dof = edof;
 
 % Get model nodeID numbers that match experimental output DOF
 % api options
 APIop = apiOptions();
 APIop.keepLoaded = 1;
-APIop.keepOpen = 1;
+APIop.keepOpen = 0;
 
 % Pull all model nodes and match with DOF locations
 run.edata = edata;
@@ -140,41 +137,43 @@ init.solver = nfa;
 init.edata = edata;
 results = apish(@update,init,APIop);
 % assign nfa results to edata
-edata.freq = results.nfa.freq;
-edata.U = results.nfa.U;
+edata.freq = init.solver.freq;
+edata.U = init.solver.U;
 run.edata = edata;
 
+%% Run Optimization Algorithm
 % Initialize analytical data
 run.adata = {};
-%% set algoritm options for particle swarm
-run.algorithm = 'PSO';
-run.algOpt = PSOSET('SWARM_SIZE', 5  , ...
-                 'MAX_ITER'  , 10  , ...
-                 'TOLFUN'    , 1e-2 , ...
-                 'TOLX'      , 1e-6 , ...
-                 'DISPLAY'   , 'iter');
-
-
+% reset number of modes to solve for
+run.solver.nmodes = 15;
+APIop.keepOpen = 1;
 % anonymous objective function to be minimized
 % create anonymous function that generates the data (residuals) to minimize
 obj = @(para)grid1_obj(para,run,run.edata);
 
-
-[para,fval,exitflag,output] = PSO(obj,run.start,run.lb,run.ub,run.algOpt);
+%% Specific algorithm implementation
+% Particle Swarm
+% set algoritm options for particle swarm
+% run.algorithm = 'particleswarm';
+% run.algOpt = optimoptions('particleswarm',...
+%                             'SwarmSize',20,...
+%                             'HybridFcn',@fmincon,...
+%                             'MaxIterations', 20);
+% 
+% [para,fval,exitflag,output] = particleswarm(obj,run.start,run.lb,run.ub,run.algOpt);
 
 %% gradient based
 run.algorithm = 'lsqnonlin';
 run.algOpt = optimoptions(@lsqnonlin,'Algorithm','trust-region-reflective',...
                 'TolFun',1e-6,...
-                'TolX',1e-6,...
-                'Display','final',...
-                'OutputFcn',obj);
+                'TolX',1e-4,...
+                'Display','iter');
 [x,resnorm,residual,exitflag,output] = lsqnonlin(obj,run.start,run.lb,run.ub,run.algOpt);
 
 %% apply final parameters and save model with different name
 out = obj(para);
 new_filename = [run.sys.filename(1:end-4) '_' Name '.st7'];
-api.saveas(run.sys.uID,sys.pathname,new_filename);
+api.saveas(sys.uID,sys.pathname,new_filename);
 
 %% Close Model
 api.closeModel(run.sys.uID)
