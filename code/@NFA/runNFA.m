@@ -107,7 +107,7 @@ function runNFA(self,uID,nodeInd)
             self.U(jj,:,ii) = NodeRes; 
         end
     end
-    fprintf('Done. ');
+    fprintf('Done. \n');
     
     % clean up
     iErr = calllib('St7API','St7CloseResultFile',uID);
