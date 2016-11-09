@@ -75,10 +75,15 @@ function runNFA(self,uID,nodeInd)
         uID,self.name,'',false,0,0);
     HandleError(iErr);
     
+    % Check for number of modes solved for 
+    NumModes=0;
+    [iErr, NumModes] = calllib('St7API','St7GetNFANumModes',uID,NumModes);
+    HandleError(iErr);
+
     % Get frequencies and modalresults
-    freq = zeros(self.nmodes,1);
-    modalres = zeros(self.nmodes,10);
-    for ii = 1:self.nmodes % loop solved modes        
+    freq = zeros(NumModes,1);
+    modalres = zeros(NumModes,10);
+    for ii = 1:NumModes % loop solved modes        
         % get natural frequency
         [iErr,self.freq(ii,1)] = calllib('St7API','St7GetFrequency',uID,ii,1);
         HandleError(iErr);        
@@ -91,8 +96,8 @@ function runNFA(self,uID,nodeInd)
     % Get modeshapes
     fprintf('\t\tPopulating Mode Shapes... ');
     NodeRes = zeros(6,1);       % temporary 6DOF result for node jj
-    self.U = zeros(nnodes,6,self.nmodes); % result mode shape matrix
-    for ii = 1:self.nmodes      % loop solved modes
+    self.U = zeros(nnodes,6,NumModes); % result mode shape matrix
+    for ii = 1:NumModes      % loop solved modes
         for jj = 1:nnodes       % loop stored nodes
             % index selected dof
             [iErr, NodeRes] = calllib('St7API', 'St7GetNodeResult', uID,...
