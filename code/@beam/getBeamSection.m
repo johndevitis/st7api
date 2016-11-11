@@ -16,8 +16,8 @@ int = 0;
 % Beam Strand7 property identifier
 propNum = self.propNum;
 
-% Retrieve section data from strand7 model
-[iErr, int, sectionData]  = calllib('St7API','St7GetBeamSectionPropertyData',uID,propNum,...
+% Retrieve section data from strand7 model (FIRST propNum)
+[iErr, int, sectionData]  = calllib('St7API','St7GetBeamSectionPropertyData',uID,propNum(1),...
     int, sectionData);
 HandleError(iErr)
 

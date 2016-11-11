@@ -15,8 +15,8 @@ stiffness = zeros(1,6);
 % Beam Strand7 property identifier
 propNum = self.propNum;
 
-% Retrieve section data from strand7 model
-[iErr, stiffness]  = calllib('St7API','St7GetConnectionData',uID,propNum,...
+% Retrieve section data from strand7 model (FIRST propNum)
+[iErr, stiffness]  = calllib('St7API','St7GetConnectionData',uID,propNum(1),...
     stiffness);
 HandleError(iErr)
 
