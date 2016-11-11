@@ -15,8 +15,8 @@ Thickness = zeros(1,2);
 % Beam Strand7 property identifier
 propNum = self.propNum;
 
-% get plate thickness for Strand7 plate property
-[iErr, Thickness] = calllib('St7API','St7GetPlateThickness',uID,propNum,...
+% get plate thickness for FIRST Strand7 plate property
+[iErr, Thickness] = calllib('St7API','St7GetPlateThickness',uID,propNum(1),...
     Thickness);
 HandleError(iErr)		
 

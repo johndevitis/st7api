@@ -23,10 +23,13 @@ MatData = ...
 % Beam Strand7 property identifier
 propNum = self.propNum;
 
+% Loop through all the properties
+for ii = 1:length(propNum)
 % set material data for Strand7 beam property
-iErr = calllib('St7API','St7SetPlateIsotropicMaterial',uID,propNum,...
+iErr = calllib('St7API','St7SetPlateIsotropicMaterial',uID,propNum(ii),...
     MatData);
 HandleError(iErr)	
+end
 	
 	
 end

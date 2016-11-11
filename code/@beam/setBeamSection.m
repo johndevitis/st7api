@@ -28,10 +28,12 @@ int = 5;
 % Beam Strand7 property identifier
 propNum = self.propNum;
 
+for ii = 1:length(propNum)
 % set material data for Strand7 beam property
-iErr = calllib('St7API','St7SetBeamSectionPropertyData',uID,propNum,...
+iErr = calllib('St7API','St7SetBeamSectionPropertyData',uID,propNum(ii),...
     int, sectionData);
 HandleError(iErr)
+end
 	
 	
 end

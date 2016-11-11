@@ -15,10 +15,12 @@ stiffness = [self.Tstiffness self.Rstiffness];
 % Beam Strand7 property identifier
 propNum = self.propNum;
 
+for ii = 1:length(propNum)
 % set material data for Strand7 beam property
-iErr = calllib('St7API','St7SetConnectionData',uID,propNum,...
+iErr = calllib('St7API','St7SetConnectionData',uID,propNum(ii),...
     stiffness);
 HandleError(iErr)
+end
 	
 	
 end

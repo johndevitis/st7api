@@ -17,10 +17,12 @@ Doubles = ...
 % Beam Strand7 property identifier
 propNum = self.propNum;
 
+% Loop though properties
+for ii = 1:length(propNum)
 % set plate thickness for Strand7 plate property
-iErr = calllib('St7API','St7SetPlateThickness',uID,propNum,...
+iErr = calllib('St7API','St7SetPlateThickness',uID,propNum(ii),...
     Doubles);
 HandleError(iErr)	
-	
+end
 	
 end
