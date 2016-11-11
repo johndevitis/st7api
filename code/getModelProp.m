@@ -52,7 +52,8 @@ for ii = 1:length(model)
     if isa(para,'node')
         % get node non-structural mass
         if strcmp(model{ii}.name,'Mns')
-            para.getNodeNSMass(uID); 
+            nsm = para.getNodeNSMass(uID); 
+            para.Mns = nsm(1);
         end
     end
 
