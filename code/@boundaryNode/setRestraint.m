@@ -1,4 +1,4 @@
-function setRestraint(self,uID,nodeInd,fcase,restraint,restraintDisp)
+function setRestraint(self,uID)
 %% classdef nodes
 % 
 % note:
@@ -29,13 +29,24 @@ function setRestraint(self,uID,nodeInd,fcase,restraint,restraintDisp)
 % create date: 15-Aug-2016 17:31:52
 
     global btTrue btFalse
-
-    if nargin < 6
-        restraintDisp = zeros(size(restraint));
+    
+    restraint = self.restraint;
+    
+    disp = self.disp;
+    if isempty(disp)
+        disp = zeros(size(self.restraint));
+    end
+        
+    fcase = self.fcase;
+    if isempty(fcase)
+        fcase = 1;
     end
     
+    % Make sure that restraint is 1 when displacement is imposed
+    restraint(disp~=0) = 1;
+    
     % loop node indices
-    for ii = 1:length(nodeInd)
+    for ii = 1:length(self.id)
         
         % sort 0/1 logicals to btTrue/btFalse globals
         for jj = 1:length(restraint(ii,:))
@@ -47,8 +58,8 @@ function setRestraint(self,uID,nodeInd,fcase,restraint,restraintDisp)
         end
         
         % set restraint for node(ii)
-        iErr = calllib('St7API','St7SetNodeRestraint6',uID,nodeInd(ii),...
-            fcase(ii),self.ucsid,status,restraintDisp(ii,:));
+        iErr = calllib('St7API','St7SetNodeRestraint6',uID,self.id(ii),...
+            fcase,self.ucsid,status,disp(ii,:));
         HandleError(iErr)
     end
 

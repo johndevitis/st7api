@@ -1,4 +1,4 @@
-classdef boundaryNode < handle
+classdef boundaryNode < node
 %% classdef boundaryNode
 % 
 % 
@@ -8,8 +8,8 @@ classdef boundaryNode < handle
 
 %% object properties
 	properties
-        nodeid
         restraint
+        disp
         fcase
 	end
 
