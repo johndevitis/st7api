@@ -36,14 +36,17 @@ function setRestraint(self,uID)
     if isempty(disp)
         disp = zeros(size(self.restraint));
     end
-        
+    
+    % Make sure that restraint is 1 when displacement is imposed
+    if isempty(restraint)
+        restraint = zeros(size(disp));
+        restraint(disp~=0) = 1;    
+    end
+    
     fcase = self.fcase;
     if isempty(fcase)
         fcase = 1;
-    end
-    
-    % Make sure that restraint is 1 when displacement is imposed
-    restraint(disp~=0) = 1;
+    end   
     
     % loop node indices
     for ii = 1:length(self.id)
@@ -59,7 +62,7 @@ function setRestraint(self,uID)
         
         % set restraint for node(ii)
         iErr = calllib('St7API','St7SetNodeRestraint6',uID,self.id(ii),...
-            fcase,self.ucsid,status,disp(ii,:));
+            fcase,self.ucsid,status(ii,:),disp(ii,:));
         HandleError(iErr)
     end
 

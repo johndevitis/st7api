@@ -47,10 +47,20 @@ function runLSA(self,uID)
     
     % enable all load cases in lsa object
     [lc,ind] = unique(self.inputcase);
+    
     for ii = 1:length(lc);
-        iErr = calllib('St7API','St7EnableLSALoadCase',uID,lc(ii),...
-            self.fcase(ind));
-        HandleError(iErr);
+        if min(size(self.fcase))==1
+            % all fcases enabled for each load case
+            fc = self.fcase;
+        else
+            % unique fcase combination for each load case
+            fc = self.fcase(:,ind(ii));
+        end
+        for jj = 1:length(fc)
+            iErr = calllib('St7API','St7EnableLSALoadCase',uID,lc(ii),...
+                fc(jj));
+            HandleError(iErr);
+        end
     end
 
     % run lsa solver
@@ -65,24 +75,26 @@ function runLSA(self,uID)
         HandleError(iErr);
     end
 
-    % open results
-    [iErr, nPrimary, nSecondary] = calllib('St7API', 'St7OpenResultFile',...
-        uID, self.name, '', false, 0, 0);
-    HandleError(iErr);
+    if ~isempty(self.outputcase)
+        % open results
+        [iErr, nPrimary, nSecondary] = calllib('St7API', 'St7OpenResultFile',...
+            uID, self.name, '', false, 0, 0);
+        HandleError(iErr);
 
-    % Gather Results
-    self.resp = zeros(length(self.outputid),6);
+        % Gather Results
+        self.resp = zeros(length(self.outputid),6);
 
-    % loop response index for requested results
-    for ii = 1:size(self.resp,1)
-        [iErr,self.resp(ii,:)] = calllib('St7API','St7GetNodeResult',uID,...
-            rtNodeDisp,self.outputid(ii),self.outputcase(ii),[0 0 0 0 0 0]);
+        % loop response index for requested results
+        for ii = 1:size(self.resp,1)
+            [iErr,self.resp(ii,:)] = calllib('St7API','St7GetNodeResult',uID,...
+                rtNodeDisp,self.outputid(ii),self.outputcase(ii),[0 0 0 0 0 0]);
+            HandleError(iErr);
+        end
+
+        % clean up
+        iErr = calllib('St7API','St7CloseResultFile',uID);
         HandleError(iErr);
     end
-
-    % clean up
-    iErr = calllib('St7API','St7CloseResultFile',uID);
-    HandleError(iErr);
     
     % update user
     fprintf('Done. ');
