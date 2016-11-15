@@ -11,18 +11,14 @@ filename = 'beam1.st7';
 scratchpath = 'C:\Temp';
 
 %% setup nfa info
-nfa = NFA();
-nfa.name = fullfile(pathname,[filename(1:end-4) '.NFA']);
-nfa.nmodes = 4; % set number of modes to compute
-nfa.run = 1;
+NFAnmodes = 4; % set number of modes to compute
 
-% %% setup node restraints
-% bc = boundaryNode();
-% bc.nodeid = [1 11];
-% bc.restraint = zeros(length(bc.nodeid),6); % no restraints
-% bc.restraint(1,1:3) = 1; % pinned
-% bc.restraint(11,2:3) = 1; % roller (x kept released)
-% bc.fcase = ones(size(bc.nodeid));
+% Instantiate st7 model
+sys = st7model();
+sys.filename = filename;
+sys.pathname = pathname;
+sys.scratchpath = scratchpath;
+
 
 %% setup material density sensitivity study
 % Alter density of beam material
@@ -37,41 +33,53 @@ beams.density = 0.284; % Set base density
 steps = 10;
 dalpha = linspace(.5,5,steps)';
 
+% add beams to parameters
+modelP = parameter();
+modelP.obj = beams;
+modelP.name = 'density';
+
+% Populate empty parameter fields
+% api options
+APIop = apiOptions();
+APIop.keepLoaded = 1;
+APIop.keepOpen = 1;
+% run shell
+apish(@getModelProp,sys,modelP,APIop);
+
 % build model array
 for ii = 1:steps
-    % the class st7model is a handle subclass. 
-    % Create new instance of St7model class
-    sys = st7model();
-    sys.filename = filename;
-    sys.pathname = pathname;
-    sys.scratchpath = scratchpath;
-    cantilever(ii).sys = sys;
     
     % create new instance of nfa class
     % * this is because nfa subclasses the handle class. handles are 
     % persistent. if you create a copy and change it, the original changes 
     % too. we we need to create a new instance. 
-    cantilever(ii).nfa = NFA();
-    cantilever(ii).nfa.name = strcat(fullfile(sys.pathname,sys.filename(1:end-4)), ...
+    nfa = NFA();
+    nfa.name = strcat(fullfile(sys.pathname,sys.filename(1:end-4)), ...
         '_step',num2str(ii),'.NFA');
-    cantilever(ii).nfa.nmodes = 4;
-    cantilever(ii).nfa.run = 1;
+    nfa.nmodes = NFAnmodes;
+    nfa.run = 1;
     
     % Beam properties
-    % Create new instance of beam class
+    % Create new instance of parameter and beam class
     % Instance labeled as materials for functionality
-    cantilever(ii).materials = beam();
-    cantilever(ii).materials.density = beams.density*dalpha(ii);
-    cantilever(ii).materials.propNum = 1;
+    bm = parameter();
+    bm.obj = beams.copy; % create clone of previously defined beam class
+    bm.obj.density = modelP.obj.density*dalpha(ii);
+    bm.name = 'density';
     
+    % add sensitivity info to "model" structure
+    model(ii).params = bm;
+    model(ii).solvers = nfa;
+    model(ii).options.populate = 0; % don't repopulate st7 property values
 end
 
 
 %% run the shell
+APIop.keepOpen = 0;
+
 tic
-
-results = apish(@main,cantilever);
-
+% Run sensitivity shell
+apish(@sensitivity,sys,model,APIop);
 toc
 
 %% view nfa info

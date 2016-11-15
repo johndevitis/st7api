@@ -1,8 +1,9 @@
-function results = getModelProp(uID,run)
+function results = getModelProp(uID,model)
 %% getModelProp
 % 
-% Pulls parameter properties from model and populates parameter object
+% Pulls propmeter properties from model and populates propmeter object
 % 
+% model - cell array of propmeter objects
 % author: John Braley
 % create date: 09-Nov-2016 10:43:28
 %% Get porperty names for material and section classes for future string comparison
@@ -11,70 +12,74 @@ matprop = {info_m.PropertyList.Name};
 info_s = ?section;
 sxnprop = {info_s.PropertyList.Name};
 
-model = run.modelPara;
 %% Pull properties from St7 Model
 for ii = 1:length(model)
-    para = model{ii}.obj;
+    if isa(model,'cell')
+        Para = model{ii};
+    else
+        Para = model(ii);
+    end
+    prop = Para.obj;
     % Operate on st7 plate elements
-    if isa(para,'plate')
+    if isa(prop,'plate')
         % Alter plate material
-        if any(strcmp(model{ii}.name,matprop))
+        if any(strcmp(Para.name,matprop))
             % call get plate material fcn
-            mat = para.getPlateMaterial(uID);
+            mat = prop.getPlateMaterial(uID);
             %populate empty material property fields
-            para = fillempty(para, mat);
+            prop = fillempty(prop, mat);
         else
             % get plate thickness
-            thick = para.getPlateThickness(uID);
+            thick = prop.getPlateThickness(uID);
             %populate empty fields
-            para = fillempty(para, thick);
+            prop = fillempty(prop, thick);
         end
     end
 
     % Operate on st7 beam elements
-    if isa(para,'beam')
+    if isa(prop,'beam')
         % Alter material property
-        if any(strcmp(model{ii}.name,matprop))
+        if any(strcmp(Para.name,matprop))
             % call get material fcn
-            mat = para.getBeamMaterial(uID);
+            mat = prop.getBeamMaterial(uID);
             % Populate empty material property fields
-            para = fillempty(para, mat);
-        elseif any(strcmp(model{ii}.name,sxnprop))
+            prop = fillempty(prop, mat);
+        elseif any(strcmp(Para.name,sxnprop))
             % Alter section property
             % call get section fcn
-            sxn = para.getBeamSection(uID);
+            sxn = prop.getBeamSection(uID);
             % Populate empty section property fields
-            para = fillempty(para, sxn);
+            prop = fillempty(prop, sxn);
         end
     end
 
     % Operate on nodes
-    if isa(para,'node')
+    if isa(prop,'node')
         % get node non-structural mass
-        if strcmp(model{ii}.name,'Mns')
-            nsm = para.getNodeNSMass(uID); 
-            para.Mns = nsm(1);
+        if strcmp(Para.name,'Mns')
+            nsm = prop.getNodeNSMass(uID); 
+            prop.Mns = nsm(1);
         end
     end
 
 %     % Apply boundary restraints
-%     if isa(para,'boundaryNode')
+%     if isa(prop,'boundaryNode')
 %         if ~exist('nodes','var')
 %             nodes = node();         % create instance of node class
 %             nodes.getUCSinfo(uID);  % get UCS info 
 %         end
-%         nodes.setRestraint(uID,para.nodeid,para.fcase,para.restraint);
+%         nodes.setRestraint(uID,prop.nodeid,prop.fcase,prop.restraint);
 %     end
 
     % Operate on node stiffness
-    if isa(para, 'spring')
+    if isa(prop, 'spring')
         % set node stiffnesses using st7indices
         if ~exist('nodes','var')
             nodes = node();         % create instance of node class
             nodes.getUCSinfo(uID);  % get UCS info 
         end
         % get node stiffness
-        [Kt,Kr] = nodes.getNodeK(uID,para);
+        [Kt,Kr] = nodes.getNodeK(uID,prop);
         % parse stiffness values for direction
         if length(unique(Kt))==1
             spring.KtX = Kt(1,1);
@@ -87,17 +92,17 @@ for ii = 1:length(model)
             spring.KrZ = Kr(1,3);
         end
         % Populate empty stiffness fields
-        para = fillempty(para, spring);
+        prop = fillempty(prop, spring);
         
     end
 
     % Operate on st7 connection elements
-    if isa(para,'connection')
+    if isa(prop,'connection')
         % Change stiffness    
         % call get connection fcn
-        vals = para.getConnection(uID);
+        vals = prop.getConnection(uID);
         % Populate empty section property fields
-        para = fillempty(para, vals);
+        prop = fillempty(prop, vals);
     end
 end
 	

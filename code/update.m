@@ -3,7 +3,9 @@
 % jbb
 
 function results = update(uID,optrun)
-%% Main function, edit as you like. 
+%% Updating function
+
+
 
 %% Get porperty names for material and section classes for future string comparison
 info_m = ?material;

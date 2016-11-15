@@ -1,4 +1,4 @@
-classdef connection < handle
+classdef connection < st7prop
 %% classdef beam
 % 
 % axial stiffness of elelements is assumed to be the 3rd dimension of

@@ -1,7 +1,7 @@
 %% SetModelProp Function
 % to be used with apish.m
 % jbb
-% model - cell array of parameter objects
+% model - cell array of propmeter objects
 
 function setModelProp(uID,model)
 %% Get porperty names for material and section classes for future string comparison
@@ -12,62 +12,67 @@ sxnprop = {info_s.PropertyList.Name};
 
 %% Make changes to St7 Model
 for ii = 1:length(model)
-    para = model{ii}.obj;
+    if isa(model,'cell')
+        Para = model{ii};
+    else
+        Para = model(ii);
+    end
+    prop = Para.obj;
     % Operate on st7 plate elements
-    if isa(para,'plate')
+    if isa(prop,'plate')
         % Alter plate material
-        if any(strcmp(model{ii}.name,matprop))
+        if any(strcmp(Para.name,matprop))
             % set new material properties
-            para.setPlateMaterial
+            prop.setPlateMaterial
         else
             % set new plate thickness
-            para.setPlateThickness(uID)
+            prop.setPlateThickness(uID)
         end
     end
 
     % Operate on st7 beam elements
-    if isa(para,'beam')
-        if any(strcmp(model{ii}.name,matprop))
+    if isa(prop,'beam')
+        if any(strcmp(Para.name,matprop))
             % Alter material property
             % set new material properties 
-            para.setBeamMaterial(uID);
-        elseif any(strcmp(model{ii}.name,sxnprop))
+            prop.setBeamMaterial(uID);
+        elseif any(strcmp(Para.name,sxnprop))
             % Alter section property
             % set new section properties 
-            para.setBeamSection(uID)
+            prop.setBeamSection(uID)
         end
     end
 
     % Operate on nodes
-    if isa(para,'node')
+    if isa(prop,'node')
         % set node non-structural mass
-        if strcmp(model{ii}.name,'Mns')
-            para.setNodeNSMass(uID); 
+        if strcmp(Para.name,'Mns')
+            prop.setNodeNSMass(uID); 
         end
     end
 
     % Apply boundary restraints
-    if isa(para,'boundaryNode')
+    if isa(prop,'boundaryNode')
         if ~exist('nodes','var')
             nodes = node();         % create instance of node class
             nodes.getUCSinfo(uID);  % get UCS info 
         end
-        nodes.setRestraint(uID,para.nodeid,para.fcase,para.restraint);
+        nodes.setRestraint(uID,prop.nodeid,prop.fcase,prop.restraint);
     end
 
     % Alter node stiffness
-    if isa(para, 'spring')
+    if isa(prop, 'spring')
         % set node stiffnesses using st7indices
         nodes = node();         % create instance of node class
         nodes.getUCSinfo(uID);  % get UCS info 
-        nodes.setNodeK(uID,para);
+        nodes.setNodeK(uID,prop);
     end
 
     % Operate on st7 connection elements
-    if isa(para,'connection')
+    if isa(prop,'connection')
         % Change stiffness    
         % set new section properties 
-        para.setConnection(uID)
+        prop.setConnection(uID)
     end
 end
 end

@@ -1,4 +1,4 @@
-classdef spring < handle
+classdef spring < st7prop
 %% classdef spring
 % 
 % 

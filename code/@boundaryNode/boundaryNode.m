@@ -1,4 +1,4 @@
-classdef boundaryNode < node
+classdef boundaryNode < node & st7prop
 %% classdef boundaryNode
 % 
 % 

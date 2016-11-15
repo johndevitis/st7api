@@ -3,23 +3,26 @@
 % solvers - cell array with all of the solver instances
 % jbb
 
-function results = solver(uID,solvers)
+function solver(uID,solvers)
     % Loop through cell array
     for ii = 1:length(solvers)
+        if isa(solvers,'cell')
+            solver = solvers{ii};
+        else
+            solver = model(ii);
+        end
         %% NFA
-        if isa(solvers{ii},'NFA') && solvers{ii}.run == 1
-            nfa = solvers{ii};
+        if isa(solver,'NFA') && solver.run == 1
+            nfa = solver;
             % call api fcn
             nfa.runNFA(uID,nfa.nodeid);
         end
 
         %% LSA 
-        if isa(solvers{ii},'LSA') && solvers{ii}.run == 1
-            lsa = solvers{ii};
+        if isa(solver,'LSA') && solver.run == 1
+            lsa = solver;
             % call lsa solver
             lsa.runLSA(uID)
         end
     end
-
-results = 0;
 end
