@@ -1,4 +1,4 @@
-function results = getModelProp(uID,model)
+function getModelProp(uID,model)
 %% getModelProp
 % 
 % Pulls propmeter properties from model and populates propmeter object
@@ -106,7 +106,6 @@ for ii = 1:length(model)
     end
 end
 	
-% hotfix for output argument requirement for apish wrapper
-results =0;
+fprintf('Done. \n');
 	
 end

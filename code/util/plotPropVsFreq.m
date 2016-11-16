@@ -4,7 +4,7 @@
 % 
 % author: john braley
 % create date: 13-Sep-2016 
-function plotMaterialVsFreq(model)
+function plotPropVsFreq(model)
 	
     fh = figure('PaperPositionMode','auto');
     ah = axes;
@@ -29,6 +29,6 @@ function plotMaterialVsFreq(model)
         end
     end
     if strcmp(model(1).params.scale,'log')
-	set(ah,'XScale','log')	
+        set(ah,'XScale','log')	
     end
 end

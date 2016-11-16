@@ -86,14 +86,14 @@ BC.scale = 'log';
 BC.lba = 5; BC.uba = 11;
 modelPara{end+1} = BC;
 
-% Diaphragm  stiffness
-dia = parameter();
-dia.obj = beam();
-dia.obj.propNum = 2;
-dia.name = 'E';
-dia.scale = 'lin';
-dia.lba = 0.5; dia.uba = 2;
-modelPara{end+1} = dia;
+% % Diaphragm  stiffness
+% dia = parameter();
+% dia.obj = beam();
+% dia.obj.propNum = 2;
+% dia.name = 'E';
+% dia.scale = 'lin';
+% dia.lba = 0.5; dia.uba = 2;
+% modelPara{end+1} = dia;
 
 
 %% Combine parameters
@@ -107,13 +107,16 @@ run.assemblePara();
 run.start = (run.ub-run.lb).*rand(1,length(run.ub))+run.lb;
 
 %% Pull existing property values from model and populate any empty parameter "base" values 
-setParaBase(run);
+setParaBase(sys,run.modelPara);
 
 %% Import experimental data
 % read in dof locations
-edof = dof();
-edof.read('dof-grid1.csv','delimiter',',');
-edata.dof = edof;
+edof = node();
+etab = readtable('dof-grid1.csv');
+edof.coords(:,1) = etab.x;
+edof.coords(:,2) = etab.y;
+edof.coords(:,3) = etab.z;
+edata.nodes = edof;
 
 % Get model nodeID numbers that match experimental output DOF
 % api options
@@ -123,7 +126,7 @@ APIop.keepOpen = 0;
 
 % Pull all model nodes and match with DOF locations
 run.edata = edata;
-edata.nodes = apish(@findNodes,run,APIop);
+apish(@findNodes,sys,edata.dof,APIop);
 
 % Run nfa on reference model
 ref = st7model();
@@ -171,7 +174,7 @@ run.algOpt = optimoptions(@lsqnonlin,'Algorithm','trust-region-reflective',...
 [x,resnorm,residual,exitflag,output] = lsqnonlin(obj,run.start,run.lb,run.ub,run.algOpt);
 
 %% apply final parameters and save model with different name
-out = obj(para);
+% out = obj(x);
 new_filename = [run.sys.filename(1:end-4) '_' Name '.st7'];
 api.saveas(sys.uID,sys.pathname,new_filename);
 
@@ -180,4 +183,4 @@ api.closeModel(run.sys.uID)
 run.sys.open=0;
 
 %% results and model parameter values for each iteration and resulting frequencies
-% can be found in run.adata
+% can be found in run.solver

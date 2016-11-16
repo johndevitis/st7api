@@ -1,4 +1,4 @@
-function setParaBase(model)
+function setParaBase(sys,model)
 %% setParaBase
 % 
 % model - cell array of parameter objects
@@ -11,13 +11,19 @@ APIop = apiOptions();
 APIop.keepLoaded = 1;
 APIop.keepOpen = 1;
 % Grab property values from model
-apish(@getModelProp,model,APIop);
+apish(@getModelProp,sys,model,APIop);
 
 %% Populate base values
+
 for ii = 1:length(model)
-    para = model{ii}.obj;
-    if isempty(model{ii}.base)
-        model{ii}.base = para.(model{ii}.name);
+    if isa(model,'cell')
+        param = model{ii};
+    else
+        param = model(ii);
+    end
+    prop = param.obj;
+    if isempty(param.base)
+        param.base = prop.(param.name);
     end
 end
 	

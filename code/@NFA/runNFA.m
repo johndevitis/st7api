@@ -37,7 +37,13 @@ function runNFA(self,uID,nodeInd)
         self.nodeid = nodeInd;
         nnodes = length(nodeInd); % get number of nodes to fetch
     end
-    
+    %% Begin logic wrapper here
+    % look in pathname for existing  result file self.name
+    % use file() to parse self.name
+    % pull pathname and filename
+    % pull directory contents
+    % loop? strcmp for file matching filename
+    % if ~exist
     fprintf('\t NFA Analysis... \n'); 
     
     % set result file name 
@@ -69,7 +75,8 @@ function runNFA(self,uID,nodeInd)
     iErr = calllib('St7API','St7RunSolver', uID, stNaturalFrequencySolver,...
         smBackgroundRun,btTrue);
     HandleError(iErr);
-    
+    % end
+    %% End logic wrapper here
     % open NFA result file
     [iErr, nPrimary, nSecondary] = calllib('St7API','St7OpenResultFile',...
         uID,self.name,'',false,0,0);

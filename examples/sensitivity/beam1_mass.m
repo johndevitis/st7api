@@ -3,7 +3,7 @@
 % * multiple runs
 % Changes density of material
 %
-% jbb 09072016
+% jbb 11162016
 
 %% setup st7 file info
 pathname = 'C:\Users\John\Projects_Git\st7api\models';
