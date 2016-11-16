@@ -26,7 +26,7 @@ classdef st7prop < handle
         end
         
         % make a clone of instance
-        function new = copy(self)
+        function new = clone(self)
             new = feval(class(self));
             
             p = properties(self);

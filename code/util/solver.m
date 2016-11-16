@@ -9,7 +9,7 @@ function solver(uID,solvers)
         if isa(solvers,'cell')
             solver = solvers{ii};
         else
-            solver = model(ii);
+            solver = solvers(ii);
         end
         %% NFA
         if isa(solver,'NFA') && solver.run == 1

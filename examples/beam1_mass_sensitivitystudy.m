@@ -60,12 +60,11 @@ for ii = 1:steps
     nfa.run = 1;
     
     % Beam properties
-    % Create new instance of parameter and beam class
-    % Instance labeled as materials for functionality
+    % Create new instance of parameter class
     bm = parameter();
-    bm.obj = beams.copy; % create clone of previously defined beam class
-    bm.obj.density = modelP.obj.density*dalpha(ii);
-    bm.name = 'density';
+    bm.obj = beams.clone; % create clone of previously defined beam class
+    bm.obj.density = modelP.obj.density*dalpha(ii); % overwrite with step value
+    bm.name = 'density'; % must correspond to the property being altered
     
     % add sensitivity info to "model" structure
     model(ii).params = bm;
@@ -83,8 +82,7 @@ apish(@sensitivity,sys,model,APIop);
 toc
 
 %% view nfa info
-field = 'density';
-plotMaterialVsFreq(results,field)
+plotMaterialVsFreq(model)
 
 
 
