@@ -1,4 +1,4 @@
-classdef LSA < handle
+classdef LSA < file
 %% classdef lsa
 % 
 % 
@@ -8,7 +8,6 @@ classdef LSA < handle
 
 %% object properties
 	properties
-        name % result file name
         inputid % nodeid to apply load
         inputcase % input loadcase id
         outputid % nodeid to return results
