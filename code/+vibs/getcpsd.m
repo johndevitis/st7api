@@ -32,7 +32,7 @@ for jj = 1:length(refInd)
     
     for ii = 1:size(data,2)
         fprintf(['\t\t DOF: ' num2str(ii) ' of ' num2str(size(data,2)) '\n'])
-        [pxy(:,ii,jj),f] = cpsd(data(:,ii),data(:,refInd(jj)),window,noverlap,nfft,fs);
+        [pxy(ii,jj,:),f] = cpsd(data(:,ii),data(:,refInd(jj)),window,noverlap,nfft,fs);
     end
 end
 
