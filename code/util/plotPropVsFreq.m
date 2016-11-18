@@ -13,22 +13,23 @@ function plotPropVsFreq(model)
     
     lins = {'+b','or','xg','*m'};
     
-    for jj = 1:model(1).solvers.nmodes % loop modes
-        mode = jj;
-        for ii = 1:steps
-            % get x value - material field value
-            beam = model(ii).params.obj;
-            results = model(ii).solvers;
-            xx = beam.(model(ii).params.name);  % plot material property value on x - axis
-            
-            % get y value - freq
-            freq = results.freq;
-            yy = freq(mode);
-            plot(xx,yy); %,lins{jj})
-            hold on
-        end
+    for ii = 1:steps
+        results.freq(ii,:) = model(ii).solvers.freq;
+        prop = model(ii).params.obj;
+        results.para(ii) = prop.(model(ii).params.name);
     end
+    
+    plot(results.para,results.freq,'-o');
     if strcmp(model(1).params.scale,'log')
         set(ah,'XScale','log')	
     end
-end
+    
+    for jj = 1:size(results.freq,2)
+        label{jj} = ['Mode ' num2str(jj)];
+    end
+        
+    legend(label)
+    ylabel('freq (Hz)')
+    xlabel(model(1).params.name)
+    
+  end

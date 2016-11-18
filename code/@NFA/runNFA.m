@@ -86,6 +86,7 @@ function runNFA(self,uID,nodeInd)
     NumModes=0;
     [iErr, NumModes] = calllib('St7API','St7GetNFANumModes',uID,NumModes);
     HandleError(iErr);
+    self.nmodes = NumModes;
 
     % Get frequencies and modalresults
     freq = zeros(NumModes,1);
