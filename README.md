@@ -72,3 +72,8 @@ A compiled PDF of the published example files can be found [here](examples/html/
 #### Simple bridge model (grid1)
 
 1. [Update Parameters based on natural frequency results] - perform an updating run of select parameters so as to match the model natural frequency results with experimental frequencies and mode shapes.
+
+
+## Dependencies
+
+[visual modal analysis - vma](https://github.com/johndevitis/vma)
