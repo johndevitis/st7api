@@ -144,6 +144,10 @@ edata.freq = init.solver.freq;
 edata.U = init.solver.U;
 run.edata = edata;
 
+%% Under construction...
+% Re-sample experimental dofs from model
+% reassine to edata.U
+
 %% Run Optimization Algorithm
 % Initialize analytical data
 run.adata = {};

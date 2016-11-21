@@ -1,4 +1,4 @@
-classdef NFA < handle
+classdef NFA < file
 %% classdef NFA
 % 
 % 
@@ -8,7 +8,6 @@ classdef NFA < handle
 
 %% object properties
 	properties
-        name
         nmodes
         run
         U % mode shape array of size [nNodes x 6 DOF x nModes]

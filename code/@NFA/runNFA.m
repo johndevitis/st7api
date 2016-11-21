@@ -37,55 +37,56 @@ function runNFA(self,uID,nodeInd)
         self.nodeid = nodeInd;
         nnodes = length(nodeInd); % get number of nodes to fetch
     end
-    %% Begin logic wrapper here
-    % look in pathname for existing  result file self.name
-    % use file() to parse self.name
-    % pull pathname and filename
-    % pull directory contents
-    % loop? strcmp for file matching filename
-    % if ~exist
-    fprintf('\t NFA Analysis... \n'); 
     
-    % set result file name 
-    iErr = calllib('St7API','St7SetResultFileName',uID,self.name);
-    HandleError(iErr);
-    
-    % set number of modes to solve
-    iErr = calllib('St7API','St7SetNFANumModes',uID,self.nmodes);
-    HandleError(iErr);
-    
-    % set mode participation calculation
-    iErr = calllib('St7API','St7SetNFAModeParticipationCalculate',uID,...
-        btTrue);
-    HandleError(iErr);
-    
-    % enable non-structural mass load cases
-    if ~isempty(self.NSMcase)
-        % Get total number of load cases - to be added
-        % Disable all other load cases
-        % If not all load cases 
-        for ii = 1:length(self.NSMcase)
-            iErr = calllib('St7API','St7EnableNFANonStructuralMassCase',uID,...
-            self.NSMcase(ii));
-            HandleError(iErr);
+%% Unique result file logic wrapper here    
+    % check if unique result name in path
+    self.isuniquefile    
+    % if result file does not already exist
+    if self.unique
+        fprintf('\t NFA Analysis... \n'); 
+
+        % set result file name 
+        iErr = calllib('St7API','St7SetResultFileName',uID,self.fullname);
+        HandleError(iErr);
+
+        % set number of modes to solve
+        iErr = calllib('St7API','St7SetNFANumModes',uID,self.nmodes);
+        HandleError(iErr);
+
+        % set mode participation calculation
+        iErr = calllib('St7API','St7SetNFAModeParticipationCalculate',uID,...
+            btTrue);
+        HandleError(iErr);
+
+        % enable non-structural mass load cases
+        if ~isempty(self.NSMcase)
+            % Get total number of load cases - to be added
+            % Disable all other load cases
+            % If not all load cases 
+            for ii = 1:length(self.NSMcase)
+                iErr = calllib('St7API','St7EnableNFANonStructuralMassCase',uID,...
+                self.NSMcase(ii));
+                HandleError(iErr);
+            end
         end
-    end
+
+        % run NFA solver
+        iErr = calllib('St7API','St7RunSolver', uID, stNaturalFrequencySolver,...
+            smBackgroundRun,btTrue);
+        HandleError(iErr);
+    end %% End Logic wrapper here
+% End Logic wrapper here
     
-    % run NFA solver
-    iErr = calllib('St7API','St7RunSolver', uID, stNaturalFrequencySolver,...
-        smBackgroundRun,btTrue);
-    HandleError(iErr);
-    % end
-    %% End logic wrapper here
-    % open NFA result file
+%% Open result file
     [iErr, nPrimary, nSecondary] = calllib('St7API','St7OpenResultFile',...
-        uID,self.name,'',false,0,0);
+        uID,self.fullname,'',false,0,0);
     HandleError(iErr);
     
     % Check for number of modes solved for 
     NumModes=0;
     [iErr, NumModes] = calllib('St7API','St7GetNFANumModes',uID,NumModes);
     HandleError(iErr);
+    self.nmodes = NumModes;
 
     % Get frequencies and modalresults
     freq = zeros(NumModes,1);
