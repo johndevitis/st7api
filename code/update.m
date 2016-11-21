@@ -2,8 +2,11 @@
 % to be used with apish.m
 % jbb
 
-function results = update(uID,optrun)
-%% Main function, edit as you like. 
+function update(uID,optrun)
+%% Updating function
+
+%% -- Outdated --
+% Use setModelProp and solver
 
 %% Get porperty names for material and section classes for future string comparison
 info_m = ?material;
@@ -91,9 +94,6 @@ if isa(optrun.solver,'LSA') && optrun.solver.run == 1
     lsa = optrun.solver;
     % call lsa solver
     lsa.runLSA(uID)
-    % save to modle struct
-%     results.lsa = lsa;
 end
 
-results = 0;
 end

@@ -1,4 +1,4 @@
-classdef node < handle
+classdef node < st7prop
 %% classdef nodes
 % 
 % 

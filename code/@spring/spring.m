@@ -1,4 +1,4 @@
-classdef spring < handle
+classdef spring < st7prop
 %% classdef spring
 % 
 % 
@@ -14,7 +14,7 @@ classdef spring < handle
         KrX
         KrY
         KrZ
-        Kfc % freedom case to be applied
+        Kfc = 1% freedom case to be applied
         nodeid % node index
 	end
 

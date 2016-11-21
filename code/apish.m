@@ -1,4 +1,4 @@
-function results = apish(main,model,opts)
+function apish(main,sys,model,opts,objectName)
 %% Self-contained API execution wrapper
 % SYNTAX: model = apish(main,model)
 %
@@ -12,6 +12,8 @@ function results = apish(main,model,opts)
 % 		filename - fe model file name
 % 		scratchpath - st7 tempo dir
 %
+% objectName - string describing which field in model structure to be
+%               passed into main function
 % note:
 %  * apish.m and the main function should be at least at the same folder
 %  level as the classdef folders
@@ -22,31 +24,36 @@ function results = apish(main,model,opts)
 
     try % execute main fcn in try/catch
         % load libs and models
-        uID = model(1).sys.uID;
-        apiInit(uID,model(1).sys); 
+        uID = sys.uID;
+        apiInit(uID,sys); 
         % main fcn
-        for ii = 1:length(model)
-            results(ii) = main(uID,model(ii));
+        if isa(model,'cell')
+            main(uID,model);
+        else
+            for ii = 1:length(model)
+                main(uID,model(ii));
+            end
         end
         
+        
         % load default options if none provided
-        if nargin < 3
+        if nargin < 4
             opts = apiOptions();
         end
         
         % check whether or not to unload library
         if opts.keepLoaded == 0
             CloseAndUnload(uID);
-            model(1).sys.open=0;
+            sys.open=0;
         elseif opts.keepOpen == 0
             api.closeModel(uID)
-            model(1).sys.open=0;
+            sys.open=0;
         end
         
     catch % force close close all refs
         fprintf('Force close');
         CloseAndUnload(uID);
-        model(1).sys.open=0;
+        sys.open=0;
         rethrow(lasterror);
     end
 end 

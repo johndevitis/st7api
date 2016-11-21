@@ -1,4 +1,4 @@
-classdef plate < material
+classdef plate < material & st7prop
 %% classdef plate
 % 
 % 

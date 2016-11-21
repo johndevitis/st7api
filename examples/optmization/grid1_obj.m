@@ -25,8 +25,11 @@ APIop = apiOptions();
 APIop.keepLoaded = 1;
 APIop.keepOpen = 1;
 
+% set new parameters in model
+apish(@setModelProp,optrun.sys,optrun.modelPara,APIop);
 % call api to get frequencies due to current para
-results = apish(@update,optrun,APIop);
+apish(@solver,optrun.sys,optrun.solver,APIop);
+
 
 % get frequencies
 afreq = optrun.solver.freq;
@@ -47,7 +50,7 @@ for ii = 1:length(afreq)
 end
 
 %   return sum of squares as objective function value (this isn't
-%   necesasry for lsqnonlin)
+%   necessary for lsqnonlin)
 % obj = sqrt(sum(sum(obj.^2),2));
 % res.obj = obj;
 % 

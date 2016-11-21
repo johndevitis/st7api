@@ -1,4 +1,4 @@
-classdef beam < material & section
+classdef beam < material & section & st7prop
 %% classdef beam
 % 
 % 

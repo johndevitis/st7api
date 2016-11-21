@@ -27,58 +27,66 @@ function runLSA(self,uID)
         self.outputcase = ones(size(self.outputid));
     end
     
-    % update user
-    fprintf('\tRunning Linear Static Analysis... \n');
+%% Unique result file logic wrapper here    
+    % check if unique result name in path
+    self.isuniquefile    
+    % if result file does not already exist
+    if self.unique
+        % update user
+        fprintf('\tRunning Linear Static Analysis... \n');
 
-    % set result file name 
-    iErr = calllib('St7API','St7SetResultFileName',uID,self.name);
-    HandleError(iErr);
-
-    % Assign force 
-    % - loop load index for force assignment indices. assign to load case
-    for ii = 1:length(self.inputid)
-        iErr = calllib('St7API','St7SetNodeForce3',uID,self.inputid(ii),...
-            self.inputcase(ii),self.force(ii,:));
+        % set result file name 
+        iErr = calllib('St7API','St7SetResultFileName',uID,self.fullname);
         HandleError(iErr);
-    end
-    
-    % Assign moment -- ADD ME PLEASE --
-    
-    
-    % enable all load cases in lsa object
-    [lc,ind] = unique(self.inputcase);
-    
-    for ii = 1:length(lc);
-        if min(size(self.fcase))==1
-            % all fcases enabled for each load case
-            fc = self.fcase;
-        else
-            % unique fcase combination for each load case
-            fc = self.fcase(:,ind(ii));
-        end
-        for jj = 1:length(fc)
-            iErr = calllib('St7API','St7EnableLSALoadCase',uID,lc(ii),...
-                fc(jj));
+
+        % Assign force 
+        % - loop load index for force assignment indices. assign to load case
+        for ii = 1:length(self.inputid)
+            iErr = calllib('St7API','St7SetNodeForce3',uID,self.inputid(ii),...
+                self.inputcase(ii),self.force(ii,:));
             HandleError(iErr);
         end
-    end
 
-    % run lsa solver
-    iErr = calllib('St7API','St7RunSolver',uID,stLinearStaticSolver, ...
-        smProgressRun, btTrue);
-    HandleError(iErr);
-    
-    % disable load case
-    for ii = 1:length(lc);
-        iErr = calllib('St7API','St7DisableLSALoadCase',uID,lc(ii),...
-            self.fcase(ind));
+        % Assign moment -- ADD ME PLEASE --
+
+
+        % enable all load cases in lsa object
+        [lc,ind] = unique(self.inputcase);
+
+        for ii = 1:length(lc);
+            if min(size(self.fcase))==1
+                % all fcases enabled for each load case
+                fc = self.fcase;
+            else
+                % unique fcase combination for each load case
+                fc = self.fcase(:,ind(ii));
+            end
+            for jj = 1:length(fc)
+                iErr = calllib('St7API','St7EnableLSALoadCase',uID,lc(ii),...
+                    fc(jj));
+                HandleError(iErr);
+            end
+        end
+
+        % run lsa solver
+        iErr = calllib('St7API','St7RunSolver',uID,stLinearStaticSolver, ...
+            smProgressRun, btTrue);
         HandleError(iErr);
-    end
 
+        % disable load case
+        for ii = 1:length(lc);
+            iErr = calllib('St7API','St7DisableLSALoadCase',uID,lc(ii),...
+                self.fcase(ind));
+            HandleError(iErr);
+        end
+    end %% End Logic wrapper here
+% End Logic wrapper here
+    
+%% Open result file
     if ~isempty(self.outputcase)
         % open results
         [iErr, nPrimary, nSecondary] = calllib('St7API', 'St7OpenResultFile',...
-            uID, self.name, '', false, 0, 0);
+            uID, self.fullname, '', false, 0, 0);
         HandleError(iErr);
 
         % Gather Results
