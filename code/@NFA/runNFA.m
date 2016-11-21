@@ -30,7 +30,7 @@ function runNFA(self,uID,nodeInd)
     global stNaturalFrequencySolver smBackgroundRun kNodeDisp btTrue
       
     % create nodeInd if not provided
-    if nargin < 3
+    if nargin < 3 || isempty(nodeInd)
         nnodes = api.getTotalNodes(uID); % get total number of nodes
         self.nodeid = 1:nnodes;          % form full node index
     else % userinput
