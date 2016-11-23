@@ -84,8 +84,7 @@ function runNFA(self,uID,nodeInd)
     
     % Check for number of modes solved for 
     NumModes=0;
-    [iErr, NumModes] = calllib('St7API','St7GetNFANumModes',uID,NumModes);
-    HandleError(iErr);
+    NumModes = getNumModes([self.fullname(1:end-3) 'NFL']);
     self.nmodes = NumModes;
 
     % Get frequencies and modalresults

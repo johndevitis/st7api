@@ -31,5 +31,4 @@ function plotPropVsFreq(model)
     legend(label)
     ylabel('freq (Hz)')
     xlabel(model(1).params.name)
-    
   end

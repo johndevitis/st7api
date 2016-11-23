@@ -23,7 +23,7 @@ for ii = 1:length(model)
         % Alter plate material
         if any(strcmp(Para.name,matprop))
             % set new material properties
-            prop.setPlateMaterial
+            prop.setPlateMaterial(uID)
         else
             % set new plate thickness
             prop.setPlateThickness(uID)
