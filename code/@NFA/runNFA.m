@@ -40,9 +40,9 @@ function runNFA(self,uID,nodeInd)
     
 %% Unique result file logic wrapper here    
     % check if unique result name in path
-    self.isuniquefile    
+     newfile = self.isunique;    
     % if result file does not already exist
-    if self.unique
+    if newfile
         fprintf('\t NFA Analysis... \n'); 
 
         % set result file name 
