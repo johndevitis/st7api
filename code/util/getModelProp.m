@@ -81,15 +81,15 @@ for ii = 1:length(model)
         % get node stiffness
         [Kt,Kr] = nodes.getNodeK(uID,prop);
         % parse stiffness values for direction
-        if length(unique(Kt))==1
-            spring.KtX = Kt(1,1);
-            spring.KtY = Kt(1,2);
-            spring.KtZ = Kt(1,3);
+        if size(unique(Kt,'rows'),1)==1
+            prop.KtX = Kt(1,1);
+            prop.KtY = Kt(1,2);
+            prop.KtZ = Kt(1,3);
         end
-        if length(unique(Kr))==1
-            spring.KrX = Kr(1,1);
-            spring.KrY = Kr(1,2);
-            spring.KrZ = Kr(1,3);
+        if size(unique(Kr,'rows'),1)==1
+            prop.KrX = Kr(1,1);
+            prop.KrY = Kr(1,2);
+            prop.KrZ = Kr(1,3);
         end
         % Populate empty stiffness fields
         prop = fillempty(prop, spring);

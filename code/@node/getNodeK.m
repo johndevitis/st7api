@@ -34,7 +34,7 @@ function [Kt,Kr] = getNodeK(self,uID,springs)
     for ii = 1:length(springs.nodeid)   
         
         % get translation spring stiffnesses
-        [iErr,kt] = calllib('St7API','St7GetNodeKTranslation3F',uID,...
+        [iErr,ucsid,kt] = calllib('St7API','St7GetNodeKTranslation3F',uID,...
             springs.nodeid(ii),springs.Kfc,self.ucsid, [0 0 0]);
         % check for empty sping values
         %  (this happens when there's no discrete spring at the node)
@@ -46,7 +46,7 @@ function [Kt,Kr] = getNodeK(self,uID,springs)
         end
         
         % get rotation spring stiffnesses
-        [iErr,kr] = calllib('St7API','St7GetNodeKRotation3F',uID,...
+        [iErr,ucsid,kr] = calllib('St7API','St7GetNodeKRotation3F',uID,...
             springs.nodeid(ii),springs.Kfc,self.ucsid, [1 1 1]);
         % check for empty sping values
         %  (this happens when there's no discrete spring at the node)
