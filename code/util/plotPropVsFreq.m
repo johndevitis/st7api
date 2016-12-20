@@ -15,12 +15,12 @@ function plotPropVsFreq(model)
     
     for ii = 1:steps
         results.freq(ii,:) = model(ii).solvers.freq;
-        prop = model(ii).params.obj;
-        results.para(ii) = prop.(model(ii).params.name);
+        prop = model(ii).params{1}.obj;
+        results.para(ii) = prop.(model(ii).params{1}.name);
     end
     
     plot(results.para,results.freq,'-o');
-    if strcmp(model(1).params.scale,'log')
+    if strcmp(model(1).params{1}.scale,'log')
         set(ah,'XScale','log')	
     end
     
@@ -30,5 +30,5 @@ function plotPropVsFreq(model)
         
     legend(label)
     ylabel('freq (Hz)')
-    xlabel(model(1).params.name)
+    xlabel(model(1).params{1}.name)
   end
