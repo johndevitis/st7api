@@ -10,6 +10,9 @@ matprop = {info_m.PropertyList.Name};
 info_s = ?section;
 sxnprop = {info_s.PropertyList.Name};
 
+%initialize checks
+platemat = 0;
+
 %% Make changes to St7 Model
 for ii = 1:length(model)
     if isa(model,'cell')

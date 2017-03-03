@@ -72,7 +72,7 @@ function getNodes(self,uID,zz)
     end
     
     % find boundary nodes
-    bcoords = getBoundaryNodes(coords);
+    bcoords = getBounds(coords(:,1),coords(:,2));
     
     % save to object
     self.units = units;
